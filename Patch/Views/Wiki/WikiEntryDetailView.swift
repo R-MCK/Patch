@@ -330,41 +330,6 @@ struct TagPill: View {
     }
 }
 
-private struct ActivityShareSheet: UIViewControllerRepresentable {
-    let items: [Any]
-    let onComplete: (Bool) -> Void
-
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: items, applicationActivities: nil)
-        controller.completionWithItemsHandler = { _, completed, _, _ in
-            onComplete(completed)
-        }
-        return controller
-    }
-
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) { }
-}
-
-private enum GrowthMetricTracker {
-    private static let prefix = "patch.metrics."
-
-    static func track(event: String, properties: [String: String] = [:]) {
-        let defaults = UserDefaults.standard
-        let key = prefix + event
-        defaults.set(defaults.integer(forKey: key) + 1, forKey: key)
-
-        let serializedProperties = properties
-            .sorted { $0.key < $1.key }
-            .map { "\($0.key)=\($0.value)" }
-            .joined(separator: ",")
-        print("[GrowthMetric] \(event) \(serializedProperties)")
-    }
-
-    static func count(for event: String) -> Int {
-        UserDefaults.standard.integer(forKey: prefix + event)
-    }
-}
-
 struct QuickInfoCard: View {
     let icon: String
     let title: String

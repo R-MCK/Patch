@@ -10,7 +10,7 @@ import type { Plant } from '@/types'
 export function PlantForm() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { plants, addPlant, updatePlant } = usePlantStore()
+  const { plants, addPlant, updatePlant, isLoading } = usePlantStore()
 
   const isEditing = !!id
   const existingPlant = isEditing ? plants.find((p) => p.id === id) : null
@@ -82,9 +82,9 @@ export function PlantForm() {
       scientificName: formData.scientificName || undefined,
       description: formData.description || undefined,
       location: formData.location || undefined,
-      healthStatus: formData.healthStatus as any,
-      growthStage: formData.growthStage as any,
-      sunRequirement: formData.sunRequirement as any || undefined,
+      healthStatus: formData.healthStatus as Plant['healthStatus'],
+      growthStage: formData.growthStage as Plant['growthStage'],
+      sunRequirement: (formData.sunRequirement as Plant['sunRequirement']) || undefined,
       wateringFrequency: formData.wateringFrequency ? parseInt(formData.wateringFrequency) : undefined,
       plantedDate: formData.plantedDate ? new Date(formData.plantedDate) : undefined,
       notes: formData.notes || undefined,
@@ -320,8 +320,8 @@ export function PlantForm() {
               Cancel
             </Button>
           </Link>
-          <Button type="submit" className="w-32 shadow-md hover:shadow-lg transition-all border-0">
-            {isEditing ? 'Save Changes' : 'Add Plant'}
+          <Button type="submit" disabled={isLoading} className="w-32 shadow-md hover:shadow-lg transition-all border-0 disabled:opacity-50">
+            {isLoading ? 'Saving...' : isEditing ? 'Save Changes' : 'Add Plant'}
           </Button>
         </div>
       </form>

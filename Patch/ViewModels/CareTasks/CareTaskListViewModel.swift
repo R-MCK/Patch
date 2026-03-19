@@ -98,41 +98,8 @@ final class CareTaskListViewModel: ObservableObject {
         }
 
         // Fetch all incomplete tasks
-        var allTasks = repository.fetchUpcoming()
-        let overdue = repository.fetchOverdue()
-
-        // Apply filters
-        if let typeFilter = selectedTaskTypeFilter {
-            allTasks = allTasks.filter { $0.taskType == typeFilter.rawValue }
-        }
-
-        if let plantFilter = selectedPlantFilter {
-            allTasks = allTasks.filter { $0.plant == plantFilter }
-        }
-
-        if !searchText.isEmpty {
-            allTasks = allTasks.filter { task in
-                task.plant?.name.localizedCaseInsensitiveContains(searchText) == true ||
-                task.taskType.localizedCaseInsensitiveContains(searchText) ||
-                task.notes?.localizedCaseInsensitiveContains(searchText) == true
-            }
-        }
-
-        // Apply same filters to overdue
-        var filteredOverdue = overdue
-        if let typeFilter = selectedTaskTypeFilter {
-            filteredOverdue = filteredOverdue.filter { $0.taskType == typeFilter.rawValue }
-        }
-        if let plantFilter = selectedPlantFilter {
-            filteredOverdue = filteredOverdue.filter { $0.plant == plantFilter }
-        }
-        if !searchText.isEmpty {
-            filteredOverdue = filteredOverdue.filter { task in
-                task.plant?.name.localizedCaseInsensitiveContains(searchText) == true ||
-                task.taskType.localizedCaseInsensitiveContains(searchText) ||
-                task.notes?.localizedCaseInsensitiveContains(searchText) == true
-            }
-        }
+        let allTasks = applyFilters(to: repository.fetchUpcoming())
+        let filteredOverdue = applyFilters(to: repository.fetchOverdue())
 
         // Group tasks by time period
         overdueTasks = filteredOverdue.sorted { $0.scheduledDate < $1.scheduledDate }
@@ -150,6 +117,24 @@ final class CareTaskListViewModel: ObservableObject {
         }.sorted { $0.scheduledDate < $1.scheduledDate }
 
         isLoading = false
+    }
+
+    private func applyFilters(to tasks: [CareTask]) -> [CareTask] {
+        var result = tasks
+        if let typeFilter = selectedTaskTypeFilter {
+            result = result.filter { $0.taskType == typeFilter.rawValue }
+        }
+        if let plantFilter = selectedPlantFilter {
+            result = result.filter { $0.plant == plantFilter }
+        }
+        if !searchText.isEmpty {
+            result = result.filter { task in
+                task.plant?.name.localizedCaseInsensitiveContains(searchText) == true ||
+                task.taskType.localizedCaseInsensitiveContains(searchText) ||
+                task.notes?.localizedCaseInsensitiveContains(searchText) == true
+            }
+        }
+        return result
     }
 
     func refresh() async {

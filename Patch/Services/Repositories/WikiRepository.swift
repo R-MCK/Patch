@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import Combine
+import os
 
 /// Repository for WikiEntry entity CRUD operations
 @MainActor
@@ -10,6 +11,8 @@ final class WikiRepository: ObservableObject {
 
     @Published var entries: [WikiEntry] = []
     @Published var errorMessage: String?
+
+    private let logger = Logger(subsystem: "com.patch.app", category: "repository")
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -29,7 +32,7 @@ final class WikiRepository: ObservableObject {
             }
             return results
         } catch {
-            print("Error fetching wiki entries: \(error)")
+            logger.error("Error fetching wiki entries: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -44,7 +47,7 @@ final class WikiRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching wiki entries by category: \(error)")
+            logger.error("Error fetching wiki entries by category: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -59,7 +62,7 @@ final class WikiRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching entries by category: \(error)")
+            logger.error("Error fetching entries by category: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -74,7 +77,7 @@ final class WikiRepository: ObservableObject {
         do {
             return try context.fetch(request).first
         } catch {
-            print("Error fetching wiki entry by ID: \(error)")
+            logger.error("Error fetching wiki entry by ID: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return nil
         }
@@ -108,7 +111,7 @@ final class WikiRepository: ObservableObject {
             fullRequest.fetchLimit = 5
             return try context.fetch(fullRequest)
         } catch {
-            print("Error searching wiki entries: \(error)")
+            logger.error("Error searching wiki entries: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -123,7 +126,7 @@ final class WikiRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error filtering wiki entries by difficulty: \(error)")
+            logger.error("Error filtering wiki entries by difficulty: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -138,7 +141,7 @@ final class WikiRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error filtering wiki entries by sunlight: \(error)")
+            logger.error("Error filtering wiki entries by sunlight: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -246,7 +249,7 @@ final class WikiRepository: ObservableObject {
             try context.save()
             _ = fetchAll() // Refresh published entries
         } catch {
-            print("Error saving context: \(error)")
+            logger.error("Error saving context: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
         }
     }

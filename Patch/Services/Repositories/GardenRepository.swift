@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import Combine
+import os
 
 protocol GardenDetailGardenRepository {
     func fetchById(_ id: UUID) -> Garden?
@@ -31,6 +32,8 @@ final class GardenRepository: ObservableObject {
     @Published var gardens: [Garden] = []
     @Published var errorMessage: String?
 
+    private let logger = Logger(subsystem: "com.patch.app", category: "repository")
+
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
     }
@@ -49,7 +52,7 @@ final class GardenRepository: ObservableObject {
             }
             return results
         } catch {
-            print("Error fetching gardens: \(error)")
+            logger.error("Error fetching gardens: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -64,7 +67,7 @@ final class GardenRepository: ObservableObject {
         do {
             return try context.fetch(request).first
         } catch {
-            print("Error fetching garden by ID: \(error)")
+            logger.error("Error fetching garden by ID: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return nil
         }
@@ -81,7 +84,7 @@ final class GardenRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error searching gardens: \(error)")
+            logger.error("Error searching gardens: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -96,7 +99,7 @@ final class GardenRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error filtering gardens by type: \(error)")
+            logger.error("Error filtering gardens by type: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -217,7 +220,7 @@ final class GardenRepository: ObservableObject {
             try context.save()
             _ = fetchAll() // Refresh published gardens
         } catch {
-            print("Error saving context: \(error)")
+            logger.error("Error saving context: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
         }
     }
@@ -228,6 +231,7 @@ extension GardenRepository: GardenDetailGardenRepository { }
 /// Repository for GardenDesign entity CRUD operations.
 final class GardenDesignRepository {
     private let context: NSManagedObjectContext
+    private let logger = Logger(subsystem: "com.patch.app", category: "repository")
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -240,7 +244,7 @@ final class GardenDesignRepository {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching garden designs: \(error)")
+            logger.error("Error fetching garden designs: \(error.localizedDescription)")
             return []
         }
     }
@@ -272,7 +276,7 @@ final class GardenDesignRepository {
         do {
             try context.save()
         } catch {
-            print("Error saving garden design context: \(error)")
+            logger.error("Error saving garden design context: \(error.localizedDescription)")
         }
     }
 }

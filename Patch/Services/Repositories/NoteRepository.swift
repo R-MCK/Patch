@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import Combine
+import os
 
 protocol PlantNoteRepository {
     func fetchByPlant(_ plant: Plant) -> [Note]
@@ -14,6 +15,8 @@ final class NoteRepository: ObservableObject {
 
     @Published var notes: [Note] = []
     @Published var errorMessage: String?
+
+    private let logger = Logger(subsystem: "com.patch.app", category: "repository")
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -34,7 +37,7 @@ final class NoteRepository: ObservableObject {
             }
             return results
         } catch {
-            print("Error fetching notes: \(error)")
+            logger.error("Error fetching notes: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -49,7 +52,7 @@ final class NoteRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching notes by plant: \(error)")
+            logger.error("Error fetching notes by plant: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -64,7 +67,7 @@ final class NoteRepository: ObservableObject {
         do {
             return try context.fetch(request).first
         } catch {
-            print("Error fetching note by ID: \(error)")
+            logger.error("Error fetching note by ID: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return nil
         }
@@ -79,7 +82,7 @@ final class NoteRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching archived notes: \(error)")
+            logger.error("Error fetching archived notes: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -99,7 +102,7 @@ final class NoteRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error searching notes: \(error)")
+            logger.error("Error searching notes: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -205,7 +208,7 @@ final class NoteRepository: ObservableObject {
             try context.save()
             _ = fetchAll() // Refresh published notes
         } catch {
-            print("Error saving context: \(error)")
+            logger.error("Error saving context: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
         }
     }

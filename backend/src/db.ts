@@ -6,8 +6,8 @@ export const db = new sqlite3.Database(path.join(__dirname, 'patch.db'));
 
 // Promisify SQLite methods for async/await
 export const dbRun = promisify(db.run.bind(db)) as (sql: string, params?: any[]) => Promise<any>;
-export const dbGet = promisify(db.get.bind(db)) as (sql: string, params?: any[]) => Promise<any>;
-export const dbAll = promisify(db.all.bind(db)) as (sql: string, params?: any[]) => Promise<any[]>;
+export const dbGet = promisify(db.get.bind(db)) as <T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T | undefined>;
+export const dbAll = promisify(db.all.bind(db)) as <T = Record<string, unknown>>(sql: string, params?: unknown[]) => Promise<T[]>;
 
 export async function initDatabase() {
     await dbRun(`
@@ -38,8 +38,8 @@ export async function initDatabase() {
   `);
 
     // Insert seed data if empty
-    const plantCount = await dbGet('SELECT COUNT(*) as count FROM plants');
-    if (plantCount.count === 0) {
+    const plantCount = await dbGet<{ count: number }>('SELECT COUNT(*) as count FROM plants');
+    if (plantCount?.count === 0) {
         console.log("Seeding initial database...");
         await dbRun(`
       INSERT INTO plants (id, name, species, health_status, growth_stage)

@@ -1,6 +1,18 @@
 import { create } from 'zustand'
 import type { Plant, PlantState } from '@/types'
 
+interface DbPlant {
+  id: string
+  name: string
+  species?: string
+  variety?: string
+  planting_date?: string
+  location?: string
+  health_status?: string
+  growth_stage?: string
+  garden_id?: string
+}
+
 interface PlantActions {
   setPlants: (plants: Plant[]) => void
   addPlant: (plant: Plant) => void
@@ -50,7 +62,7 @@ export const usePlantStore = create<PlantState & PlantActions>()((set) => ({
       const dbPlants = await api.getPlants()
 
       // Map SQLite columns to our application types
-      const mappedPlants = dbPlants.map((dp: any) => ({
+      const mappedPlants = dbPlants.map((dp: DbPlant) => ({
         id: dp.id,
         name: dp.name,
         scientificName: dp.species,

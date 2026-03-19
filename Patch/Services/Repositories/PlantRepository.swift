@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import Combine
+import os
 
 protocol PlantDetailPlantRepository {
     func fetchById(_ id: UUID) -> Plant?
@@ -52,6 +53,8 @@ final class PlantRepository: ObservableObject {
     @Published var plants: [Plant] = []
     @Published var errorMessage: String?
 
+    private let logger = Logger(subsystem: "com.patch.app", category: "repository")
+
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
     }
@@ -70,7 +73,7 @@ final class PlantRepository: ObservableObject {
             }
             return results
         } catch {
-            print("Error fetching plants: \(error)")
+            logger.error("Error fetching plants: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -85,7 +88,7 @@ final class PlantRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching plants by garden: \(error)")
+            logger.error("Error fetching plants by garden: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -100,7 +103,7 @@ final class PlantRepository: ObservableObject {
         do {
             return try context.fetch(request).first
         } catch {
-            print("Error fetching plant by ID: \(error)")
+            logger.error("Error fetching plant by ID: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return nil
         }
@@ -120,7 +123,7 @@ final class PlantRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error searching plants: \(error)")
+            logger.error("Error searching plants: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -135,7 +138,7 @@ final class PlantRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error filtering plants by health: \(error)")
+            logger.error("Error filtering plants by health: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -150,7 +153,7 @@ final class PlantRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error filtering plants by growth stage: \(error)")
+            logger.error("Error filtering plants by growth stage: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -243,7 +246,7 @@ final class PlantRepository: ObservableObject {
             try context.save()
             _ = fetchAll() // Refresh published plants
         } catch {
-            print("Error saving context: \(error)")
+            logger.error("Error saving context: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
         }
     }

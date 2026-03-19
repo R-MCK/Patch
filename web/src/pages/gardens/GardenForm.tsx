@@ -16,8 +16,13 @@ export function GardenForm() {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
 
+    const name = (formData.get('name') as string)?.trim()
+    if (!name) {
+      return
+    }
+
     const gardenData = {
-      name: formData.get('name') as string,
+      name,
       description: formData.get('description') as string || undefined,
     }
 

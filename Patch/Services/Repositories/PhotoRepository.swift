@@ -1,6 +1,7 @@
 import Foundation
 import CoreData
 import Combine
+import os
 
 protocol PlantPhotoRepository {
     func fetchByPlant(_ plant: Plant) -> [Photo]
@@ -14,6 +15,8 @@ final class PhotoRepository: ObservableObject {
 
     @Published var photos: [Photo] = []
     @Published var errorMessage: String?
+
+    private let logger = Logger(subsystem: "com.patch.app", category: "repository")
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -33,7 +36,7 @@ final class PhotoRepository: ObservableObject {
             }
             return results
         } catch {
-            print("Error fetching photos: \(error)")
+            logger.error("Error fetching photos: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -48,7 +51,7 @@ final class PhotoRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching photos by plant: \(error)")
+            logger.error("Error fetching photos by plant: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -63,7 +66,7 @@ final class PhotoRepository: ObservableObject {
         do {
             return try context.fetch(request).first
         } catch {
-            print("Error fetching photo by ID: \(error)")
+            logger.error("Error fetching photo by ID: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return nil
         }
@@ -78,7 +81,7 @@ final class PhotoRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching recent photos: \(error)")
+            logger.error("Error fetching recent photos: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -93,7 +96,7 @@ final class PhotoRepository: ObservableObject {
         do {
             return try context.fetch(request)
         } catch {
-            print("Error fetching photos in date range: \(error)")
+            logger.error("Error fetching photos in date range: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
             return []
         }
@@ -168,7 +171,7 @@ final class PhotoRepository: ObservableObject {
             try context.save()
             _ = fetchAll() // Refresh published photos
         } catch {
-            print("Error saving context: \(error)")
+            logger.error("Error saving context: \(error.localizedDescription)")
             self.errorMessage = error.localizedDescription
         }
     }
