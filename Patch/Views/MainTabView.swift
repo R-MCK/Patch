@@ -545,11 +545,11 @@ private final class DesignTabViewModel: ObservableObject {
     private let gardenDesignRepository: GardenDesignRepository
 
     init(
-        gardenRepository: GardenRepository = GardenRepository(),
-        gardenDesignRepository: GardenDesignRepository = GardenDesignRepository()
+        gardenRepository: GardenRepository? = nil,
+        gardenDesignRepository: GardenDesignRepository? = nil
     ) {
-        self.gardenRepository = gardenRepository
-        self.gardenDesignRepository = gardenDesignRepository
+        self.gardenRepository = gardenRepository ?? GardenRepository()
+        self.gardenDesignRepository = gardenDesignRepository ?? GardenDesignRepository()
     }
 
     func loadContent() {
@@ -578,12 +578,12 @@ private final class GardenDesignEditorViewModel: ObservableObject {
 
     init(
         design: GardenDesign,
-        designRepository: GardenDesignRepository = GardenDesignRepository(),
-        wikiRepository: WikiRepository = WikiRepository()
+        designRepository: GardenDesignRepository? = nil,
+        wikiRepository: WikiRepository? = nil
     ) {
         self.design = design
-        self.designRepository = designRepository
-        self.wikiRepository = wikiRepository
+        self.designRepository = designRepository ?? GardenDesignRepository()
+        self.wikiRepository = wikiRepository ?? WikiRepository()
         loadSupportingData()
     }
 

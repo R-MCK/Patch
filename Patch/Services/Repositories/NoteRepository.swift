@@ -7,6 +7,7 @@ protocol PlantNoteRepository {
 }
 
 /// Repository for Note entity CRUD operations
+@MainActor
 final class NoteRepository: ObservableObject {
 
     private let context: NSManagedObjectContext

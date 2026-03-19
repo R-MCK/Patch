@@ -3,6 +3,7 @@ import CoreData
 import Combine
 
 /// Repository for WikiEntry entity CRUD operations
+@MainActor
 final class WikiRepository: ObservableObject {
 
     private let context: NSManagedObjectContext

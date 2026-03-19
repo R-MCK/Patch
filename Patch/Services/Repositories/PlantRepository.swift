@@ -44,6 +44,7 @@ extension PlantDetailPlantRepository {
 }
 
 /// Repository for Plant entity CRUD operations
+@MainActor
 final class PlantRepository: ObservableObject {
 
     private let context: NSManagedObjectContext

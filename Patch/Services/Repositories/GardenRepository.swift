@@ -23,6 +23,7 @@ extension GardenDetailGardenRepository {
 }
 
 /// Repository for Garden entity CRUD operations
+@MainActor
 final class GardenRepository: ObservableObject {
 
     private let context: NSManagedObjectContext

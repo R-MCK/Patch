@@ -40,12 +40,12 @@ final class AddCareTaskViewModel: ObservableObject {
     // MARK: - Initialization
 
     init(
-        careTaskRepository: CareTaskRepository = CareTaskRepository(),
-        plantRepository: PlantRepository = PlantRepository(),
+        careTaskRepository: CareTaskRepository? = nil,
+        plantRepository: PlantRepository? = nil,
         preselectedPlant: Plant? = nil
     ) {
-        self.careTaskRepository = careTaskRepository
-        self.plantRepository = plantRepository
+        self.careTaskRepository = careTaskRepository ?? CareTaskRepository()
+        self.plantRepository = plantRepository ?? PlantRepository()
         self.selectedPlant = preselectedPlant
 
         loadPlants()

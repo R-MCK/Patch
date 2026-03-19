@@ -50,9 +50,9 @@ final class PhotoGalleryViewModel: ObservableObject {
 
     // MARK: - Initialization
 
-    init(plant: Plant? = nil, repository: PhotoRepository = PhotoRepository()) {
+    init(plant: Plant? = nil, repository: PhotoRepository? = nil) {
         self.plant = plant
-        self.repository = repository
+        self.repository = repository ?? PhotoRepository()
     }
 
     // MARK: - Load Photos

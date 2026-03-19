@@ -11,8 +11,8 @@ final class WikiCategoryViewModel: ObservableObject {
     private let repository: WikiRepository
     private var cancellables = Set<AnyCancellable>()
     
-    init(repository: WikiRepository = WikiRepository()) {
-        self.repository = repository
+    init(repository: WikiRepository? = nil) {
+        self.repository = repository ?? WikiRepository()
     }
     
     func loadEntries(category: WikiEntry.Category) async {

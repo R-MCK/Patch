@@ -7,6 +7,7 @@ protocol PlantPhotoRepository {
 }
 
 /// Repository for Photo entity CRUD operations
+@MainActor
 final class PhotoRepository: ObservableObject {
 
     private let context: NSManagedObjectContext

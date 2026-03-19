@@ -19,16 +19,16 @@ final class PlantDetailViewModel: ObservableObject {
 
     init(
         plant: Plant,
-        plantRepository: any PlantDetailPlantRepository = PlantRepository(),
-        careTaskRepository: any PlantCareTaskRepository = CareTaskRepository(),
-        noteRepository: any PlantNoteRepository = NoteRepository(),
-        photoRepository: any PlantPhotoRepository = PhotoRepository()
+        plantRepository: (any PlantDetailPlantRepository)? = nil,
+        careTaskRepository: (any PlantCareTaskRepository)? = nil,
+        noteRepository: (any PlantNoteRepository)? = nil,
+        photoRepository: (any PlantPhotoRepository)? = nil
     ) {
         self.plant = plant
-        self.plantRepository = plantRepository
-        self.careTaskRepository = careTaskRepository
-        self.noteRepository = noteRepository
-        self.photoRepository = photoRepository
+        self.plantRepository = plantRepository ?? PlantRepository()
+        self.careTaskRepository = careTaskRepository ?? CareTaskRepository()
+        self.noteRepository = noteRepository ?? NoteRepository()
+        self.photoRepository = photoRepository ?? PhotoRepository()
     }
 
     func loadRelatedData() {

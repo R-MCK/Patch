@@ -63,8 +63,8 @@ final class CareTaskListViewModel: ObservableObject {
 
     // MARK: - Initialization
 
-    init(repository: CareTaskRepository = CareTaskRepository()) {
-        self.repository = repository
+    init(repository: CareTaskRepository? = nil) {
+        self.repository = repository ?? CareTaskRepository()
         setupBindings()
     }
 

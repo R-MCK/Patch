@@ -11,8 +11,8 @@ final class GardenListViewModel: ObservableObject {
 
     private let repository: GardenRepository
 
-    init(repository: GardenRepository = GardenRepository()) {
-        self.repository = repository
+    init(repository: GardenRepository? = nil) {
+        self.repository = repository ?? GardenRepository()
     }
 
     func loadGardens() {

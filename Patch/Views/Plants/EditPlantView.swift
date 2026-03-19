@@ -190,10 +190,10 @@ final class EditPlantViewModel: ObservableObject {
 
     init(
         plant: Plant,
-        repository: any PlantDetailPlantRepository = PlantRepository()
+        repository: (any PlantDetailPlantRepository)? = nil
     ) {
         self.plant = plant
-        self.repository = repository
+        self.repository = repository ?? PlantRepository()
         self.name = plant.name
         self.species = plant.species ?? ""
         self.variety = plant.variety ?? ""

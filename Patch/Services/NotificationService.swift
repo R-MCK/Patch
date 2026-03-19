@@ -3,6 +3,7 @@ import UserNotifications
 import UIKit
 
 /// Service for managing local notifications for care tasks
+@MainActor
 final class NotificationService: NSObject, ObservableObject {
 
     // MARK: - Singleton

@@ -14,6 +14,7 @@ protocol CareTaskActionRepository {
 }
 
 /// Repository for CareTask entity CRUD operations
+@MainActor
 final class CareTaskRepository: ObservableObject {
 
     private let context: NSManagedObjectContext

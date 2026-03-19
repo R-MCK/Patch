@@ -29,13 +29,13 @@ final class AddPlantViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
 
     init(
-        repository: PlantRepository = PlantRepository(),
-        gardenRepository: GardenRepository = GardenRepository(),
-        wikiRepository: WikiRepository = WikiRepository()
+        repository: PlantRepository? = nil,
+        gardenRepository: GardenRepository? = nil,
+        wikiRepository: WikiRepository? = nil
     ) {
-        self.repository = repository
-        self.gardenRepository = gardenRepository
-        self.wikiRepository = wikiRepository
+        self.repository = repository ?? PlantRepository()
+        self.gardenRepository = gardenRepository ?? GardenRepository()
+        self.wikiRepository = wikiRepository ?? WikiRepository()
         loadGardens()
         setupWikiSuggestions()
     }

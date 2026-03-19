@@ -44,8 +44,8 @@ final class PlantListViewModel: ObservableObject {
         }
     }
 
-    init(repository: PlantRepository = PlantRepository()) {
-        self.repository = repository
+    init(repository: PlantRepository? = nil) {
+        self.repository = repository ?? PlantRepository()
         setupBindings()
     }
 

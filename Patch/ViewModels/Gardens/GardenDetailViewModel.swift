@@ -14,12 +14,12 @@ final class GardenDetailViewModel: ObservableObject {
 
     init(
         garden: Garden,
-        gardenRepository: any GardenDetailGardenRepository = GardenRepository(),
-        plantRepository: any PlantDetailPlantRepository = PlantRepository()
+        gardenRepository: (any GardenDetailGardenRepository)? = nil,
+        plantRepository: (any PlantDetailPlantRepository)? = nil
     ) {
         self.garden = garden
-        self.gardenRepository = gardenRepository
-        self.plantRepository = plantRepository
+        self.gardenRepository = gardenRepository ?? GardenRepository()
+        self.plantRepository = plantRepository ?? PlantRepository()
         loadPlants()
     }
 
