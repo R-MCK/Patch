@@ -50,6 +50,8 @@ final class PlantListViewModel: ObservableObject {
     }
 
     private func setupBindings() {
+        repository.$errorMessage.assign(to: &$errorMessage)
+
         Publishers.CombineLatest4($searchText, $selectedHealthFilter, $selectedGrowthFilter, $selectedGardenFilter)
             .combineLatest($sortOption)
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)

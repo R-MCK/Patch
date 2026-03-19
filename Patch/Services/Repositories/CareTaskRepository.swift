@@ -20,6 +20,7 @@ final class CareTaskRepository: ObservableObject {
     private let context: NSManagedObjectContext
 
     @Published var tasks: [CareTask] = []
+    @Published var errorMessage: String?
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -40,6 +41,7 @@ final class CareTaskRepository: ObservableObject {
             return results
         } catch {
             print("Error fetching care tasks: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -54,6 +56,7 @@ final class CareTaskRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching tasks by plant: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -68,6 +71,7 @@ final class CareTaskRepository: ObservableObject {
             return try context.fetch(request).first
         } catch {
             print("Error fetching task by ID: \(error)")
+            self.errorMessage = error.localizedDescription
             return nil
         }
     }
@@ -87,6 +91,7 @@ final class CareTaskRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching upcoming tasks: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -102,6 +107,7 @@ final class CareTaskRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching overdue tasks: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -125,6 +131,7 @@ final class CareTaskRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching tasks due today: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -143,6 +150,7 @@ final class CareTaskRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching completed tasks: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -157,6 +165,7 @@ final class CareTaskRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error filtering tasks by type: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -287,6 +296,7 @@ final class CareTaskRepository: ObservableObject {
             _ = fetchAll() // Refresh published tasks
         } catch {
             print("Error saving context: \(error)")
+            self.errorMessage = error.localizedDescription
         }
     }
 }

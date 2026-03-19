@@ -66,8 +66,8 @@ export const usePlantStore = create<PlantState & PlantActions>()((set) => ({
       }))
 
       set({ plants: mappedPlants, isLoading: false })
-    } catch (e: any) {
-      set({ error: e.message, isLoading: false })
+    } catch (e) {
+      set({ error: e instanceof Error ? e.message : String(e), isLoading: false })
     }
   }
 }))

@@ -12,11 +12,27 @@ const sunIcons = {
 }
 
 export function PlantList() {
-  const { plants, fetchPlants } = usePlantStore()
+  const { plants, fetchPlants, isLoading, error } = usePlantStore()
 
   useEffect(() => {
     fetchPlants()
-  }, [])
+  }, [fetchPlants])
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        {error}
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

@@ -29,6 +29,7 @@ final class GardenRepository: ObservableObject {
     private let context: NSManagedObjectContext
 
     @Published var gardens: [Garden] = []
+    @Published var errorMessage: String?
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -49,6 +50,7 @@ final class GardenRepository: ObservableObject {
             return results
         } catch {
             print("Error fetching gardens: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -63,6 +65,7 @@ final class GardenRepository: ObservableObject {
             return try context.fetch(request).first
         } catch {
             print("Error fetching garden by ID: \(error)")
+            self.errorMessage = error.localizedDescription
             return nil
         }
     }
@@ -79,6 +82,7 @@ final class GardenRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error searching gardens: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -93,6 +97,7 @@ final class GardenRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error filtering gardens by type: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -213,6 +218,7 @@ final class GardenRepository: ObservableObject {
             _ = fetchAll() // Refresh published gardens
         } catch {
             print("Error saving context: \(error)")
+            self.errorMessage = error.localizedDescription
         }
     }
 }

@@ -13,6 +13,7 @@ final class NoteRepository: ObservableObject {
     private let context: NSManagedObjectContext
 
     @Published var notes: [Note] = []
+    @Published var errorMessage: String?
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -34,6 +35,7 @@ final class NoteRepository: ObservableObject {
             return results
         } catch {
             print("Error fetching notes: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -48,6 +50,7 @@ final class NoteRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching notes by plant: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -62,6 +65,7 @@ final class NoteRepository: ObservableObject {
             return try context.fetch(request).first
         } catch {
             print("Error fetching note by ID: \(error)")
+            self.errorMessage = error.localizedDescription
             return nil
         }
     }
@@ -76,6 +80,7 @@ final class NoteRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching archived notes: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -95,6 +100,7 @@ final class NoteRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error searching notes: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -200,6 +206,7 @@ final class NoteRepository: ObservableObject {
             _ = fetchAll() // Refresh published notes
         } catch {
             print("Error saving context: \(error)")
+            self.errorMessage = error.localizedDescription
         }
     }
 }

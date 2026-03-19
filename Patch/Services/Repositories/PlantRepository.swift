@@ -50,6 +50,7 @@ final class PlantRepository: ObservableObject {
     private let context: NSManagedObjectContext
 
     @Published var plants: [Plant] = []
+    @Published var errorMessage: String?
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -70,6 +71,7 @@ final class PlantRepository: ObservableObject {
             return results
         } catch {
             print("Error fetching plants: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -84,6 +86,7 @@ final class PlantRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching plants by garden: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -98,6 +101,7 @@ final class PlantRepository: ObservableObject {
             return try context.fetch(request).first
         } catch {
             print("Error fetching plant by ID: \(error)")
+            self.errorMessage = error.localizedDescription
             return nil
         }
     }
@@ -117,6 +121,7 @@ final class PlantRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error searching plants: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -131,6 +136,7 @@ final class PlantRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error filtering plants by health: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -145,6 +151,7 @@ final class PlantRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error filtering plants by growth stage: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -237,6 +244,7 @@ final class PlantRepository: ObservableObject {
             _ = fetchAll() // Refresh published plants
         } catch {
             print("Error saving context: \(error)")
+            self.errorMessage = error.localizedDescription
         }
     }
 }

@@ -13,6 +13,7 @@ final class PhotoRepository: ObservableObject {
     private let context: NSManagedObjectContext
 
     @Published var photos: [Photo] = []
+    @Published var errorMessage: String?
 
     init(context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) {
         self.context = context
@@ -33,6 +34,7 @@ final class PhotoRepository: ObservableObject {
             return results
         } catch {
             print("Error fetching photos: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -47,6 +49,7 @@ final class PhotoRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching photos by plant: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -61,6 +64,7 @@ final class PhotoRepository: ObservableObject {
             return try context.fetch(request).first
         } catch {
             print("Error fetching photo by ID: \(error)")
+            self.errorMessage = error.localizedDescription
             return nil
         }
     }
@@ -75,6 +79,7 @@ final class PhotoRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching recent photos: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -89,6 +94,7 @@ final class PhotoRepository: ObservableObject {
             return try context.fetch(request)
         } catch {
             print("Error fetching photos in date range: \(error)")
+            self.errorMessage = error.localizedDescription
             return []
         }
     }
@@ -163,6 +169,7 @@ final class PhotoRepository: ObservableObject {
             _ = fetchAll() // Refresh published photos
         } catch {
             print("Error saving context: \(error)")
+            self.errorMessage = error.localizedDescription
         }
     }
 }
