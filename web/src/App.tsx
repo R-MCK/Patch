@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { Layout } from '@/components/layout/Layout'
+import { ProtectedRoute } from '@/components/ProtectedRoute'
 
 // Pages
 import { Dashboard } from '@/pages/Dashboard'
@@ -25,7 +26,8 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Main app routes (with layout) */}
+        {/* Main app routes (with layout, protected) */}
+        <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route path="/" element={<Dashboard />} />
 
@@ -51,6 +53,7 @@ function App() {
 
           {/* Profile */}
           <Route path="/profile" element={<Profile />} />
+        </Route>
         </Route>
       </Routes>
     </BrowserRouter>

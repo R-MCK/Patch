@@ -5,13 +5,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { useAuthStore } from '@/stores/authStore'
 
 export function Profile() {
-  const { user, isAuthenticated, logout } = useAuthStore()
+  const { user, logout } = useAuthStore()
   const navigate = useNavigate()
 
-  if (!isAuthenticated || !user) {
-    navigate('/login')
-    return null
-  }
+  if (!user) return null
 
   const handleLogout = () => {
     logout()

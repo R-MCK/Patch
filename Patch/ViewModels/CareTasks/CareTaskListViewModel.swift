@@ -88,8 +88,14 @@ final class CareTaskListViewModel: ObservableObject {
         let calendar = Calendar.current
         let now = Date()
         let startOfToday = calendar.startOfDay(for: now)
-        let endOfToday = calendar.date(byAdding: .day, value: 1, to: startOfToday)!
-        let endOfWeek = calendar.date(byAdding: .day, value: 7, to: startOfToday)!
+        guard let endOfToday = calendar.date(byAdding: .day, value: 1, to: startOfToday) else {
+            isLoading = false
+            return
+        }
+        guard let endOfWeek = calendar.date(byAdding: .day, value: 7, to: startOfToday) else {
+            isLoading = false
+            return
+        }
 
         // Fetch all incomplete tasks
         var allTasks = repository.fetchUpcoming()

@@ -170,7 +170,7 @@ final class CareHistoryViewModel: ObservableObject {
         totalCompleted = allCompleted.count
 
         // This week
-        let weekStart = calendar.date(byAdding: .day, value: -7, to: now)!
+        let weekStart = calendar.date(byAdding: .day, value: -7, to: now) ?? now
         thisWeekCompleted = allCompleted.filter { task in
             if let date = task.completedDate {
                 return date >= weekStart
@@ -179,7 +179,7 @@ final class CareHistoryViewModel: ObservableObject {
         }.count
 
         // This month
-        let monthStart = calendar.date(byAdding: .month, value: -1, to: now)!
+        let monthStart = calendar.date(byAdding: .month, value: -1, to: now) ?? now
         thisMonthCompleted = allCompleted.filter { task in
             if let date = task.completedDate {
                 return date >= monthStart
@@ -225,7 +225,8 @@ final class CareHistoryViewModel: ObservableObject {
         for date in completionDates {
             if date == checkDate {
                 streak += 1
-                checkDate = calendar.date(byAdding: .day, value: -1, to: checkDate)!
+                guard let previousDay = calendar.date(byAdding: .day, value: -1, to: checkDate) else { break }
+                checkDate = previousDay
             } else if date < checkDate {
                 break
             }
@@ -257,7 +258,7 @@ final class CareHistoryViewModel: ObservableObject {
 
     private func calculateCompletionRate() {
         let calendar = Calendar.current
-        let monthAgo = calendar.date(byAdding: .month, value: -1, to: Date())!
+        let monthAgo = calendar.date(byAdding: .month, value: -1, to: Date()) ?? Date()
 
         // Get all tasks (completed and incomplete) from last 30 days
         let allTasks = repository.fetchAll()

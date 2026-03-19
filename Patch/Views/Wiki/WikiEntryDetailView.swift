@@ -306,7 +306,7 @@ struct WikiEntryDetailView: View {
             URLQueryItem(name: "source", value: "wiki_share")
         ]
 
-        return components.url ?? URL(string: "patch://wiki/search")!
+        return components.url ?? URL(string: "patch://wiki/search") ?? URL(fileURLWithPath: "/")
     }
 
     private func parseCompanionString(_ string: String?) -> [String]? {

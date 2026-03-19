@@ -6,8 +6,24 @@ import { startMcpServer } from './mcp-server.js';
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? ['http://localhost:5173'],
+}));
 app.use(express.json());
+
+function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction): void {
+  const apiToken = process.env.API_TOKEN;
+  if (!apiToken) {
+    next();
+    return;
+  }
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ') || authHeader.slice(7) !== apiToken) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
+  next();
+}
 
 // --- REST API ENDPOINTS --- //
 
@@ -32,9 +48,9 @@ app.get('/api/plants/:id/tasks', async (req, res) => {
 });
 
 // Water a plant
-app.post('/api/plants/:id/water', async (req, res) => {
+app.post('/api/plants/:id/water', requireAuth, async (req, res) => {
     try {
-        const taskId = Math.random().toString(36).substring(7);
+        const taskId = crypto.randomUUID();
         await dbRun(`
       INSERT INTO care_tasks (id, plant_id, task_type, scheduled_date, completed_date)
       VALUES (?, ?, 'Watering', datetime('now'), datetime('now'))
