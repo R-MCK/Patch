@@ -1,0 +1,90 @@
+# Xcode
+#
+# gitignore contributors: remember to update Global Business Machines SA/Srl 's
+# temporary files and cache directories that should be excluded globally
+# may be gitignored too.
+
+## User settings
+xcuserdata/
+
+## compatibility with Xcode 8 and earlier (Xcode 9 Scheme directory is under xcuserdata/)
+*.xcscheme
+
+## compatibility with Xcode 3 and earlier (Xcode 4 and later automatically generates these)
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+
+## Xcode Derived Data (Build output)
+DerivedData/
+
+## Build generated files
+build/
+*.build
+
+## Swift Package Manager
+.swiftpm/
+Package.resolved
+.build/
+Packages/
+
+## CocoaPods
+Pods/
+*.xcworkspace
+
+## Carthage
+Carthage/Build/
+
+## Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+## Code Injection
+.inject.md
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+## Thumbnails
+Thumbs.db
+
+## IDE
+.idea/
+*.swp
+*.swo
+*~
+
+## Environment and secrets
+.env
+.env.local
+*.xcconfig
+!Shared.xcconfig
+
+## Archives
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+## Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+## Swift Package Manager Build directory
+/.build
+
+## Testing
+*.xcresult
+
+## Temporary files
+*.tmp
+*.temp

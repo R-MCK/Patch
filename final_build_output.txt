@@ -1,0 +1,320 @@
+Command line invocation:
+    /Applications/Xcode.app/Contents/Developer/usr/bin/xcodebuild build -project Patch.xcodeproj -scheme Patch -destination "platform=iOS Simulator,name=iPhone 17 Pro,OS=latest"
+
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'Patch' in project 'Patch' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ClangStatCache /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk /Users/ryanmckay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache
+    cd /Users/ryanmckay/Documents/Patch/Patch.xcodeproj
+    /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache
+
+ProcessProductPackaging /Users/ryanmckay/Documents/Patch/Patch/Resources/Patch.entitlements /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app.xcent (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+    Entitlements:
+    
+    {
+}
+    
+    builtin-productPackagingUtility /Users/ryanmckay/Documents/Patch/Patch/Resources/Patch.entitlements -entitlements -format xml -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app.xcent
+
+ProcessProductPackaging /Users/ryanmckay/Documents/Patch/Patch/Resources/Patch.entitlements /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app-Simulated.xcent (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "FAKETEAMID.com.patch.gardening";
+    "aps-environment" = development;
+    "com.apple.developer.icloud-container-identifiers" =     (
+        "iCloud.com.patch.gardening"
+    );
+    "com.apple.developer.icloud-services" =     (
+        CloudKit
+    );
+    "com.apple.developer.ubiquity-kvstore-identifier" = "com.patch.gardening";
+}
+    
+    builtin-productPackagingUtility /Users/ryanmckay/Documents/Patch/Patch/Resources/Patch.entitlements -entitlements -format xml -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app-Simulated.xcent
+
+ProcessProductPackagingDER /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app-Simulated.xcent /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app-Simulated.xcent.der (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    /usr/bin/derq query -f xml -i /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app-Simulated.xcent -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app-Simulated.xcent.der --raw
+
+ProcessProductPackagingDER /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app.xcent /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app.xcent.der (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    /usr/bin/derq query -f xml -i /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app.xcent -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch.app.xcent.der --raw
+
+ProcessInfoPlistFile /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator/Patch.app/Info.plist /Users/ryanmckay/Documents/Patch/Patch/Resources/Info.plist (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    builtin-infoPlistUtility /Users/ryanmckay/Documents/Patch/Patch/Resources/Info.plist -producttype com.apple.product-type.application -genpkginfo /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator/Patch.app/PkgInfo -expandbuildsettings -format binary -platform iphonesimulator -additionalcontentfile /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/assetcatalog_generated_info.plist -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator/Patch.app/Info.plist
+
+SwiftDriver Patch normal arm64 com.apple.xcode.tools.swift.compiler (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    builtin-SwiftDriver -- /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name Patch -Onone -enforce-exclusivity\=checked @/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/Patch.SwiftFileList -DDEBUG -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -target arm64-apple-ios17.0-simulator -g -module-cache-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -enable-testing -index-store-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Index.noindex/DataStore -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -swift-version 5 -I /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator -F /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator -emit-localized-strings -emit-localized-strings-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64 -c -j8 -enable-batch-mode -incremental -Xcc -ivfsstatcache -Xcc /Users/ryanmckay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache -output-file-map /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/Patch-OutputFileMap.json -use-frontend-parseable-output -save-temps -no-color-diagnostics -explicit-module-build -module-cache-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -clang-scanner-module-cache-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -sdk-module-cache-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -serialize-diagnostics -emit-dependencies -emit-module -emit-module-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/Patch.swiftmodule -validate-clang-modules-once -clang-build-session-file /Users/ryanmckay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/swift-overrides.hmap -emit-const-values -Xfrontend -const-gather-protocols-file -Xfrontend /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/Patch_const_extract_protocols.json -Xcc -iquote -Xcc /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-generated-files.hmap -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-own-target-headers.hmap -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-project-headers.hmap -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources-normal/arm64 -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources/arm64 -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources -Xcc -DDEBUG\=1 -emit-objc-header -emit-objc-header-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/Patch-Swift.h -working-directory /Users/ryanmckay/Documents/Patch -experimental-emit-module-separately -disable-cmo
+
+SwiftCompile normal arm64 Compiling\ States.swift,\ WikiRepository.swift,\ PhotoGalleryViewModel.swift,\ AnimationModifiers.swift,\ ReminderSettingsView.swift,\ CareStatisticsView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/States.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/WikiRepository.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Photos/PhotoGalleryViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Utils/AnimationModifiers.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/ReminderSettingsView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/CareStatisticsView.swift (in target 'Patch' from project 'Patch')
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Components/States.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/WikiRepository.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Photos/PhotoGalleryViewModel.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Utils/AnimationModifiers.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/ReminderSettingsView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/CareStatisticsView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 Compiling\ Plant+CoreDataProperties.swift,\ PlantDetailView.swift,\ PlantDetailViewModel.swift,\ PlantListView.swift,\ PlantListViewModel.swift,\ PlantRepository.swift,\ PlantRowView.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Plant+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantDetailView.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/PlantDetailViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantListView.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/PlantListViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/PlantRepository.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantRowView.swift (in target 'Patch' from project 'Patch')
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Models/Plant+CoreDataProperties.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantDetailView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/PlantDetailViewModel.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantListView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/PlantListViewModel.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/PlantRepository.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantRowView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 Compiling\ CareTask+CoreDataProperties.swift,\ Images.swift,\ Inputs.swift,\ MainTabView.swift,\ NavigationCoordinator.swift,\ PatchApp.swift,\ PersistenceController.swift /Users/ryanmckay/Documents/Patch/Patch/Models/CareTask+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Images.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Inputs.swift /Users/ryanmckay/Documents/Patch/Patch/Views/MainTabView.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Navigation/NavigationCoordinator.swift /Users/ryanmckay/Documents/Patch/Patch/PatchApp.swift /Users/ryanmckay/Documents/Patch/Patch/Services/PersistenceController.swift (in target 'Patch' from project 'Patch')
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Models/CareTask+CoreDataProperties.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Images.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Inputs.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/MainTabView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/Navigation/NavigationCoordinator.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/PatchApp.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/PersistenceController.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftEmitModule normal arm64 Emitting\ module\ for\ Patch (in target 'Patch' from project 'Patch')
+EmitSwiftModule normal arm64 (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 Compiling\ GardenListView.swift,\ PhotoGridView.swift,\ PhotoPickerView.swift,\ CameraCaptureView.swift,\ PhotoDetailView.swift,\ NotificationService.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/GardenListView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoGridView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoPickerView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/CameraCaptureView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoDetailView.swift /Users/ryanmckay/Documents/Patch/Patch/Services/NotificationService.swift (in target 'Patch' from project 'Patch')
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/GardenListView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoGridView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoPickerView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/CameraCaptureView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoDetailView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/NotificationService.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 Compiling\ CloudKitPhotoSyncService.swift,\ PhotoCompressionService.swift,\ WikiSeedService.swift,\ CameraService.swift,\ AddPlantCareTaskView.swift,\ GeneratedAssetSymbols.swift /Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift /Users/ryanmckay/Documents/Patch/Patch/Services/PhotoCompressionService.swift /Users/ryanmckay/Documents/Patch/Patch/Services/WikiSeedService.swift /Users/ryanmckay/Documents/Patch/Patch/Services/CameraService.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/AddPlantCareTaskView.swift /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Patch' from project 'Patch')
+Failed frontend command:
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/AddPlantView.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/AddPlantViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Utils/AppTheme.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Badges.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Buttons.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Cards.swift /Users/ryanmckay/Documents/Patch/Patch/Models/CareTask+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Models/CareTask+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/CareTaskRepository.swift /Users/ryanmckay/Documents/Patch/Patch/ContentView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/EditPlantView.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Garden+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Garden+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Models/GardenDesign+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Models/GardenDesign+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/GardenRepository.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Images.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Inputs.swift /Users/ryanmckay/Documents/Patch/Patch/Views/MainTabView.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Navigation/NavigationCoordinator.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Note+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Note+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/NoteRepository.swift /Users/ryanmckay/Documents/Patch/Patch/PatchApp.swift /Users/ryanmckay/Documents/Patch/Patch/Services/PersistenceController.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Photo+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Photo+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/PhotoRepository.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Plant+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Models/Plant+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantDetailView.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/PlantDetailViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantListView.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/PlantListViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/PlantRepository.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/PlantRowView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/States.swift /Users/ryanmckay/Documents/Patch/Patch/Models/WikiEntry+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Models/WikiEntry+CoreDataProperties.swift /Users/ryanmckay/Documents/Patch/Patch/Services/Repositories/WikiRepository.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/CareTasks/AddCareTaskViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/CareTasks/CareTaskListViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/CareTasks/CareHistoryViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Wiki/WikiHomeViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Wiki/WikiSearchViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Wiki/WikiCategoryViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Gardens/AddGardenViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Gardens/GardenListViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Gardens/GardenDetailViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Photos/PhotoGalleryViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Utils/AnimationModifiers.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/ReminderSettingsView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/CareStatisticsView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/CareTaskRowView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/CareTaskListView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/AddCareTaskView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/EmptyCareTaskView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/CareTasks/CareHistoryView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiEntryDetailView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiEntryReferenceCard.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiHomeView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiCategoryView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/StatusPickers.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/GardenDetailView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/AddGardenView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/GardenListView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoGridView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoPickerView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/CameraCaptureView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Photos/PhotoDetailView.swift /Users/ryanmckay/Documents/Patch/Patch/Services/NotificationService.swift -primary-file /Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift -primary-file /Users/ryanmckay/Documents/Patch/Patch/Services/PhotoCompressionService.swift -primary-file /Users/ryanmckay/Documents/Patch/Patch/Services/WikiSeedService.swift -primary-file /Users/ryanmckay/Documents/Patch/Patch/Services/CameraService.swift -primary-file /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/AddPlantCareTaskView.swift -primary-file /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources/GeneratedAssetSymbols.swift -supplementary-output-file-map /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/supplementaryOutputs-8 -emit-localized-strings -emit-localized-strings-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64 -target arm64-apple-ios17.0-simulator -module-can-import-version DeveloperToolsSupport 23.0.4 23.0.4 -disable-cross-import-overlay-search -swift-module-cross-import CoreData /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/CoreData.framework/Modules/CoreData.swiftcrossimport/CloudKit.swiftoverlay -swift-module-cross-import CoreData /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/System/Library/Frameworks/CoreData.framework/Modules/CoreData.swiftcrossimport/CloudKit.swiftoverlay -swift-module-cross-import PhotosUI /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/PhotosUI.framework/Modules/PhotosUI.swiftcrossimport/SwiftUI.swiftoverlay -swift-module-cross-import PhotosUI /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/PhotosUI.framework/Modules/PhotosUI.swiftcrossimport/WidgetKit.swiftoverlay -swift-module-cross-import PhotosUI /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/System/Library/Frameworks/PhotosUI.framework/Modules/PhotosUI.swiftcrossimport/SwiftUI.swiftoverlay -swift-module-cross-import PhotosUI /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/System/Library/Frameworks/PhotosUI.framework/Modules/PhotosUI.swiftcrossimport/WidgetKit.swiftoverlay -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libFoundationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#FoundationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libObservationMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#ObservationMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libPreviewsMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#PreviewsMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libSwiftMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#SwiftMacros -load-resolved-plugin /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins/libSwiftUIMacros.dylib\#/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/bin/swift-plugin-server\#SwiftUIMacros -disable-implicit-swift-modules -Xcc -fno-implicit-modules -Xcc -fno-implicit-module-maps -explicit-swift-module-map-file /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/Patch-dependencies-1.json -Xllvm -aarch64-use-tbi -enable-objc-interop -sdk /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk -I /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator -F /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator -no-color-diagnostics -Xcc -fno-color-diagnostics -enable-testing -g -debug-info-format\=dwarf -dwarf-version\=4 -module-cache-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/SwiftExplicitPrecompiledModules -swift-version 5 -enforce-exclusivity\=checked -Onone -D DEBUG -serialize-debugging-options -const-gather-protocols-file /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/Patch_const_extract_protocols.json -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -empty-abi-descriptor -validate-clang-modules-once -clang-build-session-file /Users/ryanmckay/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Session.modulevalidation -Xcc -working-directory -Xcc /Users/ryanmckay/Documents/Patch -enable-anonymous-context-mangled-names -file-compilation-dir /Users/ryanmckay/Documents/Patch -Xcc -D_LIBCPP_HARDENING_MODE\=_LIBCPP_HARDENING_MODE_DEBUG -Xcc -ivfsstatcache -Xcc /Users/ryanmckay/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphonesimulator26.2-23C53-7d00a8b37fbd7999ea79df8ebc024bf0.sdkstatcache -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/swift-overrides.hmap -Xcc -iquote -Xcc /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-generated-files.hmap -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-own-target-headers.hmap -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-all-target-headers.hmap -Xcc -iquote -Xcc /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Patch-project-headers.hmap -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Products/Debug-iphonesimulator/include -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources-normal/arm64 -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources/arm64 -Xcc -I/Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources -Xcc -DDEBUG\=1 -no-auto-bridging-header-chaining -module-name Patch -frontend-parseable-output -disable-clang-spi -target-sdk-version 26.2 -target-sdk-name iphonesimulator26.2 -clang-target arm64-apple-ios26.2-simulator -in-process-plugin-server-path /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/host/libSwiftInProcPluginServer.dylib -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/CloudKitPhotoSyncService.o -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/PhotoCompressionService.o -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/WikiSeedService.o -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/CameraService.o -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/AddPlantCareTaskView.o -o /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/GeneratedAssetSymbols.o -index-unit-output-path /Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/CloudKitPhotoSyncService.o -index-unit-output-path /Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/PhotoCompressionService.o -index-unit-output-path /Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/WikiSeedService.o -index-unit-output-path /Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/CameraService.o -index-unit-output-path /Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/AddPlantCareTaskView.o -index-unit-output-path /Patch.build/Debug-iphonesimulator/Patch.build/Objects-normal/arm64/GeneratedAssetSymbols.o -index-store-path /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Index.noindex/DataStore -index-system-modules
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:103:11: warning: 'catch' block is unreachable because no errors are thrown in 'do' block
+        } catch {
+          ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:149:14: warning: immutable value 'batchIndex' was never used; consider replacing with '_' or removing it
+        for (batchIndex, batch) in batches.enumerated() {
+             ^~~~~~~~~~
+             _
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:174:19: warning: value 'imageData' was defined but never used; consider replacing with boolean test
+        guard let imageData = photo.value(forKey: "imageData") as? Data else { return }
+              ~~~~^~~~~~~~~~~~                                 ~~~
+                                                               is
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:286:17: warning: capture of 'photo' with non-Sendable type 'NSManagedObject' in a '@Sendable' closure; this is an error in the Swift 6 language mode
+                photo.setValue(serverCaption, forKey: "caption")
+                ^
+/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator26.2.sdk/System/Library/Frameworks/CoreData.framework/Headers/NSManagedObject.h:35:12: note: class 'NSManagedObject' does not conform to the 'Sendable' protocol
+@interface NSManagedObject : NSObject {
+           ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:295:13: warning: no 'async' operations occur within 'await' expression
+        try await context?.save()
+            ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:13:21: error: return from initializer without initializing all stored properties
+    private init() {}
+                    ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:25:17: note: 'self.database' not initialized
+    private let database: CKDatabase
+                ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:49:24: error: immutable value 'self.container' may only be initialized once
+        self.container = CKContainer(identifier: containerIdentifier)
+                       ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:24:17: note: initial value already provided in 'let' declaration
+    private let container = CKContainer(identifier: "iCloud.com.patch.gardening")
+                ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CloudKitPhotoSyncService.swift:24:13: note: change 'let' to 'var' to make it mutable
+    private let container = CKContainer(identifier: "iCloud.com.patch.gardening")
+            ^~~
+            var
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/PhotoCompressionService.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+/Users/ryanmckay/Documents/Patch/Patch/Services/PhotoCompressionService.swift:158:13: warning: variable 'step' was never mutated; consider changing to 'let' constant
+        var step: CGFloat = 0.1
+        ~~~ ^
+        let
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/WikiSeedService.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+/Users/ryanmckay/Documents/Patch/Patch/Services/WikiSeedService.swift:76:17: warning: initialization of immutable value 'wikiEntry' was never used; consider replacing with assignment to '_' or removing it
+            let wikiEntry = repository.create(
+            ~~~~^~~~~~~~~
+            _
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Services/CameraService.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+/Users/ryanmckay/Documents/Patch/Patch/Services/CameraService.swift:146:34: warning: 'isHighResolutionCaptureEnabled' was deprecated in iOS 16.0: Use maxPhotoDimensions instead.
+                self.photoOutput.isHighResolutionCaptureEnabled = true
+                                 ^
+/Users/ryanmckay/Documents/Patch/Patch/Services/CameraService.swift:280:22: warning: 'isHighResolutionPhotoEnabled' was deprecated in iOS 16.0: Use maxPhotoDimensions instead.
+            settings.isHighResolutionPhotoEnabled = true
+                     ^
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/AddPlantCareTaskView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Library/Developer/Xcode/DerivedData/Patch-byyykvmigpuhftdtuzvlcmzmkovi/Build/Intermediates.noindex/Patch.build/Debug-iphonesimulator/Patch.build/DerivedSources/GeneratedAssetSymbols.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 Compiling\ WikiEntryReferenceCard.swift,\ WikiHomeView.swift,\ WikiCategoryView.swift,\ StatusPickers.swift,\ GardenDetailView.swift,\ AddGardenView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiEntryReferenceCard.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiHomeView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiCategoryView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/StatusPickers.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/GardenDetailView.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/AddGardenView.swift (in target 'Patch' from project 'Patch')
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiEntryReferenceCard.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiHomeView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Wiki/WikiCategoryView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Components/StatusPickers.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/GardenDetailView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Gardens/AddGardenView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 Compiling\ AddPlantView.swift,\ AddPlantViewModel.swift,\ AppTheme.swift,\ Badges.swift,\ Buttons.swift,\ Cards.swift,\ CareTask+CoreDataClass.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/AddPlantView.swift /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/AddPlantViewModel.swift /Users/ryanmckay/Documents/Patch/Patch/Utils/AppTheme.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Badges.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Buttons.swift /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Cards.swift /Users/ryanmckay/Documents/Patch/Patch/Models/CareTask+CoreDataClass.swift (in target 'Patch' from project 'Patch')
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Plants/AddPlantView.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/ViewModels/Plants/AddPlantViewModel.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Utils/AppTheme.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Badges.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Buttons.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Views/Components/Cards.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+
+SwiftCompile normal arm64 /Users/ryanmckay/Documents/Patch/Patch/Models/CareTask+CoreDataClass.swift (in target 'Patch' from project 'Patch')
+    cd /Users/ryanmckay/Documents/Patch
+    
+

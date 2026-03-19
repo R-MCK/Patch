@@ -1,0 +1,66 @@
+stages:
+  - build
+  - test
+
+variables:
+  # iOS Variables
+  LC_ALL: "en_US.UTF-8"
+  LANG: "en_US.UTF-8"
+  # Web Variables
+  NODE_ENV: "production"
+
+# --- Web Jobs ---
+
+.web_base:
+  image: node:20
+  before_script:
+    - cd web
+    - npm ci
+
+web-build:
+  extends: .web_base
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - web/dist/
+    expire_in: 1 hour
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-web
+    paths:
+      - web/node_modules/
+    policy: pull-push
+
+web-lint:
+  extends: .web_base
+  stage: test
+  script:
+    - npm run lint
+  cache:
+    key: ${CI_COMMIT_REF_SLUG}-web
+    paths:
+      - web/node_modules/
+    policy: pull
+
+# --- iOS Jobs ---
+
+.ios_base:
+  tags:
+    - saas-macos-medium-m1
+  image: macos-14-xcode-15
+  before_script:
+    - cd Patch
+
+ios-lint:
+  extends: .ios_base
+  stage: test
+  script:
+    - if which swiftlint >/dev/null; then swiftlint; else brew install swiftlint && swiftlint; fi
+
+ios-test:
+  extends: .ios_base
+  stage: test
+  script:
+    - cd ..
+    - xcodebuild test -scheme Patch -destination 'platform=iOS Simulator,name=iPhone 15' | xcpretty -s || xcodebuild test -scheme Patch -destination 'platform=iOS Simulator,name=iPhone 15'

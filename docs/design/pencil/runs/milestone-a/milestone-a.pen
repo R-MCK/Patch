@@ -1,0 +1,734 @@
+{
+  "version": "1.0",
+  "variables": {
+    "green-primary": { "type": "color", "value": "#2D5016" },
+    "green-dark": { "type": "color", "value": "#1E3410" },
+    "green-soft": { "type": "color", "value": "#E4EEDA" },
+    "green-mist": { "type": "color", "value": "#F1F6EC" },
+    "cream-bg": { "type": "color", "value": "#F5F0E8" },
+    "cream-card": { "type": "color", "value": "#FFFDF9" },
+    "cream-accent": { "type": "color", "value": "#FAF5EE" },
+    "text-primary": { "type": "color", "value": "#1F231C" },
+    "text-secondary": { "type": "color", "value": "#5B6255" },
+    "line-soft": { "type": "color", "value": "#DDD4C7" },
+    "line-strong": { "type": "color", "value": "#C7BCAA" },
+    "urgent": { "type": "color", "value": "#B8543C" },
+    "urgent-soft": { "type": "color", "value": "#F7E5DF" },
+    "amber": { "type": "color", "value": "#B9802E" },
+    "amber-soft": { "type": "color", "value": "#F6ECD7" },
+    "sky-soft": { "type": "color", "value": "#DCEBF3" },
+    "white": { "type": "color", "value": "#FFFFFF" },
+    "shadow": { "type": "color", "value": "#0000001A" },
+    "font-main": { "type": "string", "value": "DM Sans" }
+  },
+  "children": [
+    {
+      "id": "xVkUO",
+      "name": "Screen 3 — Capture Flow",
+      "type": "frame",
+      "x": 890,
+      "y": 40,
+      "width": 1260,
+      "height": 920,
+      "layout": "none",
+      "fill": "$cream-bg",
+      "cornerRadius": 32,
+      "stroke": { "thickness": 1, "fill": "$line-soft" },
+      "children": [
+        {
+          "id": "capTitle",
+          "type": "text",
+          "x": 32,
+          "y": 24,
+          "content": "Screen 3 — Capture Flow",
+          "fontFamily": "$font-main",
+          "fontSize": 28,
+          "fontWeight": "600",
+          "fill": "$text-primary"
+        },
+        {
+          "id": "capSub",
+          "type": "text",
+          "x": 32,
+          "y": 62,
+          "content": "Context FAB, quick-capture sheet, and note entry keep logging under 10 seconds.",
+          "fontFamily": "$font-main",
+          "fontSize": 14,
+          "fill": "$text-secondary"
+        },
+        {
+          "id": "capA",
+          "type": "frame",
+          "x": 32,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "capAStatus", "type": "text", "x": 36, "y": 20, "content": "9:41", "fontFamily": "$font-main", "fontSize": 15, "fontWeight": "600", "fill": "$text-primary" },
+            { "id": "capATitle", "type": "text", "x": 28, "y": 60, "content": "Today", "fontFamily": "$font-main", "fontSize": 34, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "capAGreet", "type": "text", "x": 28, "y": 102, "content": "Sunny and dry in Salem. Two things need you first.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+            { "id": "capAChip", "type": "frame", "x": 245, "y": 58, "width": 104, "height": 36, "layout": "none", "fill": "$sky-soft", "cornerRadius": 18, "children": [
+              { "id": "capAChipTxt", "type": "text", "x": 16, "y": 9, "content": "62° Clear", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "capAOver", "type": "text", "x": 28, "y": 156, "content": "Overdue", "fontFamily": "$font-main", "fontSize": 19, "fontWeight": "600", "fill": "$text-primary" },
+            { "id": "capACard1", "type": "frame", "x": 28, "y": 190, "width": 324, "height": 108, "layout": "none", "fill": "$urgent-soft", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "capACard1Plant", "type": "text", "x": 18, "y": 18, "content": "Roma Tomatoes", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+              { "id": "capACard1Task", "type": "text", "x": 18, "y": 46, "content": "Prune lower leaves and check for blight.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+              { "id": "capACard1Badge", "type": "frame", "x": 18, "y": 72, "width": 86, "height": 24, "layout": "none", "fill": "$white", "cornerRadius": 12, "children": [
+                { "id": "capACard1BadgeTxt", "type": "text", "x": 14, "y": 5, "content": "2 days late", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$urgent" }
+              ]},
+              { "id": "capACard1Check", "type": "ellipse", "x": 274, "y": 32, "width": 34, "height": 34, "fill": "$white", "stroke": { "thickness": 2, "fill": "$urgent" } }
+            ]},
+            { "id": "capADue", "type": "text", "x": 28, "y": 326, "content": "Due Today", "fontFamily": "$font-main", "fontSize": 19, "fontWeight": "600", "fill": "$text-primary" },
+            { "id": "capACard2", "type": "frame", "x": 28, "y": 360, "width": 324, "height": 96, "layout": "none", "fill": "$green-mist", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "capACard2Plant", "type": "text", "x": 18, "y": 18, "content": "Genovese Basil", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+              { "id": "capACard2Task", "type": "text", "x": 18, "y": 46, "content": "Harvest top leaves before afternoon heat.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" }
+            ]},
+            { "id": "capAFab", "type": "frame", "x": 276, "y": 610, "width": 72, "height": 72, "layout": "none", "fill": "$green-primary", "cornerRadius": 36, "effect": { "type": "shadow", "offset": { "x": 0, "y": 12 }, "blur": 28, "color": "#1E341044" }, "children": [
+              { "id": "capAFabPlusV", "type": "rectangle", "x": 34, "y": 20, "width": 4, "height": 32, "cornerRadius": 2, "fill": "$white" },
+              { "id": "capAFabPlusH", "type": "rectangle", "x": 20, "y": 34, "width": 32, "height": 4, "cornerRadius": 2, "fill": "$white" }
+            ]},
+            { "id": "capATab", "type": "frame", "x": 18, "y": 712, "width": 344, "height": 52, "layout": "none", "fill": "$cream-accent", "cornerRadius": 26, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "capATodayPill", "type": "frame", "x": 8, "y": 6, "width": 72, "height": 40, "layout": "none", "fill": "$green-primary", "cornerRadius": 20, "children": [
+                { "id": "capATodayTxt", "type": "text", "x": 18, "y": 12, "content": "Today", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$white" }
+              ]},
+              { "id": "capATabCapture", "type": "text", "x": 100, "y": 18, "content": "Capture", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "capATabAsk", "type": "text", "x": 198, "y": 18, "content": "Ask", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "capATabPlan", "type": "text", "x": 272, "y": 18, "content": "Plan", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" }
+            ]}
+          ]
+        },
+        {
+          "id": "capB",
+          "type": "frame",
+          "x": 440,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "capBBase", "type": "rectangle", "x": 0, "y": 0, "width": 380, "height": 780, "cornerRadius": 36, "fill": "$cream-card" },
+            { "id": "capBOverlay", "type": "rectangle", "x": 0, "y": 0, "width": 380, "height": 780, "cornerRadius": 36, "fill": "#1A221A73" },
+            { "id": "capBSheet", "type": "frame", "x": 0, "y": 332, "width": 380, "height": 448, "layout": "none", "fill": "$white", "cornerRadius": [24, 24, 36, 36], "children": [
+              { "id": "capBHandle", "type": "rectangle", "x": 170, "y": 12, "width": 40, "height": 4, "cornerRadius": 2, "fill": "$line-strong" },
+              { "id": "capBHeading", "type": "text", "x": 24, "y": 34, "content": "Quick Capture", "fontFamily": "$font-main", "fontSize": 20, "fontWeight": "600", "fill": "$text-primary" },
+              { "id": "capBTile1", "type": "frame", "x": 24, "y": 78, "width": 152, "height": 116, "layout": "none", "fill": "$green-primary", "cornerRadius": 24, "children": [
+                { "id": "capBTile1Icon", "type": "ellipse", "x": 18, "y": 18, "width": 36, "height": 36, "fill": "#FFFFFF26" },
+                { "id": "capBTile1Txt", "type": "text", "x": 18, "y": 72, "content": "Photo", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$white" },
+                { "id": "capBTile1Sub", "type": "text", "x": 18, "y": 93, "content": "Snap and sort later", "fontFamily": "$font-main", "fontSize": 12, "fill": "#FFFFFFCC" }
+              ]},
+              { "id": "capBTile2", "type": "frame", "x": 204, "y": 78, "width": 152, "height": 116, "layout": "none", "fill": "$cream-card", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$green-primary" }, "children": [
+                { "id": "capBTile2Txt", "type": "text", "x": 18, "y": 72, "content": "Note", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+                { "id": "capBTile2Sub", "type": "text", "x": 18, "y": 93, "content": "Type a quick garden note", "fontFamily": "$font-main", "fontSize": 12, "fill": "$text-secondary" }
+              ]},
+              { "id": "capBTile3", "type": "frame", "x": 24, "y": 210, "width": 152, "height": 116, "layout": "none", "opacity": 0.5, "fill": "$cream-accent", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+                { "id": "capBTile3Txt", "type": "text", "x": 18, "y": 66, "content": "Voice", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+                { "id": "capBTile3Sub", "type": "text", "x": 18, "y": 90, "content": "Coming soon", "fontFamily": "$font-main", "fontSize": 12, "fill": "$text-secondary" }
+              ]},
+              { "id": "capBTile4", "type": "frame", "x": 204, "y": 210, "width": 152, "height": 116, "layout": "none", "fill": "$cream-card", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$green-primary" }, "children": [
+                { "id": "capBTile4Txt", "type": "text", "x": 18, "y": 72, "content": "Task Done", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+                { "id": "capBTile4Sub", "type": "text", "x": 18, "y": 93, "content": "Mark care complete", "fontFamily": "$font-main", "fontSize": 12, "fill": "$text-secondary" }
+              ]},
+              { "id": "capBRecentLabel", "type": "text", "x": 24, "y": 348, "content": "Recent plants", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "capBChip1", "type": "frame", "x": 24, "y": 378, "width": 88, "height": 34, "layout": "none", "fill": "$cream-bg", "cornerRadius": 17, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+                { "id": "capBChip1Txt", "type": "text", "x": 16, "y": 9, "content": "Roma", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+              ]},
+              { "id": "capBChip2", "type": "frame", "x": 120, "y": 378, "width": 74, "height": 34, "layout": "none", "fill": "$cream-bg", "cornerRadius": 17, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+                { "id": "capBChip2Txt", "type": "text", "x": 14, "y": 9, "content": "Basil", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+              ]},
+              { "id": "capBChip3", "type": "frame", "x": 202, "y": 378, "width": 88, "height": 34, "layout": "none", "fill": "$cream-bg", "cornerRadius": 17, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+                { "id": "capBChip3Txt", "type": "text", "x": 14, "y": 9, "content": "Lavender", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+              ]},
+              { "id": "capBChip4", "type": "frame", "x": 298, "y": 378, "width": 94, "height": 34, "layout": "none", "fill": "$cream-bg", "cornerRadius": 17, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+                { "id": "capBChip4Txt", "type": "text", "x": 12, "y": 9, "content": "Pepper bed", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+              ]}
+            ]}
+          ]
+        },
+        {
+          "id": "capC",
+          "type": "frame",
+          "x": 848,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "capCNav", "type": "text", "x": 26, "y": 26, "content": "Cancel", "fontFamily": "$font-main", "fontSize": 16, "fontWeight": "500", "fill": "$green-primary" },
+            { "id": "capCHeading", "type": "text", "x": 26, "y": 74, "content": "New note", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "capCAssigned", "type": "frame", "x": 26, "y": 124, "width": 156, "height": 34, "layout": "none", "fill": "$green-soft", "cornerRadius": 17, "children": [
+              { "id": "capCAssignedTxt", "type": "text", "x": 14, "y": 9, "content": "Assigned to Roma Tomatoes", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$green-dark" }
+            ]},
+            { "id": "capCBody", "type": "frame", "x": 26, "y": 182, "width": 328, "height": 360, "layout": "none", "fill": "$white", "cornerRadius": 28, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "capCBodyTxt", "type": "text", "x": 18, "y": 18, "width": 292, "textGrowth": "fixed-width", "content": "Lower leaves yellowing under the first fruit cluster. Soil still damp from yesterday, so I skipped watering and pruned three spotted stems instead.", "fontFamily": "$font-main", "fontSize": 18, "lineHeight": 1.35, "fill": "$text-primary" }
+            ]},
+            { "id": "capCAttach", "type": "frame", "x": 26, "y": 562, "width": 146, "height": 42, "layout": "none", "fill": "$cream-accent", "cornerRadius": 21, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "capCAttachTxt", "type": "text", "x": 18, "y": 13, "content": "Attach photo", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "capCSave", "type": "frame", "x": 206, "y": 690, "width": 148, "height": 52, "layout": "none", "fill": "$green-primary", "cornerRadius": 26, "children": [
+              { "id": "capCSaveTxt", "type": "text", "x": 53, "y": 16, "content": "Save", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$white" }
+            ]},
+            { "id": "capCHint", "type": "text", "x": 26, "y": 622, "width": 230, "textGrowth": "fixed-width", "content": "Notes can be saved before you finish tagging details. Capture first, organize later.", "fontFamily": "$font-main", "fontSize": 13, "lineHeight": 1.35, "fill": "$text-secondary" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "VM1Wg",
+      "name": "Screen 4 — Onboarding",
+      "type": "frame",
+      "x": 2180,
+      "y": 40,
+      "width": 1670,
+      "height": 920,
+      "layout": "none",
+      "fill": "$cream-bg",
+      "cornerRadius": 32,
+      "stroke": { "thickness": 1, "fill": "$line-soft" },
+      "children": [
+        { "id": "onTitle", "type": "text", "x": 32, "y": 24, "content": "Screen 4 — UserProfile Onboarding", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "600", "fill": "$text-primary" },
+        { "id": "onSub", "type": "text", "x": 32, "y": 62, "content": "Four-step, skippable setup tuned for local reminders and plain-language gardening confidence.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+        {
+          "id": "on1",
+          "type": "frame",
+          "x": 32,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "on1Skip", "type": "text", "x": 304, "y": 26, "content": "Skip", "fontFamily": "$font-main", "fontSize": 15, "fontWeight": "600", "fill": "$text-secondary" },
+            { "id": "on1IllusBg", "type": "ellipse", "x": 108, "y": 110, "width": 164, "height": 164, "fill": "$green-soft" },
+            { "id": "on1IllusLeaf1", "type": "ellipse", "x": 138, "y": 128, "width": 46, "height": 86, "rotation": -24, "fill": "$green-primary" },
+            { "id": "on1IllusLeaf2", "type": "ellipse", "x": 194, "y": 138, "width": 46, "height": 96, "rotation": 18, "fill": "$amber" },
+            { "id": "on1Head", "type": "text", "x": 40, "y": 328, "width": 300, "textGrowth": "fixed-width", "content": "Your garden, remembered.", "fontFamily": "$font-main", "fontSize": 30, "fontWeight": "700", "lineHeight": 1.1, "fill": "$text-primary" },
+            { "id": "on1Body", "type": "text", "x": 40, "y": 406, "width": 296, "textGrowth": "fixed-width", "content": "Patch keeps track of what you planted, what changed, and what needs care next without making setup feel heavy.", "fontFamily": "$font-main", "fontSize": 16, "lineHeight": 1.35, "fill": "$text-secondary" },
+            { "id": "on1Primary", "type": "frame", "x": 40, "y": 658, "width": 300, "height": 52, "layout": "none", "fill": "$green-primary", "cornerRadius": 26, "children": [
+              { "id": "on1PrimaryTxt", "type": "text", "x": 102, "y": 16, "content": "Get started", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$white" }
+            ]},
+            { "id": "on1Secondary", "type": "frame", "x": 40, "y": 720, "width": 300, "height": 52, "layout": "none", "fill": "$cream-accent", "cornerRadius": 26, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on1SecondaryTxt", "type": "text", "x": 96, "y": 16, "content": "Set up later", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "on1Dots", "type": "group", "x": 156, "y": 616, "layout": "none", "children": [
+              { "id": "on1Dot1", "type": "ellipse", "x": 0, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on1Dot2", "type": "ellipse", "x": 18, "y": 0, "width": 8, "height": 8, "fill": "$line-strong" },
+              { "id": "on1Dot3", "type": "ellipse", "x": 36, "y": 0, "width": 8, "height": 8, "fill": "$line-strong" },
+              { "id": "on1Dot4", "type": "ellipse", "x": 54, "y": 0, "width": 8, "height": 8, "fill": "$line-strong" }
+            ]}
+          ]
+        },
+        {
+          "id": "on2",
+          "type": "frame",
+          "x": 440,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "on2Skip", "type": "text", "x": 304, "y": 26, "content": "Skip", "fontFamily": "$font-main", "fontSize": 15, "fontWeight": "600", "fill": "$text-secondary" },
+            { "id": "on2Head", "type": "text", "x": 34, "y": 82, "content": "Where do you garden?", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "on2Body", "type": "text", "x": 34, "y": 122, "width": 294, "textGrowth": "fixed-width", "content": "This helps Patch time reminders and seasonal nudges without asking every visit.", "fontFamily": "$font-main", "fontSize": 15, "lineHeight": 1.35, "fill": "$text-secondary" },
+            { "id": "on2Field1", "type": "frame", "x": 34, "y": 198, "width": 312, "height": 64, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on2Field1Lbl", "type": "text", "x": 18, "y": 14, "content": "Region / country", "fontFamily": "$font-main", "fontSize": 13, "fill": "$text-secondary" },
+              { "id": "on2Field1Val", "type": "text", "x": 18, "y": 34, "content": "United States", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "on2Field2", "type": "frame", "x": 34, "y": 278, "width": 312, "height": 64, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on2Field2Lbl", "type": "text", "x": 18, "y": 14, "content": "Local area", "fontFamily": "$font-main", "fontSize": 13, "fill": "$text-secondary" },
+              { "id": "on2Field2Val", "type": "text", "x": 18, "y": 34, "content": "Salem, Oregon", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "on2Note", "type": "frame", "x": 34, "y": 362, "width": 312, "height": 70, "layout": "none", "fill": "$green-mist", "cornerRadius": 24, "children": [
+              { "id": "on2NoteTxt", "type": "text", "x": 18, "y": 16, "width": 274, "textGrowth": "fixed-width", "content": "Used for seasonal reminders, frost timing, and crop suggestions. You can change this later.", "fontFamily": "$font-main", "fontSize": 14, "lineHeight": 1.35, "fill": "$green-dark" }
+            ]},
+            { "id": "on2Next", "type": "frame", "x": 198, "y": 720, "width": 148, "height": 52, "layout": "none", "fill": "$green-primary", "cornerRadius": 26, "children": [
+              { "id": "on2NextTxt", "type": "text", "x": 56, "y": 16, "content": "Next", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$white" }
+            ]},
+            { "id": "on2Dots", "type": "group", "x": 140, "y": 686, "layout": "none", "children": [
+              { "id": "on2Dot1", "type": "ellipse", "x": 0, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on2Dot2", "type": "ellipse", "x": 18, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on2Dot3", "type": "ellipse", "x": 36, "y": 0, "width": 8, "height": 8, "fill": "$line-strong" },
+              { "id": "on2Dot4", "type": "ellipse", "x": 54, "y": 0, "width": 8, "height": 8, "fill": "$line-strong" }
+            ]}
+          ]
+        },
+        {
+          "id": "on3",
+          "type": "frame",
+          "x": 848,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "on3Head", "type": "text", "x": 34, "y": 82, "content": "How much gardening have you done?", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "on3Card1", "type": "frame", "x": 34, "y": 190, "width": 312, "height": 114, "layout": "none", "fill": "$green-primary", "cornerRadius": 28, "children": [
+              { "id": "on3Card1T", "type": "text", "x": 22, "y": 24, "content": "Beginner", "fontFamily": "$font-main", "fontSize": 21, "fontWeight": "700", "fill": "$white" },
+              { "id": "on3Card1S", "type": "text", "x": 22, "y": 56, "width": 250, "textGrowth": "fixed-width", "content": "Clear reminders, gentle explanations, and less jargon.", "fontFamily": "$font-main", "fontSize": 14, "lineHeight": 1.35, "fill": "#FFFFFFCC" }
+            ]},
+            { "id": "on3Card2", "type": "frame", "x": 34, "y": 320, "width": 312, "height": 114, "layout": "none", "fill": "$white", "cornerRadius": 28, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on3Card2T", "type": "text", "x": 22, "y": 24, "content": "Intermediate", "fontFamily": "$font-main", "fontSize": 21, "fontWeight": "700", "fill": "$text-primary" },
+              { "id": "on3Card2S", "type": "text", "x": 22, "y": 56, "width": 246, "textGrowth": "fixed-width", "content": "Assumes some seasonal knowledge and faster setup flows.", "fontFamily": "$font-main", "fontSize": 14, "lineHeight": 1.35, "fill": "$text-secondary" }
+            ]},
+            { "id": "on3Card3", "type": "frame", "x": 34, "y": 450, "width": 312, "height": 114, "layout": "none", "fill": "$white", "cornerRadius": 28, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on3Card3T", "type": "text", "x": 22, "y": 24, "content": "Experienced", "fontFamily": "$font-main", "fontSize": 21, "fontWeight": "700", "fill": "$text-primary" },
+              { "id": "on3Card3S", "type": "text", "x": 22, "y": 56, "width": 248, "textGrowth": "fixed-width", "content": "Concise prompts and stronger planning cues.", "fontFamily": "$font-main", "fontSize": 14, "lineHeight": 1.35, "fill": "$text-secondary" }
+            ]},
+            { "id": "on3Next", "type": "frame", "x": 198, "y": 720, "width": 148, "height": 52, "layout": "none", "fill": "$green-primary", "cornerRadius": 26, "children": [
+              { "id": "on3NextTxt", "type": "text", "x": 56, "y": 16, "content": "Next", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$white" }
+            ]},
+            { "id": "on3Dots", "type": "group", "x": 140, "y": 686, "layout": "none", "children": [
+              { "id": "on3Dot1", "type": "ellipse", "x": 0, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on3Dot2", "type": "ellipse", "x": 18, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on3Dot3", "type": "ellipse", "x": 36, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on3Dot4", "type": "ellipse", "x": 54, "y": 0, "width": 8, "height": 8, "fill": "$line-strong" }
+            ]}
+          ]
+        },
+        {
+          "id": "on4",
+          "type": "frame",
+          "x": 1256,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "on4Head", "type": "text", "x": 34, "y": 82, "content": "What are you growing for?", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "on4Body", "type": "text", "x": 34, "y": 122, "width": 290, "textGrowth": "fixed-width", "content": "Pick a few goals so Patch can shape suggestions and starter content.", "fontFamily": "$font-main", "fontSize": 15, "lineHeight": 1.35, "fill": "$text-secondary" },
+            { "id": "on4Chip1", "type": "frame", "x": 34, "y": 204, "width": 114, "height": 40, "layout": "none", "fill": "$green-primary", "cornerRadius": 20, "children": [
+              { "id": "on4Chip1Txt", "type": "text", "x": 22, "y": 12, "content": "Vegetables", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$white" }
+            ]},
+            { "id": "on4Chip2", "type": "frame", "x": 158, "y": 204, "width": 82, "height": 40, "layout": "none", "fill": "$cream-accent", "cornerRadius": 20, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on4Chip2Txt", "type": "text", "x": 22, "y": 12, "content": "Herbs", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "on4Chip3", "type": "frame", "x": 248, "y": 204, "width": 86, "height": 40, "layout": "none", "fill": "$cream-accent", "cornerRadius": 20, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on4Chip3Txt", "type": "text", "x": 19, "y": 12, "content": "Flowers", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "on4Chip4", "type": "frame", "x": 34, "y": 256, "width": 74, "height": 40, "layout": "none", "fill": "$amber-soft", "cornerRadius": 20, "stroke": { "thickness": 1, "fill": "$amber" }, "children": [
+              { "id": "on4Chip4Txt", "type": "text", "x": 22, "y": 12, "content": "Fruit", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "on4Chip5", "type": "frame", "x": 118, "y": 256, "width": 118, "height": 40, "layout": "none", "fill": "$green-soft", "cornerRadius": 20, "children": [
+              { "id": "on4Chip5Txt", "type": "text", "x": 18, "y": 12, "content": "Indoor Plants", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$green-dark" }
+            ]},
+            { "id": "on4Chip6", "type": "frame", "x": 246, "y": 256, "width": 72, "height": 40, "layout": "none", "fill": "$cream-accent", "cornerRadius": 20, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "on4Chip6Txt", "type": "text", "x": 22, "y": 12, "content": "Other", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "on4Done", "type": "frame", "x": 184, "y": 720, "width": 162, "height": 52, "layout": "none", "fill": "$green-primary", "cornerRadius": 26, "children": [
+              { "id": "on4DoneTxt", "type": "text", "x": 56, "y": 16, "content": "Finish", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$white" }
+            ]},
+            { "id": "on4Dots", "type": "group", "x": 140, "y": 686, "layout": "none", "children": [
+              { "id": "on4Dot1", "type": "ellipse", "x": 0, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on4Dot2", "type": "ellipse", "x": 18, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on4Dot3", "type": "ellipse", "x": 36, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" },
+              { "id": "on4Dot4", "type": "ellipse", "x": 54, "y": 0, "width": 8, "height": 8, "fill": "$green-primary" }
+            ]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KlULy",
+      "name": "Screen 1 — Today View",
+      "type": "frame",
+      "x": 40,
+      "y": 40,
+      "width": 393,
+      "height": 852,
+      "layout": "none",
+      "fill": "$cream-bg",
+      "cornerRadius": 36,
+      "stroke": { "thickness": 1, "fill": "$line-soft" },
+      "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+      "children": [
+        { "id": "todayStatus", "type": "text", "x": 36, "y": 20, "content": "9:41", "fontFamily": "$font-main", "fontSize": 15, "fontWeight": "600", "fill": "$text-primary" },
+        { "id": "todayDate", "type": "text", "x": 28, "y": 56, "content": "Tuesday, March 18", "fontFamily": "$font-main", "fontSize": 15, "fontWeight": "500", "fill": "$text-secondary" },
+        { "id": "todayHead", "type": "text", "x": 28, "y": 80, "content": "What matters now", "fontFamily": "$font-main", "fontSize": 34, "fontWeight": "700", "fill": "$text-primary" },
+        { "id": "todayWeather", "type": "frame", "x": 255, "y": 78, "width": 110, "height": 40, "layout": "none", "fill": "$sky-soft", "cornerRadius": 20, "children": [
+          { "id": "todayWeatherTxt", "type": "text", "x": 18, "y": 12, "content": "62° Clear", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+        ]},
+        { "id": "todayOverLabel", "type": "text", "x": 28, "y": 146, "content": "Overdue", "fontFamily": "$font-main", "fontSize": 20, "fontWeight": "600", "fill": "$text-primary" },
+        { "id": "todayOver1", "type": "frame", "x": 28, "y": 180, "width": 337, "height": 110, "layout": "none", "fill": "$urgent-soft", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "todayOver1Plant", "type": "text", "x": 18, "y": 18, "content": "Roma Tomatoes", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "todayOver1Task", "type": "text", "x": 18, "y": 46, "content": "Prune lower leaves and inspect for blight.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+          { "id": "todayOver1Badge", "type": "frame", "x": 18, "y": 74, "width": 84, "height": 24, "layout": "none", "fill": "$white", "cornerRadius": 12, "children": [
+            { "id": "todayOver1BadgeTxt", "type": "text", "x": 14, "y": 5, "content": "2 days late", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$urgent" }
+          ]},
+          { "id": "todayOver1Check", "type": "ellipse", "x": 285, "y": 38, "width": 34, "height": 34, "fill": "$white", "stroke": { "thickness": 2, "fill": "$urgent" } }
+        ]},
+        { "id": "todayOver2", "type": "frame", "x": 28, "y": 302, "width": 337, "height": 98, "layout": "none", "fill": "$urgent-soft", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "todayOver2Plant", "type": "text", "x": 18, "y": 18, "content": "Strawberry Barrel", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "todayOver2Task", "type": "text", "x": 18, "y": 46, "content": "Water top pockets before noon.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" }
+        ]},
+        { "id": "todayDueLabel", "type": "text", "x": 28, "y": 430, "content": "Due Today", "fontFamily": "$font-main", "fontSize": 20, "fontWeight": "600", "fill": "$text-primary" },
+        { "id": "todayDue1", "type": "frame", "x": 28, "y": 464, "width": 337, "height": 104, "layout": "none", "fill": "$green-mist", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "todayDue1Plant", "type": "text", "x": 18, "y": 18, "content": "Genovese Basil", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "todayDue1Task", "type": "text", "x": 18, "y": 46, "content": "Harvest top leaves and pinch flowers.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+          { "id": "todayDue1Badge", "type": "frame", "x": 18, "y": 74, "width": 74, "height": 24, "layout": "none", "fill": "$white", "cornerRadius": 12, "children": [
+            { "id": "todayDue1BadgeTxt", "type": "text", "x": 16, "y": 5, "content": "In bed 2", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$green-dark" }
+          ]}
+        ]},
+        { "id": "todayRecentLabel", "type": "text", "x": 28, "y": 598, "content": "Recent Activity", "fontFamily": "$font-main", "fontSize": 20, "fontWeight": "600", "fill": "$text-primary" },
+        { "id": "todayAct1", "type": "frame", "x": 28, "y": 634, "width": 136, "height": 116, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "todayAct1Img", "type": "rectangle", "x": 12, "y": 12, "width": 112, "height": 60, "cornerRadius": 16, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 120, "colors": [ { "color": "#799454", "position": 0 }, { "color": "#B84333", "position": 1 } ] } },
+          { "id": "todayAct1Txt", "type": "text", "x": 12, "y": 82, "width": 106, "textGrowth": "fixed-width", "content": "Tomato note\nYellowing leaves", "fontFamily": "$font-main", "fontSize": 12, "lineHeight": 1.3, "fill": "$text-primary" }
+        ]},
+        { "id": "todayAct2", "type": "frame", "x": 176, "y": 634, "width": 136, "height": 116, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "todayAct2Img", "type": "rectangle", "x": 12, "y": 12, "width": 112, "height": 60, "cornerRadius": 16, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 120, "colors": [ { "color": "#6A8E4B", "position": 0 }, { "color": "#E6D0A2", "position": 1 } ] } },
+          { "id": "todayAct2Txt", "type": "text", "x": 12, "y": 82, "width": 108, "textGrowth": "fixed-width", "content": "Basil harvest\nPinched tops", "fontFamily": "$font-main", "fontSize": 12, "lineHeight": 1.3, "fill": "$text-primary" }
+        ]},
+        { "id": "todayAct3", "type": "frame", "x": 324, "y": 634, "width": 120, "height": 116, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "todayAct3Img", "type": "rectangle", "x": 12, "y": 12, "width": 96, "height": 60, "cornerRadius": 16, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 130, "colors": [ { "color": "#7F8C68", "position": 0 }, { "color": "#8A5A3A", "position": 1 } ] } },
+          { "id": "todayAct3Txt", "type": "text", "x": 12, "y": 82, "width": 90, "textGrowth": "fixed-width", "content": "Raised bed photo", "fontFamily": "$font-main", "fontSize": 12, "lineHeight": 1.3, "fill": "$text-primary" }
+        ]},
+        { "id": "todayFab", "type": "frame", "x": 297, "y": 696, "width": 64, "height": 64, "layout": "none", "fill": "$green-primary", "cornerRadius": 32, "effect": { "type": "shadow", "offset": { "x": 0, "y": 8 }, "blur": 20, "color": "#2D501633" }, "children": [
+          { "id": "todayFabV", "type": "rectangle", "x": 30, "y": 18, "width": 4, "height": 28, "cornerRadius": 2, "fill": "$white" },
+          { "id": "todayFabH", "type": "rectangle", "x": 18, "y": 30, "width": 28, "height": 4, "cornerRadius": 2, "fill": "$white" }
+        ]},
+        { "id": "todayTab", "type": "frame", "x": 24, "y": 780, "width": 345, "height": 52, "layout": "none", "fill": "$cream-accent", "cornerRadius": 26, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "todayTabSel", "type": "frame", "x": 8, "y": 6, "width": 74, "height": 40, "layout": "none", "fill": "$green-primary", "cornerRadius": 20, "children": [
+            { "id": "todayTabSelTxt", "type": "text", "x": 20, "y": 12, "content": "Today", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$white" }
+          ]},
+          { "id": "todayTabCap", "type": "text", "x": 120, "y": 18, "content": "Capture", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+          { "id": "todayTabAsk", "type": "text", "x": 210, "y": 18, "content": "Ask", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+          { "id": "todayTabPlan", "type": "text", "x": 286, "y": 18, "content": "Plan", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" }
+        ]}
+      ]
+    },
+    {
+      "id": "kwRui",
+      "name": "Screen 2 — Navigation Shell",
+      "type": "frame",
+      "x": 465,
+      "y": 40,
+      "width": 1410,
+      "height": 852,
+      "layout": "none",
+      "fill": "$cream-bg",
+      "cornerRadius": 32,
+      "stroke": { "thickness": 1, "fill": "$line-soft" },
+      "children": [
+        { "id": "navTitle", "type": "text", "x": 32, "y": 24, "content": "Screen 2 — Navigation Shell", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "600", "fill": "$text-primary" },
+        { "id": "navSub", "type": "text", "x": 32, "y": 62, "content": "Three tab states show Today, Ask, and Plan as top-level destinations. Plant list, wiki, gardens, and canvas stay pushed.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+        {
+          "id": "navTodayFrame",
+          "type": "frame",
+          "x": 32,
+          "y": 112,
+          "width": 393,
+          "height": 700,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "navTodayLbl", "type": "text", "x": 26, "y": 30, "content": "Today selected", "fontFamily": "$font-main", "fontSize": 24, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "navTodayDesc", "type": "text", "x": 26, "y": 70, "width": 290, "textGrowth": "fixed-width", "content": "Task urgency, recent activity, and the green capture FAB stay on the home surface.", "fontFamily": "$font-main", "fontSize": 15, "lineHeight": 1.35, "fill": "$text-secondary" },
+            { "id": "navTodayPill", "type": "frame", "x": 26, "y": 140, "width": 132, "height": 36, "layout": "none", "fill": "$green-soft", "cornerRadius": 18, "children": [
+              { "id": "navTodayPillTxt", "type": "text", "x": 18, "y": 10, "content": "Pushes to My Plants", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$green-dark" }
+            ]},
+            { "id": "navTodayPush", "type": "frame", "x": 26, "y": 206, "width": 340, "height": 94, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "navTodayPushTxt", "type": "text", "x": 18, "y": 18, "content": "My Plants", "fontFamily": "$font-main", "fontSize": 19, "fontWeight": "600", "fill": "$text-primary" },
+              { "id": "navTodayPushSub", "type": "text", "x": 18, "y": 48, "content": "Plant list, plant detail, and wiki entry links live here as pushed screens.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" }
+            ]},
+            { "id": "navTodayTab", "type": "frame", "x": 24, "y": 628, "width": 345, "height": 52, "layout": "none", "fill": "$cream-accent", "cornerRadius": 26, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "navTodayTabSel", "type": "frame", "x": 8, "y": 6, "width": 74, "height": 40, "layout": "none", "fill": "$green-primary", "cornerRadius": 20, "children": [
+                { "id": "navTodayTabSelTxt", "type": "text", "x": 20, "y": 12, "content": "Today", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$white" }
+              ]},
+              { "id": "navTodayTabCapTxt", "type": "text", "x": 120, "y": 18, "content": "Capture", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "navTodayTabAskTxt", "type": "text", "x": 210, "y": 18, "content": "Ask", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "navTodayTabPlanTxt", "type": "text", "x": 286, "y": 18, "content": "Plan", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" }
+            ]}
+          ]
+        },
+        {
+          "id": "navAskFrame",
+          "type": "frame",
+          "x": 457,
+          "y": 112,
+          "width": 393,
+          "height": 700,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "navAskLbl", "type": "text", "x": 26, "y": 30, "content": "Ask selected", "fontFamily": "$font-main", "fontSize": 24, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "navAskDesc", "type": "text", "x": 26, "y": 70, "width": 300, "textGrowth": "fixed-width", "content": "The assistant keeps a persistent input and references the user’s plant history instead of acting like a generic bot.", "fontFamily": "$font-main", "fontSize": 15, "lineHeight": 1.35, "fill": "$text-secondary" },
+            { "id": "navAskBubble1", "type": "frame", "x": 80, "y": 220, "width": 270, "height": 88, "layout": "none", "fill": "$cream-accent", "cornerRadius": 24, "children": [
+              { "id": "navAskBubble1Txt", "type": "text", "x": 18, "y": 18, "width": 230, "textGrowth": "fixed-width", "content": "Your Roma Tomatoes were watered yesterday and showed yellowing leaves in your last note.", "fontFamily": "$font-main", "fontSize": 14, "lineHeight": 1.35, "fill": "$text-primary" }
+            ]},
+            { "id": "navAskTab", "type": "frame", "x": 24, "y": 628, "width": 345, "height": 52, "layout": "none", "fill": "$cream-accent", "cornerRadius": 26, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "navAskTabToday", "type": "text", "x": 26, "y": 18, "content": "Today", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "navAskTabCap", "type": "text", "x": 116, "y": 18, "content": "Capture", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "navAskTabSel", "type": "frame", "x": 182, "y": 6, "width": 64, "height": 40, "layout": "none", "fill": "$green-primary", "cornerRadius": 20, "children": [
+                { "id": "navAskTabSelTxt", "type": "text", "x": 20, "y": 12, "content": "Ask", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$white" }
+              ]},
+              { "id": "navAskTabPlan", "type": "text", "x": 286, "y": 18, "content": "Plan", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" }
+            ]}
+          ]
+        },
+        {
+          "id": "navPlanFrame",
+          "type": "frame",
+          "x": 882,
+          "y": 112,
+          "width": 393,
+          "height": 700,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "navPlanLbl", "type": "text", "x": 26, "y": 30, "content": "Plan selected", "fontFamily": "$font-main", "fontSize": 24, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "navPlanDesc", "type": "text", "x": 26, "y": 70, "width": 300, "textGrowth": "fixed-width", "content": "Lay out beds, place crops, and check spacing before anything goes in the ground.", "fontFamily": "$font-main", "fontSize": 15, "lineHeight": 1.35, "fill": "$text-secondary" },
+            { "id": "navPlanCard1", "type": "frame", "x": 26, "y": 188, "width": 340, "height": 154, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "navPlanCard1T", "type": "text", "x": 18, "y": 16, "content": "Kitchen bed canvas", "fontFamily": "$font-main", "fontSize": 18, "fontWeight": "600", "fill": "$text-primary" },
+              { "id": "navPlanCard1S", "type": "text", "x": 18, "y": 42, "content": "Zone-aware layout with spacing guides and companion checks.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+              { "id": "navPlanZoneChip", "type": "frame", "x": 18, "y": 72, "width": 112, "height": 28, "layout": "none", "fill": "$green-soft", "cornerRadius": 14, "children": [
+                { "id": "navPlanZoneChipTxt", "type": "text", "x": 16, "y": 8, "content": "Zone A · Spring", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$green-dark" }
+              ]},
+              { "id": "navPlanBed", "type": "rectangle", "x": 18, "y": 110, "width": 304, "height": 28, "cornerRadius": 14, "fill": "$cream-bg", "stroke": { "thickness": 1, "fill": "$line-soft" } },
+              { "id": "navPlanPlot1", "type": "rectangle", "x": 30, "y": 116, "width": 58, "height": 16, "cornerRadius": 8, "fill": "$green-primary" },
+              { "id": "navPlanPlot2", "type": "rectangle", "x": 100, "y": 116, "width": 72, "height": 16, "cornerRadius": 8, "fill": "$amber-soft", "stroke": { "thickness": 1, "fill": "$amber" } },
+              { "id": "navPlanPlot3", "type": "rectangle", "x": 184, "y": 116, "width": 54, "height": 16, "cornerRadius": 8, "fill": "$green-soft" },
+              { "id": "navPlanPlot4", "type": "rectangle", "x": 250, "y": 116, "width": 60, "height": 16, "cornerRadius": 8, "fill": "$cream-accent", "stroke": { "thickness": 1, "fill": "$line-soft" } }
+            ]},
+            { "id": "navPlanCard2", "type": "frame", "x": 26, "y": 358, "width": 340, "height": 110, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "navPlanCard2T", "type": "text", "x": 18, "y": 18, "content": "Planning cues", "fontFamily": "$font-main", "fontSize": 18, "fontWeight": "600", "fill": "$text-primary" },
+              { "id": "navPlanCard2S", "type": "text", "x": 18, "y": 46, "width": 288, "textGrowth": "fixed-width", "content": "Tomatoes need 18 in spacing. Basil companions fit the south edge. One conflict flagged near peppers.", "fontFamily": "$font-main", "fontSize": 14, "lineHeight": 1.35, "fill": "$text-secondary" }
+            ]},
+            { "id": "navPlanTab", "type": "frame", "x": 24, "y": 628, "width": 345, "height": 52, "layout": "none", "fill": "$cream-accent", "cornerRadius": 26, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "navPlanTabToday", "type": "text", "x": 26, "y": 18, "content": "Today", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "navPlanTabCap", "type": "text", "x": 116, "y": 18, "content": "Capture", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "navPlanTabAsk", "type": "text", "x": 210, "y": 18, "content": "Ask", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-secondary" },
+              { "id": "navPlanTabSel", "type": "frame", "x": 269, "y": 6, "width": 68, "height": 40, "layout": "none", "fill": "$green-primary", "cornerRadius": 20, "children": [
+                { "id": "navPlanTabSelTxt", "type": "text", "x": 18, "y": 12, "content": "Plan", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$white" }
+              ]}
+            ]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "X3i7y",
+      "name": "Screen 5 — Ask View",
+      "type": "frame",
+      "x": 40,
+      "y": 940,
+      "width": 860,
+      "height": 920,
+      "layout": "none",
+      "fill": "$cream-bg",
+      "cornerRadius": 32,
+      "stroke": { "thickness": 1, "fill": "$line-soft" },
+      "children": [
+        { "id": "askTitle", "type": "text", "x": 32, "y": 24, "content": "Screen 5 — Ask View", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "600", "fill": "$text-primary" },
+        { "id": "askSub", "type": "text", "x": 32, "y": 62, "content": "Suggested prompts for empty state and a grounded mid-conversation state tied to specific care history.", "fontFamily": "$font-main", "fontSize": 14, "fill": "$text-secondary" },
+        {
+          "id": "askA",
+          "type": "frame",
+          "x": 32,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "askAHead", "type": "text", "x": 30, "y": 70, "content": "Ask Patch", "fontFamily": "$font-main", "fontSize": 32, "fontWeight": "700", "fill": "$text-primary" },
+            { "id": "askABody", "type": "text", "x": 30, "y": 112, "width": 286, "textGrowth": "fixed-width", "content": "Ask about what needs care, what changed in a bed, or what to plant next.", "fontFamily": "$font-main", "fontSize": 15, "lineHeight": 1.35, "fill": "$text-secondary" },
+            { "id": "askAChip1", "type": "frame", "x": 30, "y": 204, "width": 226, "height": 42, "layout": "none", "fill": "$green-soft", "cornerRadius": 21, "children": [
+              { "id": "askAChip1Txt", "type": "text", "x": 18, "y": 13, "content": "What needs water today?", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$green-dark" }
+            ]},
+            { "id": "askAChip2", "type": "frame", "x": 30, "y": 258, "width": 284, "height": 42, "layout": "none", "fill": "$cream-accent", "cornerRadius": 21, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "askAChip2Txt", "type": "text", "x": 18, "y": 13, "content": "Why are my tomato leaves yellowing?", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "askAChip3", "type": "frame", "x": 30, "y": 312, "width": 212, "height": 42, "layout": "none", "fill": "$cream-accent", "cornerRadius": 21, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "askAChip3Txt", "type": "text", "x": 18, "y": 13, "content": "What should I plant next?", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "askAChip4", "type": "frame", "x": 30, "y": 366, "width": 304, "height": 42, "layout": "none", "fill": "$cream-accent", "cornerRadius": 21, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "askAChip4Txt", "type": "text", "x": 18, "y": 13, "content": "What did I do in the raised bed last month?", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "askAIllusSoil", "type": "ellipse", "x": 92, "y": 520, "width": 196, "height": 88, "fill": "#E4EEDA66" },
+            { "id": "askAIllusPot", "type": "frame", "x": 156, "y": 538, "width": 78, "height": 64, "layout": "none", "fill": "#FAF5EECC", "cornerRadius": [18, 18, 22, 22], "stroke": { "thickness": 1, "fill": "$line-soft" }, "opacity": 0.9, "children": [
+              { "id": "askAIllusPotLip", "type": "rectangle", "x": 10, "y": 10, "width": 58, "height": 10, "cornerRadius": 5, "fill": "$cream-bg" }
+            ]},
+            { "id": "askAIllusLeaf1", "type": "ellipse", "x": 138, "y": 470, "width": 34, "height": 86, "rotation": -20, "fill": "#E4EEDA99" },
+            { "id": "askAIllusLeaf2", "type": "ellipse", "x": 166, "y": 462, "width": 36, "height": 94, "rotation": -4, "fill": "#2D501633" },
+            { "id": "askAIllusLeaf3", "type": "ellipse", "x": 196, "y": 470, "width": 34, "height": 86, "rotation": 14, "fill": "#E4EEDA99" },
+            { "id": "askAIllusLeaf4", "type": "ellipse", "x": 222, "y": 482, "width": 30, "height": 74, "rotation": 24, "fill": "#2D501622" },
+            { "id": "askAIllusCanBody", "type": "ellipse", "x": 84, "y": 566, "width": 54, "height": 34, "fill": "#FAF5EECC", "stroke": { "thickness": 1, "fill": "$line-soft" } },
+            { "id": "askAIllusCanTop", "type": "rectangle", "x": 104, "y": 554, "width": 14, "height": 16, "cornerRadius": 7, "fill": "#FAF5EECC", "stroke": { "thickness": 1, "fill": "$line-soft" } },
+            { "id": "askAIllusCanHandle", "type": "ellipse", "x": 72, "y": 570, "width": 18, "height": 18, "fill": "#00000000", "stroke": { "thickness": 2, "fill": "$line-soft" } },
+            { "id": "askAIllusSpark1", "type": "ellipse", "x": 262, "y": 500, "width": 8, "height": 8, "fill": "#E4EEDA99" },
+            { "id": "askAIllusSpark2", "type": "ellipse", "x": 284, "y": 528, "width": 6, "height": 6, "fill": "#2D501622" },
+            { "id": "askAInput", "type": "frame", "x": 22, "y": 704, "width": 336, "height": 56, "layout": "none", "fill": "$white", "cornerRadius": 28, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "askAInputPh", "type": "text", "x": 20, "y": 19, "content": "Ask about your garden", "fontFamily": "$font-main", "fontSize": 15, "fill": "$text-secondary" },
+              { "id": "askAInputMic", "type": "ellipse", "x": 286, "y": 12, "width": 32, "height": 32, "fill": "$cream-bg", "stroke": { "thickness": 1, "fill": "$line-soft" }, "opacity": 0.5 }
+            ]}
+          ]
+        },
+        {
+          "id": "askB",
+          "type": "frame",
+          "x": 440,
+          "y": 112,
+          "width": 380,
+          "height": 780,
+          "layout": "none",
+          "fill": "$cream-card",
+          "cornerRadius": 36,
+          "stroke": { "thickness": 1, "fill": "$line-soft" },
+          "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+          "children": [
+            { "id": "askBUser", "type": "frame", "x": 114, "y": 110, "width": 236, "height": 58, "layout": "none", "fill": "$green-primary", "cornerRadius": 24, "children": [
+              { "id": "askBUserTxt", "type": "text", "x": 18, "y": 18, "content": "Why are my Roma Tomatoes yellowing?", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$white" }
+            ]},
+            { "id": "askBAssistant", "type": "frame", "x": 24, "y": 196, "width": 304, "height": 196, "layout": "none", "fill": "$cream-accent", "cornerRadius": 24, "children": [
+              { "id": "askBAssistantTxt", "type": "text", "x": 18, "y": 18, "width": 266, "textGrowth": "fixed-width", "content": "Your Roma Tomatoes were watered yesterday, and your last note mentions yellowing under the first fruit cluster. Because the soil was still damp, this looks more like stress or early disease than thirst. Start by removing the spotted lower leaves and improving airflow today.", "fontFamily": "$font-main", "fontSize": 14, "lineHeight": 1.35, "fill": "$text-primary" }
+            ]},
+            { "id": "askBFollow1", "type": "frame", "x": 24, "y": 418, "width": 148, "height": 38, "layout": "none", "fill": "$green-soft", "cornerRadius": 19, "children": [
+              { "id": "askBFollow1Txt", "type": "text", "x": 16, "y": 12, "content": "What should I prune?", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$green-dark" }
+            ]},
+            { "id": "askBFollow2", "type": "frame", "x": 182, "y": 418, "width": 134, "height": 38, "layout": "none", "fill": "$cream-accent", "cornerRadius": 19, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "askBFollow2Txt", "type": "text", "x": 16, "y": 12, "content": "Show care history", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+            ]},
+            { "id": "askBInput", "type": "frame", "x": 22, "y": 704, "width": 336, "height": 56, "layout": "none", "fill": "$white", "cornerRadius": 28, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+              { "id": "askBInputTxt", "type": "text", "x": 20, "y": 19, "content": "Ask a follow-up", "fontFamily": "$font-main", "fontSize": 15, "fill": "$text-secondary" },
+              { "id": "askBInputMic", "type": "ellipse", "x": 286, "y": 12, "width": 32, "height": 32, "fill": "$cream-bg", "stroke": { "thickness": 1, "fill": "$line-soft" }, "opacity": 0.5 }
+            ]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "KOZ8Z",
+      "name": "Screen 6 — Plant List",
+      "type": "frame",
+      "x": 940,
+      "y": 940,
+      "width": 393,
+      "height": 852,
+      "layout": "none",
+      "fill": "$cream-bg",
+      "cornerRadius": 36,
+      "stroke": { "thickness": 1, "fill": "$line-soft" },
+      "effect": { "type": "shadow", "offset": { "x": 0, "y": 10 }, "blur": 30, "color": "$shadow" },
+      "children": [
+        { "id": "plantBack", "type": "text", "x": 24, "y": 28, "content": "Today", "fontFamily": "$font-main", "fontSize": 16, "fontWeight": "600", "fill": "$green-primary" },
+        { "id": "plantHead", "type": "text", "x": 24, "y": 60, "content": "My Plants", "fontFamily": "$font-main", "fontSize": 32, "fontWeight": "700", "fill": "$text-primary" },
+        { "id": "plantAdd", "type": "text", "x": 340, "y": 68, "content": "+", "fontFamily": "$font-main", "fontSize": 28, "fontWeight": "600", "fill": "$green-primary" },
+        { "id": "plantSearch", "type": "frame", "x": 24, "y": 118, "width": 345, "height": 50, "layout": "none", "fill": "$white", "cornerRadius": 25, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantSearchTxt", "type": "text", "x": 20, "y": 17, "content": "Search plants", "fontFamily": "$font-main", "fontSize": 15, "fill": "$text-secondary" }
+        ]},
+        { "id": "plantChip1", "type": "frame", "x": 24, "y": 184, "width": 42, "height": 34, "layout": "none", "fill": "$green-primary", "cornerRadius": 17, "children": [
+          { "id": "plantChip1Txt", "type": "text", "x": 13, "y": 9, "content": "All", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$white" }
+        ]},
+        { "id": "plantChip2", "type": "frame", "x": 76, "y": 184, "width": 90, "height": 34, "layout": "none", "fill": "$cream-accent", "cornerRadius": 17, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantChip2Txt", "type": "text", "x": 15, "y": 9, "content": "Needs Care", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+        ]},
+        { "id": "plantChip3", "type": "frame", "x": 176, "y": 184, "width": 70, "height": 34, "layout": "none", "fill": "$cream-accent", "cornerRadius": 17, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantChip3Txt", "type": "text", "x": 16, "y": 9, "content": "Healthy", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+        ]},
+        { "id": "plantChip4", "type": "frame", "x": 256, "y": 184, "width": 78, "height": 34, "layout": "none", "fill": "$cream-accent", "cornerRadius": 17, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantChip4Txt", "type": "text", "x": 16, "y": 9, "content": "By Garden", "fontFamily": "$font-main", "fontSize": 13, "fontWeight": "600", "fill": "$text-primary" }
+        ]},
+        { "id": "plantSec1", "type": "text", "x": 24, "y": 240, "content": "Kitchen Beds", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-secondary" },
+        { "id": "plantRow1", "type": "frame", "x": 24, "y": 268, "width": 345, "height": 82, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantRow1Thumb", "type": "rectangle", "x": 14, "y": 14, "width": 54, "height": 54, "cornerRadius": 18, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 120, "colors": [ { "color": "#78974E", "position": 0 }, { "color": "#B74C35", "position": 1 } ] } },
+          { "id": "plantRow1Name", "type": "text", "x": 84, "y": 18, "content": "Roma Tomatoes", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "plantRow1Species", "type": "text", "x": 84, "y": 42, "content": "Solanum lycopersicum", "fontFamily": "$font-main", "fontSize": 13, "fill": "$text-secondary" },
+          { "id": "plantRow1Badge", "type": "frame", "x": 248, "y": 16, "width": 70, "height": 24, "layout": "none", "fill": "$urgent-soft", "cornerRadius": 12, "children": [
+            { "id": "plantRow1BadgeTxt", "type": "text", "x": 18, "y": 5, "content": "Fair", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$urgent" }
+          ]},
+          { "id": "plantRow1Care", "type": "text", "x": 230, "y": 48, "content": "Care today", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$amber" }
+        ]},
+        { "id": "plantRow2", "type": "frame", "x": 24, "y": 362, "width": 345, "height": 82, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantRow2Thumb", "type": "rectangle", "x": 14, "y": 14, "width": 54, "height": 54, "cornerRadius": 18, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 120, "colors": [ { "color": "#5F8B49", "position": 0 }, { "color": "#A3C269", "position": 1 } ] } },
+          { "id": "plantRow2Name", "type": "text", "x": 84, "y": 18, "content": "Genovese Basil", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "plantRow2Species", "type": "text", "x": 84, "y": 42, "content": "Ocimum basilicum", "fontFamily": "$font-main", "fontSize": 13, "fill": "$text-secondary" },
+          { "id": "plantRow2Badge", "type": "frame", "x": 236, "y": 16, "width": 82, "height": 24, "layout": "none", "fill": "$green-mist", "cornerRadius": 12, "children": [
+            { "id": "plantRow2BadgeTxt", "type": "text", "x": 18, "y": 5, "content": "Healthy", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$green-dark" }
+          ]},
+          { "id": "plantRow2Care", "type": "text", "x": 238, "y": 48, "content": "Next care 1d", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$green-dark" }
+        ]},
+        { "id": "plantRow3", "type": "frame", "x": 24, "y": 456, "width": 345, "height": 82, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantRow3Thumb", "type": "rectangle", "x": 14, "y": 14, "width": 54, "height": 54, "cornerRadius": 18, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 120, "colors": [ { "color": "#8C6C39", "position": 0 }, { "color": "#D8BC72", "position": 1 } ] } },
+          { "id": "plantRow3Name", "type": "text", "x": 84, "y": 18, "content": "Nantes Carrots", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "plantRow3Species", "type": "text", "x": 84, "y": 42, "content": "Daucus carota", "fontFamily": "$font-main", "fontSize": 13, "fill": "$text-secondary" },
+          { "id": "plantRow3Badge", "type": "frame", "x": 240, "y": 16, "width": 78, "height": 24, "layout": "none", "fill": "$amber-soft", "cornerRadius": 12, "children": [
+            { "id": "plantRow3BadgeTxt", "type": "text", "x": 18, "y": 5, "content": "Good", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$amber" }
+          ]},
+          { "id": "plantRow3Care", "type": "text", "x": 236, "y": 48, "content": "Thin in 3d", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$amber" }
+        ]},
+        { "id": "plantSec2", "type": "text", "x": 24, "y": 564, "content": "Patio Containers", "fontFamily": "$font-main", "fontSize": 14, "fontWeight": "600", "fill": "$text-secondary" },
+        { "id": "plantRow4", "type": "frame", "x": 24, "y": 592, "width": 345, "height": 82, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantRow4Thumb", "type": "rectangle", "x": 14, "y": 14, "width": 54, "height": 54, "cornerRadius": 18, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 120, "colors": [ { "color": "#91805C", "position": 0 }, { "color": "#B1A690", "position": 1 } ] } },
+          { "id": "plantRow4Name", "type": "text", "x": 84, "y": 18, "content": "Lavender", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "plantRow4Species", "type": "text", "x": 84, "y": 42, "content": "Lavandula angustifolia", "fontFamily": "$font-main", "fontSize": 13, "fill": "$text-secondary" },
+          { "id": "plantRow4Badge", "type": "frame", "x": 236, "y": 16, "width": 82, "height": 24, "layout": "none", "fill": "$green-mist", "cornerRadius": 12, "children": [
+            { "id": "plantRow4BadgeTxt", "type": "text", "x": 18, "y": 5, "content": "Healthy", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$green-dark" }
+          ]},
+          { "id": "plantRow4Care", "type": "text", "x": 236, "y": 48, "content": "Water in 4d", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$green-dark" }
+        ]},
+        { "id": "plantRow5", "type": "frame", "x": 24, "y": 686, "width": 345, "height": 82, "layout": "none", "fill": "$white", "cornerRadius": 24, "stroke": { "thickness": 1, "fill": "$line-soft" }, "children": [
+          { "id": "plantRow5Thumb", "type": "rectangle", "x": 14, "y": 14, "width": 54, "height": 54, "cornerRadius": 18, "fill": { "type": "gradient", "gradientType": "linear", "rotation": 120, "colors": [ { "color": "#4E7B48", "position": 0 }, { "color": "#C4472F", "position": 1 } ] } },
+          { "id": "plantRow5Name", "type": "text", "x": 84, "y": 18, "content": "Jalapeno", "fontFamily": "$font-main", "fontSize": 17, "fontWeight": "600", "fill": "$text-primary" },
+          { "id": "plantRow5Species", "type": "text", "x": 84, "y": 42, "content": "Capsicum annuum", "fontFamily": "$font-main", "fontSize": 13, "fill": "$text-secondary" },
+          { "id": "plantRow5Badge", "type": "frame", "x": 248, "y": 16, "width": 70, "height": 24, "layout": "none", "fill": "$urgent-soft", "cornerRadius": 12, "children": [
+            { "id": "plantRow5BadgeTxt", "type": "text", "x": 14, "y": 5, "content": "Poor", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$urgent" }
+          ]},
+          { "id": "plantRow5Care", "type": "text", "x": 232, "y": 48, "content": "Check pests now", "fontFamily": "$font-main", "fontSize": 12, "fontWeight": "600", "fill": "$urgent" }
+        ]}
+      ]
+    },
+    {
+      "id": "gD8Sg",
+      "name": "Navigation Annotation",
+      "type": "text",
+      "x": 1360,
+      "y": 980,
+      "width": 420,
+      "textGrowth": "fixed-width",
+      "content": "Navigation note: Today, Ask, and Plan are the only top-level destinations. Capture stays as a prominent central action. Plant list, wiki, garden list, and design canvas are intentionally modeled as pushed screens to preserve one-handed focus on the home experience.",
+      "fontFamily": "$font-main",
+      "fontSize": 18,
+      "lineHeight": 1.4,
+      "fill": "$text-primary"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+name: Patch
+options:
+  bundleIdPrefix: com.patch
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+  generateEmptyDirectories: true
+
+settings:
+  base:
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+
+targets:
+  Patch:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: Patch
+        excludes:
+          - "**/.DS_Store"
+    settings:
+      base:
+        INFOPLIST_FILE: Patch/Resources/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.patch.gardening
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        DEVELOPMENT_TEAM: ""
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_EMIT_LOC_STRINGS: "YES"
+        GENERATE_INFOPLIST_FILE: false
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
+    entitlements:
+      path: Patch/Resources/Patch.entitlements
+      # iCloud (CloudKit) and Push Notifications removed for personal team compatibility.
+      # Re-add when using a paid Apple Developer account:
+      #   com.apple.developer.icloud-container-identifiers: [iCloud.com.patch.gardening]
+      #   com.apple.developer.icloud-services: [CloudKit]
+      #   com.apple.developer.ubiquity-kvstore-identifier: $(TeamIdentifierPrefix)com.patch.gardening
+      #   aps-environment: development
+      properties: {}
+
+  PatchTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: PatchTests
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - target: Patch
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Patch.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Patch"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+
+  PatchUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: PatchUITests
+        excludes:
+          - "**/.DS_Store"
+    dependencies:
+      - target: Patch
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Patch
+
+schemes:
+  Patch:
+    build:
+      targets:
+        Patch: all
+        PatchTests: [test]
+        PatchUITests: [test]
+    run:
+      config: Debug
+    test:
+      config: Debug
+      targets:
+        - PatchTests
+        - PatchUITests
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

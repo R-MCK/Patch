@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CareTask" representedClassName="CareTask" syncable="YES">
+        <attribute name="completedDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="frequency" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isRecurring" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="scheduledDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="taskType" attributeType="String" defaultValueString="Watering"/>
+        <relationship name="plant" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Plant" inverseName="careTasks" inverseEntity="Plant"/>
+    </entity>
+    <entity name="Garden" representedClassName="Garden" syncable="YES">
+        <attribute name="climateZone" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="gardenType" attributeType="String" defaultValueString="Raised Bed"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="length" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="name" attributeType="String" defaultValueString=""/>
+        <attribute name="soilType" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="width" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <relationship name="designs" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="GardenDesign" inverseName="garden" inverseEntity="GardenDesign"/>
+        <relationship name="plants" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Plant" inverseName="garden" inverseEntity="Plant"/>
+    </entity>
+    <entity name="GardenDesign" representedClassName="GardenDesign" syncable="YES">
+        <attribute name="canvasData" optional="YES" attributeType="Binary"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="name" attributeType="String" defaultValueString=""/>
+        <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="garden" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Garden" inverseName="designs" inverseEntity="Garden"/>
+    </entity>
+    <entity name="Note" representedClassName="Note" syncable="YES">
+        <attribute name="content" attributeType="String" defaultValueString=""/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="isArchived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="title" attributeType="String" defaultValueString=""/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <relationship name="plant" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Plant" inverseName="plantNotes" inverseEntity="Plant"/>
+    </entity>
+    <entity name="Photo" representedClassName="Photo" syncable="YES">
+        <attribute name="caption" optional="YES" attributeType="String"/>
+        <attribute name="capturedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="thumbnailData" optional="YES" attributeType="Binary"/>
+        <relationship name="plant" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Plant" inverseName="photos" inverseEntity="Plant"/>
+    </entity>
+    <entity name="Plant" representedClassName="Plant" syncable="YES">
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="growthStage" attributeType="String" defaultValueString="Seedling"/>
+        <attribute name="healthStatus" attributeType="String" defaultValueString="Good"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="location" optional="YES" attributeType="String"/>
+        <attribute name="name" attributeType="String" defaultValueString=""/>
+        <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="plantingDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="spacingOverrideFeet" optional="YES" attributeType="Double" usesScalarValueType="NO"/>
+        <attribute name="species" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="variety" optional="YES" attributeType="String"/>
+        <relationship name="careTasks" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CareTask" inverseName="plant" inverseEntity="CareTask"/>
+        <relationship name="garden" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Garden" inverseName="plants" inverseEntity="Garden"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="plant" inverseEntity="Photo"/>
+        <relationship name="plantNotes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Note" inverseName="plant" inverseEntity="Note"/>
+    </entity>
+    <entity name="WikiEntry" representedClassName="WikiEntry" syncable="YES">
+        <attribute name="antagonistPlants" optional="YES" attributeType="String"/>
+        <attribute name="category" attributeType="String" defaultValueString="Vegetables"/>
+        <attribute name="commonName" attributeType="String" defaultValueString=""/>
+        <attribute name="companionPlants" optional="YES" attributeType="String"/>
+        <attribute name="createdAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="daysToMaturity" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="difficulty" attributeType="String" defaultValueString="Easy"/>
+        <attribute name="entryDescription" attributeType="String" defaultValueString=""/>
+        <attribute name="fertilizing" optional="YES" attributeType="String"/>
+        <attribute name="germinationTime" optional="YES" attributeType="String"/>
+        <attribute name="harvestInfo" optional="YES" attributeType="String"/>
+        <attribute name="humidity" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="imageURL" optional="YES" attributeType="String"/>
+        <attribute name="isUserContributed" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
+        <attribute name="plantingDepth" optional="YES" attributeType="String"/>
+        <attribute name="scientificName" optional="YES" attributeType="String"/>
+        <attribute name="soil" attributeType="String" defaultValueString="Well-draining"/>
+        <attribute name="spacing" optional="YES" attributeType="String"/>
+        <attribute name="sunlight" attributeType="String" defaultValueString="Full Sun"/>
+        <attribute name="temperature" optional="YES" attributeType="String"/>
+        <attribute name="updatedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="watering" attributeType="String" defaultValueString="Regular"/>
+    </entity>
+</model>
