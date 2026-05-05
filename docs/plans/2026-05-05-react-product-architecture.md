@@ -8,12 +8,11 @@ Patch will move toward a React product architecture with a web app and native iO
 
 The repo now uses npm workspaces:
 
-- `web`: existing React/Vite web app.
-- `mobile`: Expo React Native app for iOS and Android.
+- `apps/web`: existing React/Vite web app.
+- `apps/mobile`: Expo React Native app for iOS and Android.
+- `apps/backend`: Node.js Express API and SQLite database.
 - `packages/core`: shared product types, validation helpers, scheduling logic, and design tokens.
 - `packages/api`: shared backend API client for web and mobile.
-
-This first pass intentionally keeps `web` in place instead of moving it to `apps/web`, because the repo already has substantial dirty iOS and web work. A later cleanup can move `web` and `mobile` under `apps/` once the workspace is stable.
 
 ## Sharing Rules
 

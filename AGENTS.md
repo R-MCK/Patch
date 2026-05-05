@@ -21,9 +21,10 @@ The repository is organized as a monorepo with the following workspace packages:
 
 ```
 Patch/
-├── backend/                 # Node.js Express API and SQLite database
-├── mobile/                  # Expo React Native iOS/Android application
-├── web/                     # React Vite web application
+├── apps/
+│   ├── backend/             # Node.js Express API and SQLite database
+│   ├── mobile/              # Expo React Native iOS/Android application
+│   └── web/                 # React Vite web application
 └── packages/
     ├── api/                 # Shared API client for web and mobile
     └── core/                # Shared domain types, validation, and design tokens

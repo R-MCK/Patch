@@ -2,8 +2,7 @@
   "name": "patch-monorepo",
   "private": true,
   "workspaces": [
-    "web",
-    "mobile",
+    "apps/*",
     "packages/*"
   ],
   "scripts": {
