@@ -1,4 +1,24 @@
-import type { User } from '@/types'
+import { PatchApiClient } from '@patch/api'
+import type { DbPlant, PaginatedResponse, User } from '@/types'
+
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+
+const getAuthToken = () => {
+    const storedAuth = localStorage.getItem('auth-storage')
+    if (!storedAuth) return null
+
+    try {
+        const parsed = JSON.parse(storedAuth) as { state?: { token?: string | null } }
+        return parsed.state?.token ?? null
+    } catch {
+        return null
+    }
+}
+
+const patchApiClient = new PatchApiClient({
+    baseUrl: apiBaseUrl,
+    getAuthToken,
+})
 
 // Mock API Service
 // TODO: Replace these mock functions with real fetch calls to the backend API once available.
@@ -38,23 +58,18 @@ export const api = {
         }
     },
 
-    getPlants: async () => {
-        const response = await fetch('http://localhost:3000/api/plants');
-        if (!response.ok) throw new Error('Failed to fetch plants');
-        return await response.json();
+    getPlants: async (): Promise<DbPlant[]> => {
+        const payload = await patchApiClient.getPlants()
+        return Array.isArray(payload) ? payload : (payload as PaginatedResponse<DbPlant>).data
     },
 
     getTasks: async (plantId: string) => {
-        const response = await fetch(`http://localhost:3000/api/plants/${plantId}/tasks`);
-        if (!response.ok) throw new Error('Failed to fetch tasks');
-        return await response.json();
+        const response = await fetch(`${apiBaseUrl}/api/plants/${encodeURIComponent(plantId)}/tasks`)
+        if (!response.ok) throw new Error('Failed to fetch tasks')
+        return await response.json()
     },
 
     waterPlant: async (plantId: string) => {
-        const response = await fetch(`http://localhost:3000/api/plants/${plantId}/water`, {
-            method: 'POST'
-        });
-        if (!response.ok) throw new Error('Failed to water plant');
-        return await response.json();
+        return patchApiClient.waterPlant(plantId)
     }
 }

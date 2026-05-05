@@ -1,0 +1,155 @@
+import { db } from './db'
+import { patchApiClient } from '../api/client'
+import type { DbPlant, DbGarden, DbCareTask, DbWikiEntry } from '@patch/core'
+
+export async function syncPull() {
+  try {
+    // 1. Pull Gardens
+    const gardens = await patchApiClient.getGardens(1000, 0)
+    gardens.data.forEach((g) => {
+      db.runSync(`
+        INSERT OR REPLACE INTO gardens (id, name, garden_type, width, length, climate_zone, soil_type, sync_status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 'synced')
+      `, [
+        g.id,
+        g.name,
+        g.gardenType || null,
+        g.width || null,
+        g.length || null,
+        g.climateZone || null,
+        g.soilType || null,
+      ])
+    })
+
+    // 2. Pull Plants
+    const plants = await patchApiClient.getPlantRows(1000, 0)
+    plants.data.forEach((p) => {
+      db.runSync(`
+        INSERT OR REPLACE INTO plants (id, name, species, variety, planting_date, location, health_status, growth_stage, garden_id, sync_status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced')
+      `, [
+        p.id,
+        p.name,
+        p.species || null,
+        p.variety || null,
+        p.planting_date || null,
+        p.location || null,
+        p.health_status || null,
+        p.growth_stage || null,
+        p.garden_id || null,
+      ])
+    })
+
+    // 3. Pull Tasks
+    for (const plant of plants.data) {
+      const tasks = await patchApiClient.getPlantTaskRows(plant.id)
+      tasks.forEach((t) => {
+        db.runSync(`
+          INSERT OR REPLACE INTO care_tasks (id, plant_id, task_type, scheduled_date, completed_date, is_recurring, frequency, notes, sync_status)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'synced')
+        `, [
+          t.id,
+          t.plant_id,
+          t.task_type,
+          t.scheduled_date,
+          t.completed_date || null,
+          t.is_recurring ? 1 : 0,
+          t.frequency || null,
+          (t as any).notes || null,
+        ])
+      })
+    }
+
+    // 4. Pull Wiki Entries
+    const wikis = await patchApiClient.getWikiEntries(1000, 0)
+    wikis.data.forEach((w) => {
+      db.runSync(`
+        INSERT OR REPLACE INTO wiki_entries (id, common_name, scientific_name, category, entry_description, sunlight, watering, soil, temperature, spacing, planting_depth, germination_time, companion_plants, antagonist_plants, sync_status)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced')
+      `, [
+        w.id,
+        w.commonName || null,
+        w.scientificName || null,
+        w.category || null,
+        w.entryDescription || null,
+        w.sunlight || null,
+        w.watering || null,
+        w.soil || null,
+        w.temperature || null,
+        w.spacing || null,
+        w.plantingDepth || null,
+        w.germinationTime || null,
+        w.companionPlants || null,
+        w.antagonistPlants || null,
+      ])
+    })
+  } catch (error) {
+    console.error('Failed to pull from remote', error)
+  }
+}
+
+export async function syncPush() {
+  try {
+    // 1. Push Gardens
+    const pendingGardens = db.getAllSync<DbGarden & { sync_status: string }>("SELECT * FROM gardens WHERE sync_status = 'pending_create'")
+    for (const g of pendingGardens) {
+      try {
+        await patchApiClient.createGarden({
+          name: g.name,
+          garden_type: g.garden_type || undefined,
+          width: g.width || undefined,
+          length: g.length || undefined,
+          climate_zone: g.climate_zone || undefined,
+          soil_type: g.soil_type || undefined,
+        })
+        db.runSync("UPDATE gardens SET sync_status = 'synced' WHERE id = ?", [g.id])
+      } catch (err) {
+        console.error('Failed to push garden', g.id, err)
+      }
+    }
+
+    // 2. Push Plants
+    const pendingPlants = db.getAllSync<DbPlant & { sync_status: string }>("SELECT * FROM plants WHERE sync_status = 'pending_create'")
+    for (const p of pendingPlants) {
+      try {
+        await patchApiClient.createPlant({
+          name: p.name,
+          species: p.species || undefined,
+          variety: p.variety || undefined,
+          location: p.location || undefined,
+          health_status: p.health_status || undefined,
+          growth_stage: p.growth_stage || undefined,
+          garden_id: p.garden_id || undefined,
+        })
+        db.runSync("UPDATE plants SET sync_status = 'synced' WHERE id = ?", [p.id])
+      } catch (err) {
+        console.error('Failed to push plant', p.id, err)
+      }
+    }
+
+    // 3. Push Tasks
+    const pendingTasks = db.getAllSync<DbCareTask & { sync_status: string, notes?: string }>("SELECT * FROM care_tasks WHERE sync_status = 'pending_create'")
+    for (const t of pendingTasks) {
+      try {
+        await patchApiClient.createCareTask(t.plant_id, {
+          task_type: t.task_type,
+          scheduled_date: t.scheduled_date,
+          is_recurring: !!t.is_recurring,
+          frequency: t.frequency || undefined,
+          notes: t.notes || undefined,
+        })
+        db.runSync("UPDATE care_tasks SET sync_status = 'synced' WHERE id = ?", [t.id])
+      } catch (err) {
+        console.error('Failed to push task', t.id, err)
+      }
+    }
+
+  } catch (error) {
+    console.error('Failed to push to remote', error)
+  }
+}
+
+export async function syncWithBackend() {
+  await syncPush() // Push local changes first
+  await syncPull() // Pull updates
+}

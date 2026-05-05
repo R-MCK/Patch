@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft, Leaf, Wand2, MapPin, Activity, Sun, Droplets, Calendar, AlignLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -6,6 +6,50 @@ import { Card, CardContent } from '@/components/ui/card'
 import { usePlantStore } from '@/stores/plantStore'
 import { getWikiRecommendations } from '@/lib/wikiData'
 import type { Plant } from '@/types'
+
+type PlantFormData = {
+  name: string
+  scientificName: string
+  description: string
+  location: string
+  healthStatus: Plant['healthStatus']
+  growthStage: Plant['growthStage']
+  sunRequirement: Plant['sunRequirement'] | ''
+  wateringFrequency: string
+  plantedDate: string
+  notes: string
+}
+
+const healthStatuses = ['excellent', 'good', 'fair', 'poor', 'critical'] as const
+const growthStages = ['seedling', 'vegetative', 'flowering', 'fruiting', 'dormant'] as const
+const sunRequirements = ['full', 'partial', 'shade'] as const
+
+function isHealthStatus(value: string): value is NonNullable<Plant['healthStatus']> {
+  return healthStatuses.includes(value as NonNullable<Plant['healthStatus']>)
+}
+
+function isGrowthStage(value: string): value is NonNullable<Plant['growthStage']> {
+  return growthStages.includes(value as NonNullable<Plant['growthStage']>)
+}
+
+function isSunRequirement(value: string): value is NonNullable<Plant['sunRequirement']> {
+  return sunRequirements.includes(value as NonNullable<Plant['sunRequirement']>)
+}
+
+function toFormData(plant?: Plant | null): PlantFormData {
+  return {
+    name: plant?.name ?? '',
+    scientificName: plant?.scientificName ?? '',
+    description: plant?.description ?? '',
+    location: plant?.location ?? '',
+    healthStatus: plant?.healthStatus ?? 'good',
+    growthStage: plant?.growthStage ?? 'seedling',
+    sunRequirement: plant?.sunRequirement ?? '',
+    wateringFrequency: plant?.wateringFrequency ? String(plant.wateringFrequency) : '',
+    plantedDate: plant?.plantedDate ? new Date(plant.plantedDate).toISOString().split('T')[0] : '',
+    notes: plant?.notes ?? ''
+  }
+}
 
 export function PlantForm() {
   const { id } = useParams<{ id: string }>()
@@ -15,40 +59,12 @@ export function PlantForm() {
   const isEditing = !!id
   const existingPlant = isEditing ? plants.find((p) => p.id === id) : null
 
-  const [formData, setFormData] = useState({
-    name: '',
-    scientificName: '',
-    description: '',
-    location: '',
-    healthStatus: 'good',
-    growthStage: 'seedling',
-    sunRequirement: '',
-    wateringFrequency: '',
-    plantedDate: '',
-    notes: ''
-  })
-
+  const [formOverrides, setFormOverrides] = useState<Partial<PlantFormData>>({})
+  const formData = { ...toFormData(existingPlant), ...formOverrides }
   const [autofillSuccess, setAutofillSuccess] = useState(false)
 
-  useEffect(() => {
-    if (existingPlant) {
-      setFormData({
-        name: existingPlant.name || '',
-        scientificName: existingPlant.scientificName || '',
-        description: existingPlant.description || '',
-        location: existingPlant.location || '',
-        healthStatus: existingPlant.healthStatus || 'good',
-        growthStage: existingPlant.growthStage || 'seedling',
-        sunRequirement: existingPlant.sunRequirement || '',
-        wateringFrequency: existingPlant.wateringFrequency ? String(existingPlant.wateringFrequency) : '',
-        plantedDate: existingPlant.plantedDate ? new Date(existingPlant.plantedDate).toISOString().split('T')[0] : '',
-        notes: existingPlant.notes || ''
-      })
-    }
-  }, [existingPlant])
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData(prev => ({
+    setFormOverrides(prev => ({
       ...prev,
       [e.target.name]: e.target.value
     }))
@@ -60,7 +76,7 @@ export function PlantForm() {
 
     const recommendation = getWikiRecommendations(query)
     if (recommendation) {
-      setFormData(prev => ({
+      setFormOverrides(prev => ({
         ...prev,
         scientificName: recommendation.scientificName || prev.scientificName,
         description: prev.description || recommendation.content.split('\n')[0] || '',
@@ -77,15 +93,27 @@ export function PlantForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    const name = formData.name.trim()
+    const wateringFrequency = Number.parseInt(formData.wateringFrequency, 10)
+    const healthStatus = formData.healthStatus && isHealthStatus(formData.healthStatus)
+      ? formData.healthStatus
+      : 'good'
+    const growthStage = formData.growthStage && isGrowthStage(formData.growthStage)
+      ? formData.growthStage
+      : 'seedling'
+    const sunRequirement = formData.sunRequirement && isSunRequirement(formData.sunRequirement)
+      ? formData.sunRequirement
+      : undefined
+
     const plantData: Partial<Plant> = {
-      name: formData.name,
+      name,
       scientificName: formData.scientificName || undefined,
       description: formData.description || undefined,
       location: formData.location || undefined,
-      healthStatus: formData.healthStatus as Plant['healthStatus'],
-      growthStage: formData.growthStage as Plant['growthStage'],
-      sunRequirement: (formData.sunRequirement as Plant['sunRequirement']) || undefined,
-      wateringFrequency: formData.wateringFrequency ? parseInt(formData.wateringFrequency) : undefined,
+      healthStatus,
+      growthStage,
+      sunRequirement,
+      wateringFrequency: Number.isFinite(wateringFrequency) ? wateringFrequency : undefined,
       plantedDate: formData.plantedDate ? new Date(formData.plantedDate) : undefined,
       notes: formData.notes || undefined,
     }
@@ -94,12 +122,13 @@ export function PlantForm() {
       updatePlant(existingPlant.id, plantData)
       navigate(`/plants/${existingPlant.id}`)
     } else {
-      const newPlant = {
+      const newPlant: Plant = {
         ...plantData,
+        name,
         id: Date.now().toString(),
         createdAt: new Date(),
         updatedAt: new Date(),
-      } as Plant
+      }
       addPlant(newPlant)
       navigate('/plants')
     }

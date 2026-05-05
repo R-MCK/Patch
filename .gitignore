@@ -26,6 +26,7 @@ DerivedData/
 ## Build generated files
 build/
 *.build
+node_modules/
 
 ## Swift Package Manager
 .swiftpm/
@@ -67,6 +68,7 @@ Thumbs.db
 ## Environment and secrets
 .env
 .env.local
+.npm-cache/
 *.xcconfig
 !Shared.xcconfig
 

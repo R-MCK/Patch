@@ -1,0 +1,18 @@
+{
+  "name": "patch-monorepo",
+  "private": true,
+  "workspaces": [
+    "web",
+    "mobile",
+    "packages/*"
+  ],
+  "scripts": {
+    "web:dev": "npm --workspace web run dev",
+    "web:build": "npm --workspace web run build",
+    "web:lint": "npm --workspace web run lint",
+    "mobile:start": "npm --workspace mobile run start",
+    "mobile:ios": "npm --workspace mobile run ios",
+    "mobile:android": "npm --workspace mobile run android",
+    "packages:check": "npm --workspace @patch/core run typecheck && npm --workspace @patch/api run typecheck"
+  }
+}

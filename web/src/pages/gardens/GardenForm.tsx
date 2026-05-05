@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,7 @@ export function GardenForm() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { gardens, addGarden, updateGarden } = useGardenStore()
+  const [error, setError] = useState<string | null>(null)
 
   const isEditing = !!id && id !== 'new'
   const garden = isEditing ? gardens.find((g) => g.id === id) : null
@@ -18,12 +20,14 @@ export function GardenForm() {
 
     const name = (formData.get('name') as string)?.trim()
     if (!name) {
+      setError('Garden name is required.')
       return
     }
+    setError(null)
 
     const gardenData = {
       name,
-      description: formData.get('description') as string || undefined,
+      description: (formData.get('description') as string)?.trim() || undefined,
     }
 
     if (isEditing && garden) {
@@ -57,6 +61,12 @@ export function GardenForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+                {error}
+              </div>
+            )}
+
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="name">
                 Garden Name *

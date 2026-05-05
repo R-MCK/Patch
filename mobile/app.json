@@ -1,0 +1,20 @@
+{
+  "expo": {
+    "name": "Patch",
+    "slug": "patch",
+    "scheme": "patch",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "bundleIdentifier": "com.patch.gardening.react"
+    },
+    "android": {
+      "package": "com.patch.gardening.react"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sqlite"
+    ]
+  }
+}

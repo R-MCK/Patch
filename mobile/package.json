@@ -1,0 +1,35 @@
+{
+  "name": "mobile",
+  "version": "0.1.0",
+  "private": true,
+  "main": "expo-router/entry",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "android": "expo start --android",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@expo/vector-icons": "^15.1.1",
+    "@patch/api": "0.1.0",
+    "@patch/core": "0.1.0",
+    "expo": "^55.0.23",
+    "expo-constants": "^55.0.16",
+    "expo-linking": "^55.0.15",
+    "expo-router": "^55.0.14",
+    "expo-sqlite": "~55.0.15",
+    "expo-status-bar": "^3.0.9",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-native": "^0.85.3",
+    "react-native-gesture-handler": "^2.29.1",
+    "react-native-reanimated": "^4.2.0",
+    "react-native-safe-area-context": "^5.6.2",
+    "react-native-screens": "^4.19.0",
+    "react-native-web": "^0.21.2"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.5",
+    "typescript": "~5.9.3"
+  }
+}

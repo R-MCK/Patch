@@ -1,0 +1,16 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@patch/core": ["../packages/core/src/index.ts"],
+      "@patch/api": ["../packages/api/src/index.ts"]
+    }
+  },
+  "include": [
+    "app",
+    "src",
+    "../packages/core/src",
+    "../packages/api/src"
+  ]
+}

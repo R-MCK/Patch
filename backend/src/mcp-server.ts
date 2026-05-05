@@ -1,7 +1,13 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { randomUUID } from "crypto";
 import { z } from "zod";
 import { dbAll, dbRun } from "./db";
+import { logger } from "./types";
+
+interface PlantIdentifier {
+    id: string;
+}
 
 // Initialize the MCP Server
 const server = new McpServer({
@@ -28,7 +34,7 @@ server.tool(
         const results = [];
         for (const name of identifiers) {
             // Find the plant by name
-            const plants = await dbAll('SELECT id FROM plants WHERE name LIKE ?', [`%${name}%`]);
+            const plants = await dbAll<PlantIdentifier>('SELECT id FROM plants WHERE name LIKE ?', [`%${name}%`]);
 
             if (plants.length === 0) {
                 results.push(`Could not find a plant matching: \${ name }`);
@@ -36,7 +42,7 @@ server.tool(
             }
 
             for (const plant of plants) {
-                const taskId = Math.random().toString(36).substring(7);
+                const taskId = randomUUID();
                 // Create a completed watering task
                 await dbRun(`
           INSERT INTO care_tasks(id, plant_id, task_type, scheduled_date, completed_date)
@@ -57,5 +63,5 @@ server.tool(
 export async function startMcpServer() {
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.log("MCP Server running on Stdio");
+    logger.info("MCP Server running on Stdio");
 }

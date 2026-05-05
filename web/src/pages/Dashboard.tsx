@@ -13,12 +13,13 @@ const quickLinks = [
 ]
 
 export function Dashboard() {
-  const { plants, fetchPlants } = usePlantStore()
+  const plants = usePlantStore((state) => state.plants)
+  const fetchPlants = usePlantStore((state) => state.fetchPlants)
   const { gardens } = useGardenStore()
 
   useEffect(() => {
     fetchPlants()
-  }, [])
+  }, [fetchPlants])
 
   return (
     <div className="space-y-6">

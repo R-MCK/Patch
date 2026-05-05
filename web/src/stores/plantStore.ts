@@ -1,17 +1,8 @@
 import { create } from 'zustand'
+import { mapDbPlantToPlant } from '@patch/core'
 import type { Plant, PlantState } from '@/types'
-
-interface DbPlant {
-  id: string
-  name: string
-  species?: string
-  variety?: string
-  planting_date?: string
-  location?: string
-  health_status?: string
-  growth_stage?: string
-  garden_id?: string
-}
+import type { DbPlant } from '@patch/core'
+import { api } from '@/lib/api'
 
 interface PlantActions {
   setPlants: (plants: Plant[]) => void
@@ -23,8 +14,6 @@ interface PlantActions {
   setError: (error: string | null) => void
   fetchPlants: () => Promise<void>
 }
-
-import { api } from '@/lib/api'
 
 export const usePlantStore = create<PlantState & PlantActions>()((set) => ({
   plants: [],
@@ -59,23 +48,9 @@ export const usePlantStore = create<PlantState & PlantActions>()((set) => ({
   fetchPlants: async () => {
     set({ isLoading: true, error: null })
     try {
-      const dbPlants = await api.getPlants()
+      const dbPlants: DbPlant[] = await api.getPlants()
 
-      // Map SQLite columns to our application types
-      const mappedPlants = dbPlants.map((dp: DbPlant) => ({
-        id: dp.id,
-        name: dp.name,
-        scientificName: dp.species,
-        description: dp.variety || '',
-        sunRequirement: 'full', // defaulting for now
-        wateringFrequency: 2,
-        location: dp.location || undefined,
-        healthStatus: dp.health_status || 'good',
-        growthStage: dp.growth_stage || 'seedling',
-        plantedDate: dp.planting_date ? new Date(dp.planting_date) : undefined,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }))
+      const mappedPlants: Plant[] = dbPlants.map((dbPlant) => mapDbPlantToPlant(dbPlant))
 
       set({ plants: mappedPlants, isLoading: false })
     } catch (e) {
