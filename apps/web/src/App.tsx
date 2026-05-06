@@ -1,62 +1,31 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import { Layout } from '@/components/layout/Layout'
-import { ProtectedRoute } from '@/components/ProtectedRoute'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 
-// Pages
-import { Dashboard } from '@/pages/Dashboard'
-import { PlantList } from '@/pages/plants/PlantList'
-import { PlantDetail } from '@/pages/plants/PlantDetail'
-import { PlantForm } from '@/pages/plants/PlantForm'
-import { WikiHome } from '@/pages/wiki/WikiHome'
-import { WikiCategory } from '@/pages/wiki/WikiCategory'
-import { WikiEntry } from '@/pages/wiki/WikiEntry'
-import { GardenList } from '@/pages/gardens/GardenList'
-import { GardenDetail } from '@/pages/gardens/GardenDetail'
-import { GardenForm } from '@/pages/gardens/GardenForm'
-import { GardenDesigner } from '@/pages/gardens/GardenDesigner'
-import { Login } from '@/pages/auth/Login'
-import { Register } from '@/pages/auth/Register'
-import { Profile } from '@/pages/auth/Profile'
+import { DashboardMap } from '@/redesign/pages/DashboardMap'
+import { DashboardAlmanac } from '@/redesign/pages/DashboardAlmanac'
+import { DashboardSeasons } from '@/redesign/pages/DashboardSeasons'
+import { PlantTrackerPackets } from '@/redesign/pages/PlantTrackerPackets'
+import { PlantTrackerLedger } from '@/redesign/pages/PlantTrackerLedger'
+import { PlantSpread } from '@/redesign/pages/PlantSpread'
+import { GardenDesigner } from '@/redesign/pages/GardenDesigner'
 
 function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter>
         <Routes>
-          {/* Auth routes (no layout) */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<DashboardMap />} />
+          <Route path="/dashboard/almanac" element={<DashboardAlmanac />} />
+          <Route path="/dashboard/seasons" element={<DashboardSeasons />} />
 
-          {/* Main app routes (with layout, protected) */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<Layout />}>
-              <Route path="/" element={<Dashboard />} />
+          <Route path="/plants" element={<PlantTrackerPackets />} />
+          <Route path="/plants/ledger" element={<PlantTrackerLedger />} />
+          <Route path="/plants/:id" element={<PlantSpread />} />
 
-              {/* Plants */}
-              <Route path="/plants" element={<PlantList />} />
-              <Route path="/plants/new" element={<PlantForm />} />
-              <Route path="/plants/:id" element={<PlantDetail />} />
-              <Route path="/plants/:id/edit" element={<PlantForm />} />
+          <Route path="/design" element={<GardenDesigner />} />
+          <Route path="/design/:id" element={<GardenDesigner />} />
 
-              {/* Wiki */}
-              <Route path="/wiki" element={<WikiHome />} />
-              <Route path="/wiki/:category" element={<WikiCategory />} />
-              <Route path="/wiki/:category/:id" element={<WikiEntry />} />
-
-              {/* Gardens */}
-              <Route path="/gardens" element={<GardenList />} />
-              <Route path="/gardens/new" element={<GardenForm />} />
-              <Route path="/gardens/:id" element={<GardenDetail />} />
-              <Route path="/gardens/:id/edit" element={<GardenForm />} />
-
-              {/* Garden Designer */}
-              <Route path="/design/:id" element={<GardenDesigner />} />
-
-              {/* Profile */}
-              <Route path="/profile" element={<Profile />} />
-            </Route>
-          </Route>
+          <Route path="*" element={<DashboardMap />} />
         </Routes>
       </BrowserRouter>
     </ErrorBoundary>

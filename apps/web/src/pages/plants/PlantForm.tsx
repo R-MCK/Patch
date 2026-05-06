@@ -21,7 +21,7 @@ type PlantFormData = {
 }
 
 const healthStatuses = ['excellent', 'good', 'fair', 'poor', 'critical'] as const
-const growthStages = ['seedling', 'vegetative', 'flowering', 'fruiting', 'dormant'] as const
+const growthStages = ['seedling', 'vegetative', 'flowering', 'fruiting', 'dormant', 'harvesting'] as const
 const sunRequirements = ['full', 'partial', 'shade'] as const
 
 function isHealthStatus(value: string): value is NonNullable<Plant['healthStatus']> {
