@@ -3,6 +3,7 @@ import { PlantArt } from '../plant-art'
 import { PLANTS } from '../data'
 import { useParams, Link } from 'react-router-dom'
 import AlmanacLayout from '../components/AlmanacLayout'
+import SectionHeader from '../components/SectionHeader'
 
 export const PlantSpread = () => {
   const { id } = useParams()
@@ -136,11 +137,7 @@ export const PlantSpread = () => {
 
       <section style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ padding: '28px 36px', borderRight: '1px solid var(--rule)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--ink-2)' }}>Soil, water, sky</h2>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--ink-faint)' }}>LAST 12 WEEKS</span>
-          </div>
-          <hr className="dotted-rule" />
+          <SectionHeader title="Soil, water, sky" trailing="LAST 12 WEEKS" />
 
           <div style={{ marginTop: 18 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--ink-faint)' }}>
@@ -194,11 +191,7 @@ export const PlantSpread = () => {
         </div>
 
         <div style={{ padding: '28px 36px', background: 'var(--paper-2)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
-            <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--ink-2)' }}>The journal</h2>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--ink-faint)' }}>14 ENTRIES</span>
-          </div>
-          <hr className="dotted-rule" />
+          <SectionHeader title="The journal" trailing="14 ENTRIES" />
 
           <div style={{ marginTop: 18, padding: 16, background: 'var(--cream)', border: '1px solid var(--rule)', position: 'relative' }}>
             <div className="washi" style={{ width: 60, height: 14, top: -7, left: 18, transform: 'rotate(-3deg)' }} />
