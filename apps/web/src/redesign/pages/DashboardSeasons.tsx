@@ -1,236 +1,222 @@
-import { Monogram, SproutGlyph, LeafGlyph, FlowerGlyph } from '../glyphs'
+import { Link } from 'react-router-dom'
+import { Monogram, FlowerGlyph, SunGlyph, LeafGlyph, MoonGlyph } from '../glyphs'
 import AlmanacLayout from '../components/AlmanacLayout'
+import HeroCard from '../components/HeroCard'
 import PaperCard from '../components/PaperCard'
+import SectionHeader from '../components/SectionHeader'
+import type { ReactNode } from 'react'
+
+type GlyphComponent = typeof FlowerGlyph
+
+// --- Seed map (Northern hemisphere) ---
+// TODO Phase 5 — replace this static seed with `UserProfile.hemisphere` + wiki-derived
+// availability per plant kind. The shape below is the contract Phase 5 should fulfil.
+
+type SeasonKey = 'spring' | 'summer' | 'fall' | 'winter'
+
+interface SeasonContent {
+  key: SeasonKey
+  label: string
+  // Calendar months covered (Northern hemisphere). 0 = Jan.
+  months: readonly number[]
+  accent: string
+  Icon: GlyphComponent
+  inSeason: readonly string[]
+  plantNow: readonly string[]
+  harvestNow: readonly string[]
+}
+
+const SEASONS: readonly SeasonContent[] = [
+  {
+    key: 'spring',
+    label: 'Spring',
+    months: [2, 3, 4],
+    accent: 'var(--moss)',
+    Icon: FlowerGlyph,
+    inSeason: ['Asparagus', 'Strawberries', 'Spring onions', 'Peas'],
+    plantNow: ['Tomatoes (transplant)', 'Basil', 'Lettuces', 'Radish'],
+    harvestNow: ['Asparagus', 'Rhubarb', 'Spring greens'],
+  },
+  {
+    key: 'summer',
+    label: 'Summer',
+    months: [5, 6, 7],
+    accent: 'var(--terracotta)',
+    Icon: SunGlyph,
+    inSeason: ['Tomatoes', 'Zucchini', 'Cucumbers', 'Peppers'],
+    plantNow: ['Bush beans', 'Sunflowers', 'Late-summer brassicas (start)'],
+    harvestNow: ['Garlic', 'Berries', 'Stone fruit', 'Summer squash'],
+  },
+  {
+    key: 'fall',
+    label: 'Fall',
+    months: [8, 9, 10],
+    accent: 'var(--rust)',
+    Icon: LeafGlyph,
+    inSeason: ['Pumpkins', 'Apples', 'Kale', 'Brussels sprouts'],
+    plantNow: ['Garlic (cloves)', 'Cover crops', 'Spring bulbs'],
+    harvestNow: ['Apples', 'Squash', 'Root vegetables'],
+  },
+  {
+    key: 'winter',
+    label: 'Winter',
+    months: [11, 0, 1],
+    accent: 'var(--sky)',
+    Icon: MoonGlyph,
+    inSeason: ['Citrus', 'Hardy greens', 'Stored squash'],
+    plantNow: ['Tomato seeds (indoors)', 'Onions (indoors)', 'Peppers (indoors)'],
+    harvestNow: ['Kale', 'Brussels sprouts', 'Stored alliums'],
+  },
+] as const
+
+const seasonForMonth = (monthIndex: number): SeasonKey => {
+  for (const s of SEASONS) {
+    if (s.months.includes(monthIndex)) return s.key
+  }
+  return 'spring'
+}
+
+// --- Page ---
 
 export const DashboardSeasons = () => {
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-  const currentMonth = 4
-  const currentDay = 12
-  const daysInMay = 31
-  const angleNow = ((currentMonth + (currentDay/daysInMay)) / 12) * 360 - 90
+  const now = new Date()
+  const currentSeason = seasonForMonth(now.getMonth())
 
   return (
-    <AlmanacLayout header={
-      <header style={{ padding: '20px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <Monogram letter="P" size={42} color="var(--forest)" />
-          <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, lineHeight: 1, color: 'var(--ink)' }}>Patch</div>
-        </div>
-        <nav style={{ display: 'flex', gap: 28, fontFamily: 'var(--font-slab)', fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          <a href="/" style={{ color: 'var(--ink)' }}>Today</a>
-          <a href="/plants" style={{ color: 'var(--ink-soft)' }}>Plants</a>
-          <a href="/gardens" style={{ color: 'var(--ink-soft)' }}>Gardens</a>
-          <a href="/wiki" style={{ color: 'var(--ink-soft)' }}>Wiki</a>
-          <a href="/design" style={{ color: 'var(--ink-soft)' }}>Designer</a>
-        </nav>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ink-faint)', letterSpacing: '0.12em' }}>ZONE 7B</span>
-          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
-        </div>
-      </header>
-    }>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: 0, alignItems: 'stretch' }}>
-        <section style={{ padding: '36px 32px', borderRight: '1px solid var(--rule)' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>Now harvesting</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 38, lineHeight: 1, marginTop: 8, color: 'var(--ink-2)' }}>
-            In the kitchen,<br />
-            <em style={{ color: 'var(--terracotta)' }}>this week.</em>
-          </h2>
-          <hr className="dotted-rule" style={{ margin: '20px 0' }} />
-          {[
-            { name: 'Asparagus', sci: 'A. officinalis', last: '7 spears today', icon: 'sprout' },
-            { name: 'Rainbow Chard', sci: 'Beta vulgaris', last: 'cut & come', icon: 'leaf' },
-            { name: 'Strawberries', sci: 'F. × ananassa', last: '4 ripe', icon: 'flower' },
-            { name: 'Spring Onions', sci: 'A. fistulosum', last: 'pull as needed', icon: 'sprout' },
-          ].map((p, i) => {
-            const Icon = p.icon === 'sprout' ? SproutGlyph : p.icon === 'leaf' ? LeafGlyph : FlowerGlyph
-            return (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderBottom: '1px dashed var(--rule-soft)' }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'var(--sage-soft)', color: 'var(--forest)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <Icon size={22} stroke={1.3} />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontFamily: 'var(--font-slab)', fontSize: 15, fontWeight: 600 }}>{p.name}</div>
-                  <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontStyle: 'italic', color: 'var(--ink-faint)' }}>{p.sci}</div>
-                </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.06em', color: 'var(--ink-soft)', textTransform: 'uppercase' }}>{p.last}</div>
-              </div>
-            )
-          })}
+    <AlmanacLayout header={<SeasonsHeader />}>
+      <div style={{ padding: '32px 40px 56px', display: 'flex', flexDirection: 'column', gap: 28 }}>
+        <HeroCard
+          eyebrow="The Year, in turn"
+          title={
+            <>
+              The <em style={{ color: 'var(--terracotta)' }}>seasons</em>, at a glance.
+            </>
+          }
+          subtitle="What's growing, what to plant, and what to bring in — by quarter of the year. Northern hemisphere boundaries; Phase 5 will hook UserProfile + wiki for true regional accuracy."
+          titleSize={56}
+        />
 
-          <PaperCard style={{ marginTop: 24, padding: 16 }}>
-            <div className="washi" style={{ width: 60, height: 14, top: -7, left: 14, transform: 'rotate(-3deg)' }} />
-            <div style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--terracotta)', lineHeight: 1.1 }}>
-              Suggestion ✿
-            </div>
-            <div style={{ fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', marginTop: 4, lineHeight: 1.5 }}>
-              Asparagus & strawberry salad — both peaking together for one more week. Three on Patch have made it this season.
-            </div>
-          </PaperCard>
-        </section>
-
-        <section style={{ padding: '36px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>The Year, in turn</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 44, lineHeight: 1, marginTop: 6, color: 'var(--ink-2)', textAlign: 'center' }}>Late spring</h1>
-          <div style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--terracotta)', marginTop: 4, transform: 'rotate(-1.5deg)' }}>
-            day 132 of 365
-          </div>
-
-          <div style={{ position: 'relative', width: 380, height: 380, marginTop: 16 }}>
-            <svg viewBox="0 0 380 380" style={{ width: '100%', height: '100%' }}>
-              <defs>
-                <linearGradient id="seasonGrad" x1="0" y1="0" x2="1" y2="1">
-                  <stop offset="0" stopColor="var(--sage-soft)" />
-                  <stop offset="0.5" stopColor="var(--cream)" />
-                  <stop offset="1" stopColor="var(--paper-2)" />
-                </linearGradient>
-              </defs>
-
-              <circle cx="190" cy="190" r="170" fill="url(#seasonGrad)" stroke="var(--ink)" strokeWidth="1.2" />
-              <circle cx="190" cy="190" r="155" fill="none" stroke="var(--ink)" strokeWidth="0.4" strokeDasharray="1 3" />
-              <circle cx="190" cy="190" r="120" fill="none" stroke="var(--rule)" strokeWidth="0.6" />
-              <circle cx="190" cy="190" r="90" fill="var(--cream)" stroke="var(--ink)" strokeWidth="0.6" />
-
-              {[
-                { from: -90, to: 0, c: 'var(--sage-soft)', o: 0.5 },
-                { from: 0, to: 90, c: 'var(--honey)', o: 0.18 },
-                { from: 90, to: 180, c: 'var(--rust)', o: 0.18 },
-                { from: 180, to: 270, c: 'var(--sky)', o: 0.18 },
-              ].map((s, i) => {
-                const r1 = 120, r2 = 168
-                const a1 = s.from * Math.PI / 180
-                const a2 = s.to * Math.PI / 180
-                const x1 = 190 + r1 * Math.cos(a1), y1 = 190 + r1 * Math.sin(a1)
-                const x2 = 190 + r2 * Math.cos(a1), y2 = 190 + r2 * Math.sin(a1)
-                const x3 = 190 + r2 * Math.cos(a2), y3 = 190 + r2 * Math.sin(a2)
-                const x4 = 190 + r1 * Math.cos(a2), y4 = 190 + r1 * Math.sin(a2)
-                return (
-                  <path key={i} d={`M ${x1} ${y1} L ${x2} ${y2} A ${r2} ${r2} 0 0 1 ${x3} ${y3} L ${x4} ${y4} A ${r1} ${r1} 0 0 0 ${x1} ${y1} Z`} fill={s.c} fillOpacity={s.o} />
-                )
-              })}
-
-              {months.map((m, i) => {
-                const angle = (i / 12) * 360 - 90
-                const a = angle * Math.PI / 180
-                const x1 = 190 + 90 * Math.cos(a), y1 = 190 + 90 * Math.sin(a)
-                const x2 = 190 + 168 * Math.cos(a), y2 = 190 + 168 * Math.sin(a)
-                const tx = 190 + 142 * Math.cos((angle + 15) * Math.PI / 180)
-                const ty = 190 + 142 * Math.sin((angle + 15) * Math.PI / 180)
-                const isCurrent = i === currentMonth
-                return (
-                  <g key={m}>
-                    <line x1={x1} y1={y1} x2={x2} y2={y2} stroke="var(--ink)" strokeWidth={isCurrent ? "1.5" : "0.4"} />
-                    <text x={tx} y={ty + 4} textAnchor="middle" fontFamily="DM Serif Display" fontSize={isCurrent ? "16" : "13"} fill={isCurrent ? "var(--terracotta)" : "var(--ink-soft)"} fontStyle={isCurrent ? "italic" : "normal"}>
-                      {m}
-                    </text>
-                  </g>
-                )
-              })}
-
-              {[
-                { angle: -45, text: 'Spring', c: 'var(--forest)' },
-                { angle: 45, text: 'Summer', c: 'var(--terracotta)' },
-                { angle: 135, text: 'Autumn', c: 'var(--rust)' },
-                { angle: 225, text: 'Winter', c: 'var(--sky)' },
-              ].map((s, i) => {
-                const a = s.angle * Math.PI / 180
-                const x = 190 + 195 * Math.cos(a)
-                const y = 190 + 195 * Math.sin(a)
-                return (
-                  <text key={i} x={x} y={y + 4} textAnchor="middle" fontFamily="JetBrains Mono" fontSize="9" fill={s.c} letterSpacing="0.18em">
-                    {s.text.toUpperCase()}
-                  </text>
-                )
-              })}
-
-              <g transform={`rotate(${angleNow} 190 190)`}>
-                <line x1="190" y1="190" x2="190" y2="38" stroke="var(--terracotta)" strokeWidth="1.5" />
-                <circle cx="190" cy="38" r="6" fill="var(--terracotta)" stroke="var(--ink)" strokeWidth="1" />
-              </g>
-
-              <circle cx="190" cy="190" r="42" fill="var(--ink)" />
-              <text x="190" y="184" textAnchor="middle" fontFamily="JetBrains Mono" fontSize="9" fill="var(--cream)" letterSpacing="0.16em">TUE 12</text>
-              <text x="190" y="200" textAnchor="middle" fontFamily="DM Serif Display" fontSize="22" fill="var(--cream)" fontStyle="italic">May</text>
-            </svg>
-          </div>
-
-          <div style={{ display: 'flex', justifyContent: 'space-around', width: '100%', marginTop: 18, fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--ink-faint)' }}>
-            <span>← LAST FROST · APR 18</span>
-            <span style={{ color: 'var(--ink)' }}>↓ TODAY</span>
-            <span>FIRST FROST · OCT 27 →</span>
-          </div>
-        </section>
-
-        <section style={{ padding: '36px 32px', borderLeft: '1px solid var(--rule)' }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>To tend, today</div>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 38, lineHeight: 1, marginTop: 8, color: 'var(--ink-2)' }}>
-            Five small <em style={{ color: 'var(--terracotta)' }}>kindnesses.</em>
-          </h2>
-          <hr className="dotted-rule" style={{ margin: '20px 0' }} />
-
-          <ol style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-            {[
-              { kind: 'Water', plant: 'Tomatoes · Bed III', done: true },
-              { kind: 'Inspect', plant: 'Sweet peas · trellis', done: true },
-              { kind: 'Prune', plant: 'Lavender hedge · south', done: false },
-              { kind: 'Sow', plant: 'Coriander · Bed I', done: false },
-              { kind: 'Harvest', plant: 'Rainbow chard · Bed II', done: false },
-            ].map((t, i) => (
-              <li key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderBottom: '1px dashed var(--rule-soft)' }}>
-                <span className="numeral" style={{ fontSize: 22, lineHeight: 1, width: 22, color: t.done ? 'var(--ink-faint)' : 'var(--terracotta)' }}>{['I','II','III','IV','V'][i]}</span>
-                <div style={{ width: 18, height: 18, border: '1.5px solid var(--ink)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', background: t.done ? 'var(--ink)' : 'transparent', color: 'var(--cream)', flexShrink: 0 }}>
-                  {t.done && <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 6 L 5 9 L 10 3" /></svg>}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontFamily: 'var(--font-slab)', fontSize: 14, fontWeight: 600, color: t.done ? 'var(--ink-faint)' : 'var(--ink)', textDecoration: t.done ? 'line-through' : 'none' }}>{t.kind}</div>
-                  <div style={{ fontFamily: 'var(--font-slab)', fontSize: 12, color: 'var(--ink-soft)' }}>{t.plant}</div>
-                </div>
-              </li>
-            ))}
-          </ol>
-
-          <div style={{ marginTop: 24, padding: 18, background: 'var(--ink)', color: 'var(--cream)', position: 'relative' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em', color: 'var(--sage-soft)' }}>STREAK</div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4 }}>
-              <span className="numeral" style={{ fontSize: 56, lineHeight: 0.9, color: 'var(--honey)' }}>92</span>
-              <span style={{ fontFamily: 'var(--font-slab)', fontSize: 13 }}>days</span>
-            </div>
-            <div style={{ display: 'flex', gap: 3, marginTop: 12 }}>
-              {Array.from({length: 28}).map((_, i) => (
-                <div key={i} style={{
-                  width: 8, height: 18,
-                  background: i < 26 ? 'var(--honey)' : 'rgba(255,255,255,0.15)',
-                  borderRadius: 1,
-                }} />
-              ))}
-            </div>
-            <div style={{ fontFamily: 'var(--font-slab)', fontSize: 11, marginTop: 10, color: 'var(--sage-soft)', lineHeight: 1.5 }}>Tended every day since 9 February. Eight more days for the spring badge.</div>
-          </div>
-        </section>
-      </div>
-
-      <section style={{ borderTop: '1px solid var(--rule)', padding: '28px 36px', background: 'var(--paper-2)' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 16 }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 28, color: 'var(--ink-2)' }}>Coming up in the season</h2>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--ink-faint)' }}>NEXT 6 WEEKS · ZONE 7B</span>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 12 }}>
-          {[
-            { wk: 'WK 20', date: 'May 18', what: 'Direct-sow beans', detail: 'Bush, then pole' },
-            { wk: 'WK 22', date: 'Jun 1', what: 'Garlic scapes', detail: 'Cut while curled' },
-            { wk: 'WK 24', date: 'Jun 15', what: 'First tomato', detail: 'Brandywine likely' },
-            { wk: 'WK 25', date: 'Jun 22', what: 'Solstice', detail: 'Longest day · 14h 49m' },
-            { wk: 'WK 26', date: 'Jun 29', what: 'Garlic harvest', detail: 'Tops 50% brown' },
-            { wk: 'WK 27', date: 'Jul 6', what: 'Sow autumn brassicas', detail: 'Indoors first' },
-          ].map((e, i) => (
-            <PaperCard key={i} style={{ padding: 14 }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.14em', color: 'var(--terracotta)' }}>{e.wk} · {e.date}</div>
-              <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, marginTop: 6, color: 'var(--ink-2)' }}>{e.what}</div>
-              <div style={{ fontFamily: 'var(--font-slab)', fontSize: 11, color: 'var(--ink-soft)', marginTop: 4 }}>{e.detail}</div>
-            </PaperCard>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 18 }}>
+          {SEASONS.map((s) => (
+            <SeasonCard
+              key={s.key}
+              season={s}
+              isCurrent={s.key === currentSeason}
+            />
           ))}
         </div>
-      </section>
+
+        <PaperCard style={{ padding: 18 }}>
+          <div style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--terracotta)', lineHeight: 1.1 }}>~ Coming soon ~</div>
+          <div style={{ fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', marginTop: 6, lineHeight: 1.55 }}>
+            Phase 5 will hook this view to your <em>UserProfile</em> (zone, hemisphere) and the wiki to suggest plants
+            and harvest windows specific to your patch.
+          </div>
+        </PaperCard>
+      </div>
     </AlmanacLayout>
   )
 }
+
+// --- Subcomponents ---
+
+const SeasonsHeader = () => (
+  <header style={{ padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <Monogram letter="P" size={42} color="var(--forest)" />
+      <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, lineHeight: 1, color: 'var(--ink)' }}>Patch</div>
+    </div>
+    <nav style={{ display: 'flex', gap: 28, fontFamily: 'var(--font-slab)', fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+      <Link to="/" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Today</Link>
+      <Link to="/plants" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Plants</Link>
+      <Link to="/dashboard/almanac" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Almanac</Link>
+      <Link to="/dashboard/seasons" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Seasons</Link>
+      <Link to="/design" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Designer</Link>
+    </nav>
+    <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
+  </header>
+)
+
+interface SeasonCardProps {
+  season: SeasonContent
+  isCurrent: boolean
+}
+
+const SeasonCard = ({ season, isCurrent }: SeasonCardProps) => {
+  const { Icon, label, accent, inSeason, plantNow, harvestNow } = season
+  return (
+    <PaperCard
+      hover="lift"
+      style={{
+        padding: 0,
+        display: 'flex',
+        flexDirection: 'column',
+        borderTop: `4px solid ${accent}`,
+        position: 'relative',
+      }}
+    >
+      {isCurrent && (
+        <div className="washi" style={{ width: 70, height: 14, top: -7, right: 18, transform: 'rotate(3deg)' }} />
+      )}
+      <div style={{ padding: '18px 20px 8px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+        <h3 style={{ fontFamily: 'var(--font-display)', fontSize: 30, color: 'var(--ink-2)', margin: 0, lineHeight: 1 }}>{label}</h3>
+        <div style={{ color: accent }}>
+          <Icon size={28} stroke={1.3} />
+        </div>
+      </div>
+      {isCurrent && (
+        <div style={{ padding: '0 20px', fontFamily: 'var(--font-hand)', fontSize: 18, color: 'var(--terracotta)' }}>~ now ~</div>
+      )}
+      <div style={{ padding: '8px 20px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <SeasonList eyebrow="In season now" items={inSeason} accent={accent} />
+        <SeasonList eyebrow="Plant now" items={plantNow} accent={accent} />
+        <SeasonList eyebrow="Harvest now" items={harvestNow} accent={accent} />
+      </div>
+    </PaperCard>
+  )
+}
+
+interface SeasonListProps {
+  eyebrow: ReactNode
+  items: readonly string[]
+  accent: string
+}
+
+const SeasonList = ({ eyebrow, items, accent }: SeasonListProps) => (
+  <div>
+    <SectionHeader
+      title={eyebrow}
+      titleSize={14}
+      marginBottom={6}
+      ruleMarginBottom={0}
+    />
+    <ul style={{ listStyle: 'none', padding: 0, margin: '8px 0 0' }}>
+      {items.map((it) => (
+        <li
+          key={it}
+          style={{
+            fontFamily: 'var(--font-slab)',
+            fontSize: 13,
+            color: 'var(--ink)',
+            padding: '4px 0 4px 14px',
+            position: 'relative',
+          }}
+        >
+          <span
+            aria-hidden
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 11,
+              width: 6,
+              height: 6,
+              borderRadius: '50%',
+              background: accent,
+            }}
+          />
+          {it}
+        </li>
+      ))}
+    </ul>
+  </div>
+)
