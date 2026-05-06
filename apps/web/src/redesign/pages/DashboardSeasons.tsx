@@ -1,5 +1,6 @@
 import { Monogram, SproutGlyph, LeafGlyph, FlowerGlyph } from '../glyphs'
 import AlmanacLayout from '../components/AlmanacLayout'
+import PaperCard from '../components/PaperCard'
 
 export const DashboardSeasons = () => {
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -57,7 +58,7 @@ export const DashboardSeasons = () => {
             )
           })}
 
-          <div style={{ marginTop: 24, padding: 16, background: 'var(--cream)', border: '1px solid var(--rule)', position: 'relative' }}>
+          <PaperCard style={{ marginTop: 24, padding: 16 }}>
             <div className="washi" style={{ width: 60, height: 14, top: -7, left: 14, transform: 'rotate(-3deg)' }} />
             <div style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--terracotta)', lineHeight: 1.1 }}>
               Suggestion ✿
@@ -65,7 +66,7 @@ export const DashboardSeasons = () => {
             <div style={{ fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', marginTop: 4, lineHeight: 1.5 }}>
               Asparagus & strawberry salad — both peaking together for one more week. Three on Patch have made it this season.
             </div>
-          </div>
+          </PaperCard>
         </section>
 
         <section style={{ padding: '36px 28px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -222,11 +223,11 @@ export const DashboardSeasons = () => {
             { wk: 'WK 26', date: 'Jun 29', what: 'Garlic harvest', detail: 'Tops 50% brown' },
             { wk: 'WK 27', date: 'Jul 6', what: 'Sow autumn brassicas', detail: 'Indoors first' },
           ].map((e, i) => (
-            <div key={i} style={{ background: 'var(--cream)', border: '1px solid var(--rule)', padding: 14, position: 'relative' }}>
+            <PaperCard key={i} style={{ padding: 14 }}>
               <div style={{ fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.14em', color: 'var(--terracotta)' }}>{e.wk} · {e.date}</div>
               <div style={{ fontFamily: 'var(--font-display)', fontSize: 16, marginTop: 6, color: 'var(--ink-2)' }}>{e.what}</div>
               <div style={{ fontFamily: 'var(--font-slab)', fontSize: 11, color: 'var(--ink-soft)', marginTop: 4 }}>{e.detail}</div>
-            </div>
+            </PaperCard>
           ))}
         </div>
       </section>

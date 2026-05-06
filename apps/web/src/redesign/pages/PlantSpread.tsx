@@ -4,6 +4,7 @@ import { PLANTS } from '../data'
 import { useParams, Link } from 'react-router-dom'
 import AlmanacLayout from '../components/AlmanacLayout'
 import SectionHeader from '../components/SectionHeader'
+import PaperCard from '../components/PaperCard'
 
 export const PlantSpread = () => {
   const { id } = useParams()
@@ -193,7 +194,7 @@ export const PlantSpread = () => {
         <div style={{ padding: '28px 36px', background: 'var(--paper-2)' }}>
           <SectionHeader title="The journal" trailing="14 ENTRIES" />
 
-          <div style={{ marginTop: 18, padding: 16, background: 'var(--cream)', border: '1px solid var(--rule)', position: 'relative' }}>
+          <PaperCard style={{ marginTop: 18, padding: 16 }}>
             <div className="washi" style={{ width: 60, height: 14, top: -7, left: 18, transform: 'rotate(-3deg)' }} />
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em', color: 'var(--terracotta)' }}>TUE 12 MAY · 14:22</span>
@@ -202,7 +203,7 @@ export const PlantSpread = () => {
             <p style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--ink-2)', lineHeight: 1.25, margin: 0 }}>
               First flower. Pinched a sucker between the second and third truss — the leaves smell like the kitchen of an Italian grandmother. Side-dressed with worm castings.
             </p>
-          </div>
+          </PaperCard>
 
           {[
             { date: 'SUN 10 MAY · 09:01', body: 'Tied the leader to the cane. Looking sturdy.' },

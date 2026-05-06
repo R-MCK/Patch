@@ -1,6 +1,7 @@
 import { Monogram, HomeGlyph, LeafGlyph, MapGlyph, BookGlyph, PencilGlyph, HeartGlyph, PlusGlyph, SunGlyph, CloudGlyph, DropGlyph } from '../glyphs'
 import PaperBackdrop from '../components/PaperBackdrop'
 import SummaryStat from '../components/SummaryStat'
+import PaperCard from '../components/PaperCard'
 
 interface Bed {
   id: string
@@ -157,7 +158,7 @@ export const DashboardMap = () => {
       </main>
 
       <aside style={{ borderLeft: '1px solid var(--rule)', padding: '24px 24px', overflow: 'auto', background: 'var(--paper-2)' }}>
-        <div style={{ background: 'var(--cream)', border: '1px solid var(--rule)', padding: 18, position: 'relative' }}>
+        <PaperCard style={{ padding: 18 }}>
           <div className="washi" style={{ width: 50, height: 14, top: -6, left: 16, transform: 'rotate(-3deg)' }} />
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em', color: 'var(--ink-faint)' }}>SKY · TUE</div>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4 }}>
@@ -180,7 +181,7 @@ export const DashboardMap = () => {
               </div>
             ))}
           </div>
-        </div>
+        </PaperCard>
 
         <h2 style={{ fontFamily: 'var(--font-display)', fontSize: 24, color: 'var(--ink-2)', marginTop: 28, marginBottom: 4 }}>To tend, today</h2>
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--ink-faint)' }}>5 TASKS · 2 DONE</div>
