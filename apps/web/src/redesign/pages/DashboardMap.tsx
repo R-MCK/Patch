@@ -1,5 +1,6 @@
 import { Monogram, HomeGlyph, LeafGlyph, MapGlyph, BookGlyph, PencilGlyph, HeartGlyph, PlusGlyph, SunGlyph, CloudGlyph, DropGlyph } from '../glyphs'
 import PaperBackdrop from '../components/PaperBackdrop'
+import SummaryStat from '../components/SummaryStat'
 
 interface Bed {
   id: string
@@ -143,13 +144,14 @@ export const DashboardMap = () => {
             { num: '17', label: 'Harvested', sub: 'May to date' },
             { num: '92', label: 'Day streak', sub: 'since Feb 9' },
           ].map((s, i) => (
-            <div key={i} style={{ padding: 16, borderRight: i < 3 ? '1px solid var(--rule)' : 'none', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span className="numeral" style={{ fontSize: 36, lineHeight: 0.9, color: i === 3 ? 'var(--forest)' : 'var(--terracotta)' }}>{s.num}</span>
-                <span style={{ fontFamily: 'var(--font-slab)', fontSize: 11, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--ink-soft)' }}>{s.label}</span>
-              </div>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ink-faint)', marginTop: 4, letterSpacing: '0.06em' }}>{s.sub}</span>
-            </div>
+            <SummaryStat
+              key={i}
+              value={s.num}
+              label={s.label}
+              caption={s.sub}
+              valueColor={i === 3 ? 'var(--forest)' : 'var(--terracotta)'}
+              style={{ borderRight: i < 3 ? '1px solid var(--rule)' : 'none' }}
+            />
           ))}
         </div>
       </main>
