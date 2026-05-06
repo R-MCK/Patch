@@ -1,4 +1,5 @@
 import { Monogram, HomeGlyph, LeafGlyph, MapGlyph, BookGlyph, PencilGlyph, HeartGlyph, PlusGlyph, SunGlyph, CloudGlyph, DropGlyph } from '../glyphs'
+import PaperBackdrop from '../components/PaperBackdrop'
 
 interface Bed {
   id: string
@@ -29,7 +30,7 @@ export const DashboardMap = () => {
   )
 
   return (
-    <div className="paper-bg" style={{ minHeight: '100vh', fontFamily: 'var(--font-body)', color: 'var(--ink)', display: 'grid', gridTemplateColumns: '64px 1fr 360px' }}>
+    <PaperBackdrop style={{ display: 'grid', gridTemplateColumns: '64px 1fr 360px' }}>
       <aside style={{ borderRight: '1px solid var(--rule)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: 8 }}>
         <Monogram letter="P" size={42} color="var(--forest)" />
         <div style={{ flex: 1, marginTop: 28, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -215,6 +216,6 @@ export const DashboardMap = () => {
           </div>
         ))}
       </aside>
-    </div>
+    </PaperBackdrop>
   )
 }

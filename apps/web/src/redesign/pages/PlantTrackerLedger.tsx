@@ -2,6 +2,7 @@ import { Monogram, SearchGlyph, PlusGlyph, SunGlyph, ChevronRightGlyph } from '.
 import { PlantArt } from '../plant-art'
 import { PLANTS } from '../data'
 import { Link } from 'react-router-dom'
+import PaperBackdrop from '../components/PaperBackdrop'
 
 const Sparkline = ({ data, color }: { data: number[]; color: string }) => {
   const w = 90, h = 22
@@ -46,7 +47,7 @@ export const PlantTrackerLedger = () => {
   }))
 
   return (
-    <div className="paper-bg-cream" style={{ minHeight: '100vh', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+    <PaperBackdrop variant="cream">
       <header style={{ padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid var(--ink)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={38} color="var(--forest)" />
@@ -179,6 +180,6 @@ export const PlantTrackerLedger = () => {
         </div>
         <span>Tended by R. (you)</span>
       </footer>
-    </div>
+    </PaperBackdrop>
   )
 }

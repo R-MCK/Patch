@@ -2,6 +2,7 @@ import { ChevronLeftGlyph, PencilGlyph, PlusGlyph, FlowerGlyph, SunGlyph, DropGl
 import { PlantArt } from '../plant-art'
 import { PLANTS } from '../data'
 import { useParams, Link } from 'react-router-dom'
+import PaperBackdrop from '../components/PaperBackdrop'
 
 export const PlantSpread = () => {
   const { id } = useParams()
@@ -30,7 +31,7 @@ export const PlantSpread = () => {
   ]
 
   return (
-    <div className="paper-bg" style={{ minHeight: '100vh', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+    <PaperBackdrop>
       <header style={{ padding: '14px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <Link to="/plants" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', color: 'var(--ink-soft)' }}>
           <ChevronLeftGlyph size={14} /> ALL PLANTS · {p.bed.toUpperCase()} · {p.name.toUpperCase()}
@@ -262,6 +263,6 @@ export const PlantSpread = () => {
           ))}
         </div>
       </section>
-    </div>
+    </PaperBackdrop>
   )
 }

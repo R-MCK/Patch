@@ -2,6 +2,7 @@ import { Monogram, SearchGlyph, PlusGlyph, SunGlyph, DropGlyph, CalendarGlyph } 
 import { PlantArt } from '../plant-art'
 import { PLANTS, type Plant } from '../data'
 import { Link } from 'react-router-dom'
+import PaperBackdrop from '../components/PaperBackdrop'
 
 const SeedPacket = ({ p, idx }: { p: Plant; idx: number }) => (
   <Link to={`/plants/${idx}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -66,7 +67,7 @@ const SeedPacket = ({ p, idx }: { p: Plant; idx: number }) => (
 export const PlantTrackerPackets = () => {
   const filters = ['All plants', 'Bed I', 'Bed II', 'Bed III', 'Bed IV', 'Bed V', 'Trellis']
   return (
-    <div className="paper-bg" style={{ minHeight: '100vh', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+    <PaperBackdrop>
       <header style={{ padding: '20px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={38} color="var(--forest)" />
@@ -121,6 +122,6 @@ export const PlantTrackerPackets = () => {
       <section style={{ padding: '28px 36px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20 }}>
         {PLANTS.map((p, i) => <SeedPacket key={i} p={p} idx={i} />)}
       </section>
-    </div>
+    </PaperBackdrop>
   )
 }

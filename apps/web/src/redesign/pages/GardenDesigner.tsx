@@ -1,5 +1,6 @@
 import { Monogram, HomeGlyph, LeafGlyph, MapGlyph, BookGlyph, PencilGlyph, HeartGlyph, SearchGlyph, DropGlyph, SunGlyph } from '../glyphs'
 import { PlantArt } from '../plant-art'
+import PaperBackdrop from '../components/PaperBackdrop'
 
 export const GardenDesigner = () => {
   const palette = [
@@ -26,7 +27,7 @@ export const GardenDesigner = () => {
   ]
 
   return (
-    <div className="paper-bg" style={{ minHeight: '100vh', fontFamily: 'var(--font-body)', color: 'var(--ink)', display: 'grid', gridTemplateColumns: '64px 280px 1fr 320px' }}>
+    <PaperBackdrop style={{ display: 'grid', gridTemplateColumns: '64px 280px 1fr 320px' }}>
       <aside style={{ borderRight: '1px solid var(--rule)', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px 0', gap: 8 }}>
         <Monogram letter="P" size={42} color="var(--forest)" />
         <div style={{ flex: 1, marginTop: 28, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -258,6 +259,6 @@ export const GardenDesigner = () => {
           ~ leave the SE corner for marigolds ~
         </div>
       </aside>
-    </div>
+    </PaperBackdrop>
   )
 }

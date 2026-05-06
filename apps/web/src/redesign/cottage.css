@@ -30,7 +30,21 @@
 
   --density: 1;
   --radius: 4px;
-  --radius-lg: 8px;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+
+  --ink-overdue: #b8543c;
+  --ink-overdue-soft: #f7e5df;
 
   --font-display: 'DM Serif Display', 'Playfair Display', Georgia, serif;
   --font-slab: 'Roboto Slab', 'Rockwell', Georgia, serif;
@@ -70,7 +84,15 @@ body[data-palette="meadow"] {
 
 body[data-density="compact"] { --density: 0.85; }
 body[data-density="cozy"]    { --density: 1; }
-body[data-density="airy"]    { --density: 1.15; }
+body[data-density="airy"]    {
+  --density: 1.15;
+  --space-xs: 5px;
+  --space-sm: 10px;
+  --space-md: 20px;
+  --space-lg: 30px;
+  --space-xl: 40px;
+  --space-2xl: 60px;
+}
 
 .cottage-host {
   font-size: calc(14px * var(--density, 1));

@@ -1,4 +1,5 @@
 import { Monogram, SproutGlyph, LeafGlyph, FlowerGlyph } from '../glyphs'
+import PaperBackdrop from '../components/PaperBackdrop'
 
 export const DashboardSeasons = () => {
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -8,7 +9,7 @@ export const DashboardSeasons = () => {
   const angleNow = ((currentMonth + (currentDay/daysInMay)) / 12) * 360 - 90
 
   return (
-    <div className="paper-bg" style={{ minHeight: '100vh', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+    <PaperBackdrop>
       <header style={{ padding: '20px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={42} color="var(--forest)" />
@@ -229,6 +230,6 @@ export const DashboardSeasons = () => {
           ))}
         </div>
       </section>
-    </div>
+    </PaperBackdrop>
   )
 }

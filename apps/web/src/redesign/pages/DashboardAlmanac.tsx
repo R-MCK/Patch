@@ -1,4 +1,5 @@
 import { Monogram, SearchGlyph, BotanicalSprig, SunGlyph, DropGlyph, MoonGlyph, LeafGlyph, ScissorsGlyph, SproutGlyph, PlusGlyph } from '../glyphs'
+import PaperBackdrop from '../components/PaperBackdrop'
 
 export const DashboardAlmanac = () => {
   const today = { day: 'Tuesday', date: '12', month: 'May', year: '2026' }
@@ -21,7 +22,7 @@ export const DashboardAlmanac = () => {
   ]
 
   return (
-    <div className="paper-bg" style={{ minHeight: '100vh', fontFamily: 'var(--font-body)', color: 'var(--ink)' }}>
+    <PaperBackdrop>
       <header style={{ padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={48} color="var(--forest)" />
@@ -216,6 +217,6 @@ export const DashboardAlmanac = () => {
         <span>Hand-set in DM Serif & Roboto Slab</span>
         <span>Page i</span>
       </footer>
-    </div>
+    </PaperBackdrop>
   )
 }
