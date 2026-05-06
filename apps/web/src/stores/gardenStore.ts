@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { PatchApiClient } from '@patch/api'
 import type { Garden, GardenPlot, GardenState } from '@/types'
 
 interface GardenActions {
@@ -12,7 +13,23 @@ interface GardenActions {
   removePlot: (gardenId: string, plotId: string) => void
   setLoading: (loading: boolean) => void
   setError: (error: string | null) => void
+  fetchGardens: () => Promise<void>
 }
+
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
+
+const getAuthToken = () => {
+  const storedAuth = localStorage.getItem('auth-storage')
+  if (!storedAuth) return null
+  try {
+    const parsed = JSON.parse(storedAuth) as { state?: { token?: string | null } }
+    return parsed.state?.token ?? null
+  } catch {
+    return null
+  }
+}
+
+const gardenApiClient = new PatchApiClient({ baseUrl: apiBaseUrl, getAuthToken })
 
 // Mock data for initial development
 const mockGardens: Garden[] = [
@@ -104,4 +121,14 @@ export const useGardenStore = create<GardenState & GardenActions>()((set) => ({
 
   setLoading: (isLoading) => set({ isLoading }),
   setError: (error) => set({ error }),
+
+  fetchGardens: async () => {
+    set({ isLoading: true, error: null })
+    try {
+      const response = await gardenApiClient.getGardens()
+      set({ gardens: response.data, isLoading: false })
+    } catch (e) {
+      set({ error: e instanceof Error ? e.message : String(e), isLoading: false })
+    }
+  },
 }))
