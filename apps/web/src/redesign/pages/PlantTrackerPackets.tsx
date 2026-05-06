@@ -3,6 +3,7 @@ import { PlantArt } from '../plant-art'
 import { PLANTS, type Plant } from '../data'
 import { Link } from 'react-router-dom'
 import AlmanacLayout from '../components/AlmanacLayout'
+import HeroCard from '../components/HeroCard'
 
 const SeedPacket = ({ p, idx }: { p: Plant; idx: number }) => (
   <Link to={`/plants/${idx}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -83,19 +84,17 @@ export const PlantTrackerPackets = () => {
         <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
       </header>
     }>
-      <section style={{ padding: '36px 36px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
-        <div>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>The Patch · 24 in care · 6 beds</div>
-          <h1 style={{ fontFamily: 'var(--font-display)', fontSize: 64, lineHeight: 1, marginTop: 6, color: 'var(--ink-2)' }}>
-            The seed drawer
-          </h1>
-          <p style={{ fontFamily: 'var(--font-slab)', fontSize: 15, color: 'var(--ink-soft)', marginTop: 8, maxWidth: 540, lineHeight: 1.5 }}>Every plant on the patch, kept like a vintage packet on the shelf. Click one to open its long story.</p>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <Link to="/plants/ledger" className="btn-ghost" style={{ textDecoration: 'none' }}>Ledger view</Link>
-          <button className="btn-ghost"><SearchGlyph size={14} /> Search</button>
-          <button className="btn-primary"><PlusGlyph size={14} /> New plant</button>
-        </div>
+      <section style={{ padding: '36px 36px 0' }}>
+        <HeroCard
+          eyebrow="The Patch · 24 in care · 6 beds"
+          title="The seed drawer"
+          subtitle="Every plant on the patch, kept like a vintage packet on the shelf. Click one to open its long story."
+          trailing={<>
+            <Link to="/plants/ledger" className="btn-ghost" style={{ textDecoration: 'none' }}>Ledger view</Link>
+            <button className="btn-ghost"><SearchGlyph size={14} /> Search</button>
+            <button className="btn-primary"><PlusGlyph size={14} /> New plant</button>
+          </>}
+        />
       </section>
 
       <div style={{ padding: '24px 36px 18px', display: 'flex', gap: 8, alignItems: 'center', borderBottom: '1px solid var(--rule)', overflowX: 'auto' }}>
