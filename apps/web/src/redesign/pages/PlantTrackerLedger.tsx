@@ -2,7 +2,7 @@ import { Monogram, SearchGlyph, PlusGlyph, SunGlyph, ChevronRightGlyph } from '.
 import { PlantArt } from '../plant-art'
 import { PLANTS } from '../data'
 import { Link } from 'react-router-dom'
-import PaperBackdrop from '../components/PaperBackdrop'
+import AlmanacLayout from '../components/AlmanacLayout'
 
 const Sparkline = ({ data, color }: { data: number[]; color: string }) => {
   const w = 90, h = 22
@@ -47,7 +47,7 @@ export const PlantTrackerLedger = () => {
   }))
 
   return (
-    <PaperBackdrop variant="cream">
+    <AlmanacLayout variant="cream" header={
       <header style={{ padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '2px solid var(--ink)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={38} color="var(--forest)" />
@@ -65,7 +65,7 @@ export const PlantTrackerLedger = () => {
         </nav>
         <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
       </header>
-
+    }>
       <section style={{ padding: '32px 40px 18px', display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'end', gap: 24, borderBottom: '1px solid var(--rule)' }}>
         <div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>An Index of Living Things</div>
@@ -180,6 +180,6 @@ export const PlantTrackerLedger = () => {
         </div>
         <span>Tended by R. (you)</span>
       </footer>
-    </PaperBackdrop>
+    </AlmanacLayout>
   )
 }

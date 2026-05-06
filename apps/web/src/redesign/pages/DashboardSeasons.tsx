@@ -1,5 +1,5 @@
 import { Monogram, SproutGlyph, LeafGlyph, FlowerGlyph } from '../glyphs'
-import PaperBackdrop from '../components/PaperBackdrop'
+import AlmanacLayout from '../components/AlmanacLayout'
 
 export const DashboardSeasons = () => {
   const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
@@ -9,7 +9,7 @@ export const DashboardSeasons = () => {
   const angleNow = ((currentMonth + (currentDay/daysInMay)) / 12) * 360 - 90
 
   return (
-    <PaperBackdrop>
+    <AlmanacLayout header={
       <header style={{ padding: '20px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={42} color="var(--forest)" />
@@ -27,7 +27,7 @@ export const DashboardSeasons = () => {
           <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
         </div>
       </header>
-
+    }>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.3fr 1fr', gap: 0, alignItems: 'stretch' }}>
         <section style={{ padding: '36px 32px', borderRight: '1px solid var(--rule)' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>Now harvesting</div>
@@ -230,6 +230,6 @@ export const DashboardSeasons = () => {
           ))}
         </div>
       </section>
-    </PaperBackdrop>
+    </AlmanacLayout>
   )
 }

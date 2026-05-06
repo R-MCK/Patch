@@ -1,5 +1,5 @@
 import { Monogram, SearchGlyph, BotanicalSprig, SunGlyph, DropGlyph, MoonGlyph, LeafGlyph, ScissorsGlyph, SproutGlyph, PlusGlyph } from '../glyphs'
-import PaperBackdrop from '../components/PaperBackdrop'
+import AlmanacLayout from '../components/AlmanacLayout'
 
 export const DashboardAlmanac = () => {
   const today = { day: 'Tuesday', date: '12', month: 'May', year: '2026' }
@@ -22,7 +22,7 @@ export const DashboardAlmanac = () => {
   ]
 
   return (
-    <PaperBackdrop>
+    <AlmanacLayout header={
       <header style={{ padding: '20px 40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={48} color="var(--forest)" />
@@ -43,7 +43,7 @@ export const DashboardAlmanac = () => {
           <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--sage-soft)', border: '1.5px solid var(--rule)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16, color: 'var(--forest)' }}>R</div>
         </div>
       </header>
-
+    }>
       <section style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ padding: '40px 40px 36px', borderRight: '1px solid var(--rule)', position: 'relative' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>
@@ -217,6 +217,6 @@ export const DashboardAlmanac = () => {
         <span>Hand-set in DM Serif & Roboto Slab</span>
         <span>Page i</span>
       </footer>
-    </PaperBackdrop>
+    </AlmanacLayout>
   )
 }

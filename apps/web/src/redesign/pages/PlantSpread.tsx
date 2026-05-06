@@ -2,7 +2,7 @@ import { ChevronLeftGlyph, PencilGlyph, PlusGlyph, FlowerGlyph, SunGlyph, DropGl
 import { PlantArt } from '../plant-art'
 import { PLANTS } from '../data'
 import { useParams, Link } from 'react-router-dom'
-import PaperBackdrop from '../components/PaperBackdrop'
+import AlmanacLayout from '../components/AlmanacLayout'
 
 export const PlantSpread = () => {
   const { id } = useParams()
@@ -31,7 +31,7 @@ export const PlantSpread = () => {
   ]
 
   return (
-    <PaperBackdrop>
+    <AlmanacLayout header={
       <header style={{ padding: '14px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <Link to="/plants" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: 12, fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.1em', color: 'var(--ink-soft)' }}>
           <ChevronLeftGlyph size={14} /> ALL PLANTS · {p.bed.toUpperCase()} · {p.name.toUpperCase()}
@@ -47,7 +47,7 @@ export const PlantSpread = () => {
           <button className="btn-primary"><PlusGlyph size={12} /> Log entry</button>
         </div>
       </header>
-
+    }>
       <section style={{ display: 'grid', gridTemplateColumns: '1.1fr 1fr', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ padding: '40px 44px', borderRight: '1px solid var(--rule)', position: 'relative' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>
@@ -263,6 +263,6 @@ export const PlantSpread = () => {
           ))}
         </div>
       </section>
-    </PaperBackdrop>
+    </AlmanacLayout>
   )
 }

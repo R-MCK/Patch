@@ -2,7 +2,7 @@ import { Monogram, SearchGlyph, PlusGlyph, SunGlyph, DropGlyph, CalendarGlyph } 
 import { PlantArt } from '../plant-art'
 import { PLANTS, type Plant } from '../data'
 import { Link } from 'react-router-dom'
-import PaperBackdrop from '../components/PaperBackdrop'
+import AlmanacLayout from '../components/AlmanacLayout'
 
 const SeedPacket = ({ p, idx }: { p: Plant; idx: number }) => (
   <Link to={`/plants/${idx}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -67,7 +67,7 @@ const SeedPacket = ({ p, idx }: { p: Plant; idx: number }) => (
 export const PlantTrackerPackets = () => {
   const filters = ['All plants', 'Bed I', 'Bed II', 'Bed III', 'Bed IV', 'Bed V', 'Trellis']
   return (
-    <PaperBackdrop>
+    <AlmanacLayout header={
       <header style={{ padding: '20px 36px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--rule)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <Monogram letter="P" size={38} color="var(--forest)" />
@@ -82,7 +82,7 @@ export const PlantTrackerPackets = () => {
         </nav>
         <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
       </header>
-
+    }>
       <section style={{ padding: '36px 36px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
         <div>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--ink-faint)' }}>The Patch · 24 in care · 6 beds</div>
@@ -122,6 +122,6 @@ export const PlantTrackerPackets = () => {
       <section style={{ padding: '28px 36px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20 }}>
         {PLANTS.map((p, i) => <SeedPacket key={i} p={p} idx={i} />)}
       </section>
-    </PaperBackdrop>
+    </AlmanacLayout>
   )
 }
