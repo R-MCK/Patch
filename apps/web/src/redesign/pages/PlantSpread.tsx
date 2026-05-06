@@ -5,6 +5,7 @@ import { useParams, Link } from 'react-router-dom'
 import AlmanacLayout from '../components/AlmanacLayout'
 import SectionHeader from '../components/SectionHeader'
 import PaperCard from '../components/PaperCard'
+import LabeledIconButton from '../components/LabeledIconButton'
 
 export const PlantSpread = () => {
   const { id } = useParams()
@@ -45,8 +46,8 @@ export const PlantSpread = () => {
           <a href="/wiki" style={{ color: 'var(--ink-soft)' }}>Wiki</a>
         </nav>
         <div style={{ display: 'flex', gap: 6 }}>
-          <button className="btn-ghost"><PencilGlyph size={12} /> Edit</button>
-          <button className="btn-primary"><PlusGlyph size={12} /> Log entry</button>
+          <LabeledIconButton variant="ghost" icon={<PencilGlyph size={12} />} label="Edit" />
+          <LabeledIconButton variant="primary" icon={<PlusGlyph size={12} />} label="Log entry" />
         </div>
       </header>
     }>
@@ -216,7 +217,7 @@ export const PlantSpread = () => {
             </div>
           ))}
 
-          <button className="btn-ghost" style={{ marginTop: 16, width: '100%' }}><PlusGlyph size={12} /> New journal entry</button>
+          <LabeledIconButton variant="ghost" icon={<PlusGlyph size={12} />} label="New journal entry" style={{ marginTop: 16, width: '100%' }} />
         </div>
       </section>
 

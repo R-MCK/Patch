@@ -4,6 +4,7 @@ import { PLANTS, type Plant } from '../data'
 import { Link } from 'react-router-dom'
 import AlmanacLayout from '../components/AlmanacLayout'
 import HeroCard from '../components/HeroCard'
+import LabeledIconButton from '../components/LabeledIconButton'
 
 const SeedPacket = ({ p, idx }: { p: Plant; idx: number }) => (
   <Link to={`/plants/${idx}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -91,8 +92,8 @@ export const PlantTrackerPackets = () => {
           subtitle="Every plant on the patch, kept like a vintage packet on the shelf. Click one to open its long story."
           trailing={<>
             <Link to="/plants/ledger" className="btn-ghost" style={{ textDecoration: 'none' }}>Ledger view</Link>
-            <button className="btn-ghost"><SearchGlyph size={14} /> Search</button>
-            <button className="btn-primary"><PlusGlyph size={14} /> New plant</button>
+            <LabeledIconButton variant="ghost" icon={<SearchGlyph size={14} />} label="Search" />
+            <LabeledIconButton variant="primary" icon={<PlusGlyph size={14} />} label="New plant" />
           </>}
         />
       </section>

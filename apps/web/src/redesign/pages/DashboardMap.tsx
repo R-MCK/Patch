@@ -2,6 +2,7 @@ import { Monogram, HomeGlyph, LeafGlyph, MapGlyph, BookGlyph, PencilGlyph, Heart
 import PaperBackdrop from '../components/PaperBackdrop'
 import SummaryStat from '../components/SummaryStat'
 import PaperCard from '../components/PaperCard'
+import LabeledIconButton from '../components/LabeledIconButton'
 
 interface Bed {
   id: string
@@ -69,8 +70,8 @@ export const DashboardMap = () => {
             </h1>
           </div>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button className="btn-ghost"><PencilGlyph size={14} /> Edit map</button>
-            <button className="btn-primary"><PlusGlyph size={14} /> New bed</button>
+            <LabeledIconButton variant="ghost" icon={<PencilGlyph size={14} />} label="Edit map" />
+            <LabeledIconButton variant="primary" icon={<PlusGlyph size={14} />} label="New bed" />
           </div>
         </div>
 

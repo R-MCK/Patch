@@ -3,6 +3,7 @@ import { PlantArt } from '../plant-art'
 import { PLANTS } from '../data'
 import { Link } from 'react-router-dom'
 import AlmanacLayout from '../components/AlmanacLayout'
+import LabeledIconButton from '../components/LabeledIconButton'
 
 const Sparkline = ({ data, color }: { data: number[]; color: string }) => {
   const w = 90, h = 22
@@ -81,8 +82,8 @@ export const PlantTrackerLedger = () => {
           <div style={{ fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', marginBottom: 8, lineHeight: 1.5 }}>Browse, search, and tend. Click any row to open the long story for that plant.</div>
           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
             <Link to="/plants" className="btn-ghost" style={{ textDecoration: 'none' }}>Packet view</Link>
-            <button className="btn-ghost"><SearchGlyph size={12} /> Search</button>
-            <button className="btn-primary"><PlusGlyph size={12} /> New entry</button>
+            <LabeledIconButton variant="ghost" icon={<SearchGlyph size={12} />} label="Search" />
+            <LabeledIconButton variant="primary" icon={<PlusGlyph size={12} />} label="New entry" />
           </div>
         </div>
       </section>
