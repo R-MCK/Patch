@@ -1,11 +1,21 @@
+import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Leaf } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { NotebookPen, Sprout } from 'lucide-react'
+import PaperBackdrop from '@/redesign/components/PaperBackdrop'
+import PaperCard from '@/redesign/components/PaperCard'
 import { useAuthStore } from '@/stores/authStore'
-import { api } from '@/lib/api'
-import { FloatingLeavesBackground } from '@/components/animations/FloatingLeavesBackground'
+
+const inputStyle = {
+  width: '100%',
+  border: '1px solid var(--rule)',
+  borderRadius: 'var(--radius)',
+  background: 'var(--paper)',
+  color: 'var(--ink)',
+  padding: '12px 14px',
+  font: 'inherit',
+  outlineColor: 'var(--forest)',
+}
 
 export function Register() {
   const [name, setName] = useState('')
@@ -13,28 +23,25 @@ export function Register() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
-  const { isLoading } = useAuthStore()
+  const { register, isLoading } = useAuthStore()
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault()
     setError('')
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
+      setError('Passwords do not match.')
       return
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+      setError('Password must be at least 8 characters.')
       return
     }
 
     try {
-      // Register with API then log in
-      const { user, token } = await api.register(name, email, password)
-      useAuthStore.getState().setUser(user)
-      useAuthStore.getState().setToken(token)
+      await register(email, password, name.trim() || undefined)
       navigate('/')
     } catch {
       setError('Registration failed. Please try again.')
@@ -42,104 +49,105 @@ export function Register() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-earth-50 via-leaf-50 to-earth-100 font-sans text-foreground selection:bg-primary/20 relative">
-      <FloatingLeavesBackground />
-      <div className="w-full max-w-md relative z-10 animate-plant-bounce py-8">
-        <Card className="border-white/60 bg-white/70 backdrop-blur-xl shadow-xl shadow-earth-900/5">
-          <CardHeader className="text-center pb-6 pt-8">
-            <div className="flex justify-center mb-6">
-              <div className="p-4 bg-primary/10 rounded-full">
-                <Leaf className="h-10 w-10 text-primary animate-sway" />
-              </div>
-            </div>
-            <CardTitle className="text-3xl text-earth-900">Create an account</CardTitle>
-            <CardDescription className="text-base text-earth-600 font-medium">Start your gardening journey with Patch</CardDescription>
-          </CardHeader>
-          <CardContent className="px-8 pb-8">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {error && (
-                <div className="p-3 text-sm text-destructive bg-destructive/10 rounded-md">
-                  {error}
-                </div>
-              )}
+    <PaperBackdrop
+      variant="cream"
+      style={{
+        display: 'grid',
+        placeItems: 'center',
+        padding: '32px 16px',
+      }}
+    >
+      <main style={{ width: 'min(100%, 460px)' }}>
+        <PaperCard className="book-frame" style={{ padding: '38px 32px 32px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 24 }}>
+            <span className="chip">
+              <Sprout size={14} />
+              Patch
+            </span>
+            <span className="dotted-rule" style={{ flex: 1 }} />
+          </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="name">
-                  Name
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  className="w-full rounded-2xl border border-white/60 bg-white/50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
-                  placeholder="Your name"
-                />
-              </div>
+          <h1 className="font-display" style={{ fontSize: 44, lineHeight: 1, margin: 0 }}>
+            Start a garden log
+          </h1>
+          <p style={{ color: 'var(--ink-soft)', margin: '10px 0 28px' }}>
+            Create your account and keep the almanac close.
+          </p>
 
-              <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="email">
-                  Email
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="w-full rounded-2xl border border-white/60 bg-white/50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
-                  placeholder="you@example.com"
-                />
+          <form onSubmit={handleSubmit} style={{ display: 'grid', gap: 16 }}>
+            {error && (
+              <div role="alert" style={{ border: '1px solid var(--berry)', color: 'var(--berry)', padding: 12 }}>
+                {error}
               </div>
+            )}
 
-              <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="password">
-                  Password
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  className="w-full rounded-2xl border border-white/60 bg-white/50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
-                  placeholder="At least 8 characters"
-                />
-              </div>
+            <label style={{ display: 'grid', gap: 6, fontFamily: 'var(--font-slab)', fontSize: 13 }}>
+              Name
+              <input
+                type="text"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                autoComplete="name"
+                style={inputStyle}
+                placeholder="Your name"
+              />
+            </label>
 
-              <div>
-                <label className="block text-sm font-medium mb-1" htmlFor="confirmPassword">
-                  Confirm Password
-                </label>
-                <input
-                  id="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                  className="w-full rounded-2xl border border-white/60 bg-white/50 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow"
-                  placeholder="Confirm your password"
-                />
-              </div>
+            <label style={{ display: 'grid', gap: 6, fontFamily: 'var(--font-slab)', fontSize: 13 }}>
+              Email
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                required
+                autoComplete="email"
+                style={inputStyle}
+                placeholder="you@example.com"
+              />
+            </label>
 
-              <div className="pt-4">
-                <Button type="submit" className="w-full rounded-full py-6 text-base shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5" disabled={isLoading}>
-                  {isLoading ? 'Creating account...' : 'Create Account'}
-                </Button>
-              </div>
+            <label style={{ display: 'grid', gap: 6, fontFamily: 'var(--font-slab)', fontSize: 13 }}>
+              Password
+              <input
+                type="password"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                minLength={8}
+                autoComplete="new-password"
+                style={inputStyle}
+                placeholder="At least 8 characters"
+              />
+            </label>
 
-              <p className="text-center text-sm text-muted-foreground">
-                Already have an account?{' '}
-                <Link to="/login" className="text-primary hover:underline">
-                  Sign in
-                </Link>
-              </p>
-            </form>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+            <label style={{ display: 'grid', gap: 6, fontFamily: 'var(--font-slab)', fontSize: 13 }}>
+              Confirm Password
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                required
+                minLength={8}
+                autoComplete="new-password"
+                style={inputStyle}
+                placeholder="Repeat your password"
+              />
+            </label>
+
+            <button type="submit" className="btn-primary" disabled={isLoading} style={{ justifyContent: 'center' }}>
+              <NotebookPen size={16} />
+              {isLoading ? 'Creating account' : 'Create account'}
+            </button>
+          </form>
+
+          <p style={{ color: 'var(--ink-soft)', fontSize: 14, margin: '22px 0 0', textAlign: 'center' }}>
+            Already registered?{' '}
+            <Link to="/login" className="link-ink" style={{ color: 'var(--ink)' }}>
+              Sign in
+            </Link>
+          </p>
+        </PaperCard>
+      </main>
+    </PaperBackdrop>
   )
 }

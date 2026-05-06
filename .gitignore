@@ -33,6 +33,8 @@ node_modules/
 Package.resolved
 .build/
 Packages/
+!packages/
+!packages/**
 
 ## CocoaPods
 Pods/

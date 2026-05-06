@@ -11,23 +11,21 @@ interface Leaf {
     delay: number
 }
 
-export function FloatingLeavesBackground() {
-    const [leaves, setLeaves] = React.useState<Leaf[]>([])
+function createLeaves(): Leaf[] {
+    return Array.from({ length: 15 }).map((_, i) => ({
+        id: i,
+        x: Math.random() * 100,
+        y: -20 - Math.random() * 20,
+        rotation: Math.random() * 360,
+        scale: 0.5 + Math.random() * 0.8,
+        speed: 10 + Math.random() * 25,
+        sway: 3 + Math.random() * 5,
+        delay: Math.random() * 15,
+    }))
+}
 
-    React.useEffect(() => {
-        setLeaves(
-            Array.from({ length: 15 }).map((_, i) => ({
-                id: i,
-                x: Math.random() * 100, // percentage string
-                y: -20 - Math.random() * 20, // Start above screen
-                rotation: Math.random() * 360,
-                scale: 0.5 + Math.random() * 0.8,
-                speed: 10 + Math.random() * 25, // seconds to fall
-                sway: 3 + Math.random() * 5, // sway amount
-                delay: Math.random() * 15, // start delay
-            }))
-        )
-    }, [])
+export function FloatingLeavesBackground() {
+    const [leaves] = React.useState<Leaf[]>(createLeaves)
 
     return (
         <div className="fixed inset-0 overflow-hidden pointer-events-none z-0 opacity-20 dark:opacity-10">

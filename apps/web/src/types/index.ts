@@ -23,6 +23,7 @@ export interface AuthState {
   token: string | null
   isAuthenticated: boolean
   isLoading: boolean
+  hasRestored: boolean
 }
 
 export interface PlantState {

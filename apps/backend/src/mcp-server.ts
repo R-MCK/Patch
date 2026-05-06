@@ -1,12 +1,16 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { randomUUID } from "crypto";
-import { z } from "zod";
+import { z } from "zod/v3";
 import { dbAll, dbRun } from "./db";
 import { logger } from "./types";
 
 interface PlantIdentifier {
     id: string;
+}
+
+interface WaterPlantsArgs {
+    identifiers: string[];
 }
 
 // Initialize the MCP Server
@@ -23,21 +27,23 @@ server.tool("get_plants", "Get a list of all plants in the user's garden", {}, a
     };
 });
 
+const waterPlantsInputSchema = {
+    identifiers: z.array(z.string()).describe("The names of the plants that were watered")
+};
+
 // Tool: Water Plants
-server.tool(
+(server.tool as any)(
     "water_plants",
     "Record that you watered specific plants",
-    {
-        identifiers: z.array(z.string()).describe("The names of the plants that were watered")
-    },
-    async ({ identifiers }) => {
+    waterPlantsInputSchema,
+    async ({ identifiers }: WaterPlantsArgs) => {
         const results = [];
         for (const name of identifiers) {
             // Find the plant by name
             const plants = await dbAll<PlantIdentifier>('SELECT id FROM plants WHERE name LIKE ?', [`%${name}%`]);
 
             if (plants.length === 0) {
-                results.push(`Could not find a plant matching: \${ name }`);
+                results.push(`Could not find a plant matching: ${name}`);
                 continue;
             }
 
@@ -49,7 +55,7 @@ server.tool(
           VALUES(?, ?, 'Watering', datetime('now'), datetime('now'))
                 `, [taskId, plant.id]);
 
-                results.push(`Successfully logged watering for \${ name } (ID: \${ plant.id })`);
+                results.push(`Successfully logged watering for ${name} (ID: ${plant.id})`);
             }
         }
 

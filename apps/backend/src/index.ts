@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import { randomUUID } from 'crypto';
+import { createHash, createHmac, randomBytes, randomUUID, scrypt as cryptoScrypt, timingSafeEqual } from 'crypto';
+import { promisify } from 'util';
 import { pathToFileURL } from 'url';
 import { z } from 'zod';
 import { dbAll, dbGet, dbRun, initDatabase } from './db.js';
@@ -44,6 +45,56 @@ const createTaskSchema = z.object({
   notes: z.string().nullable().optional(),
 });
 
+const registerSchema = z.object({
+  email: z.email().trim().toLowerCase(),
+  name: z.string().trim().min(1).max(120).optional(),
+  password: z.string().min(8).max(200),
+});
+
+const loginSchema = z.object({
+  email: z.email().trim().toLowerCase(),
+  password: z.string().min(1).max(200),
+});
+
+type AuthUser = {
+  id: string;
+  email: string;
+  name: string;
+  created_at: string;
+};
+
+type UserWithPassword = AuthUser & {
+  password_hash: string;
+};
+
+type AuthenticatedRequest = express.Request & {
+  authUserId?: string;
+};
+
+type JwtPayload = {
+  sub: string;
+  email: string;
+  name: string;
+  exp: number;
+};
+
+type RefreshTokenRow = {
+  id: string;
+  user_id: string;
+  expires_at: string;
+  revoked_at: string | null;
+};
+
+const scrypt = promisify(cryptoScrypt) as (
+  password: string,
+  salt: string,
+  keylen: number,
+) => Promise<Buffer>;
+
+const ACCESS_TOKEN_EXPIRES_IN_SECONDS = 15 * 60;
+const REFRESH_TOKEN_EXPIRES_IN_DAYS = 30;
+const REFRESH_COOKIE_NAME = 'patch_refresh_token';
+
 export const app = express();
 const port = process.env.PORT || 3000;
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -53,6 +104,7 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 app.use(cors({
   origin: allowedOrigins,
+  credentials: true,
 }));
 app.use(express.json());
 
@@ -97,6 +149,203 @@ function serializeSqliteBoolean(value: boolean | number | string | null): boolea
   return value === '1' || value.toLowerCase() === 'true';
 }
 
+function serializeAuthUser(user: AuthUser): AuthUser {
+  return {
+    ...user,
+    created_at: serializeSqliteDate(user.created_at) ?? user.created_at,
+  };
+}
+
+function getDefaultUserName(email: string): string {
+  return email.split('@')[0] || 'Patch Gardener';
+}
+
+function getConfiguredJwtSecret(): string | undefined {
+  return process.env.JWT_SECRET;
+}
+
+function getJwtSecretForSigning(): string | undefined {
+  if (process.env.JWT_SECRET) {
+    return process.env.JWT_SECRET;
+  }
+
+  if (process.env.NODE_ENV === 'development') {
+    return 'patch-development-jwt-secret';
+  }
+
+  return undefined;
+}
+
+function base64UrlJson(value: unknown): string {
+  return Buffer.from(JSON.stringify(value)).toString('base64url');
+}
+
+function signJwtPayload(payload: JwtPayload, secret: string): string {
+  const header = base64UrlJson({ alg: 'HS256', typ: 'JWT' });
+  const body = base64UrlJson(payload);
+  const signature = createHmac('sha256', secret)
+    .update(`${header}.${body}`)
+    .digest('base64url');
+
+  return `${header}.${body}.${signature}`;
+}
+
+function createAccessToken(user: AuthUser): string {
+  const secret = getJwtSecretForSigning();
+  if (!secret) {
+    throw new Error('JWT_SECRET is required for auth token issuance');
+  }
+
+  const expiresAt = Math.floor(Date.now() / 1000) + ACCESS_TOKEN_EXPIRES_IN_SECONDS;
+  return signJwtPayload({
+    sub: user.id,
+    email: user.email,
+    name: user.name,
+    exp: expiresAt,
+  }, secret);
+}
+
+function verifyAccessToken(token: string): JwtPayload | null {
+  const secret = getJwtSecretForSigning();
+  if (!secret) {
+    return null;
+  }
+
+  const parts = token.split('.');
+  if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
+    return null;
+  }
+
+  const expectedSignature = createHmac('sha256', secret)
+    .update(`${parts[0]}.${parts[1]}`)
+    .digest('base64url');
+  const receivedSignature = parts[2];
+  const expected = Buffer.from(expectedSignature);
+  const received = Buffer.from(receivedSignature);
+
+  if (expected.length !== received.length || !timingSafeEqual(expected, received)) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')) as Partial<JwtPayload>;
+    if (
+      typeof payload.sub !== 'string'
+      || typeof payload.email !== 'string'
+      || typeof payload.name !== 'string'
+      || typeof payload.exp !== 'number'
+      || payload.exp <= Math.floor(Date.now() / 1000)
+    ) {
+      return null;
+    }
+
+    return payload as JwtPayload;
+  } catch {
+    return null;
+  }
+}
+
+async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16).toString('base64url');
+  const hash = await scrypt(password, salt, 64);
+  return `scrypt:${salt}:${hash.toString('base64url')}`;
+}
+
+async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
+  const [algorithm, salt, hash] = storedHash.split(':');
+  if (algorithm !== 'scrypt' || !salt || !hash) {
+    return false;
+  }
+
+  const expected = Buffer.from(hash, 'base64url');
+  const actual = await scrypt(password, salt, expected.length);
+  return expected.length === actual.length && timingSafeEqual(expected, actual);
+}
+
+function hashRefreshToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
+async function createRefreshToken(userId: string): Promise<string> {
+  const token = randomBytes(48).toString('base64url');
+  const tokenHash = hashRefreshToken(token);
+  const tokenId = randomUUID();
+
+  await dbRun(`
+    INSERT INTO refresh_tokens (id, user_id, token_hash, expires_at)
+    VALUES (?, ?, ?, datetime('now', ?))
+  `, [tokenId, userId, tokenHash, `+${REFRESH_TOKEN_EXPIRES_IN_DAYS} days`]);
+
+  return token;
+}
+
+function setRefreshCookie(res: express.Response, token: string): void {
+  res.cookie(REFRESH_COOKIE_NAME, token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/api/auth',
+    maxAge: REFRESH_TOKEN_EXPIRES_IN_DAYS * 24 * 60 * 60 * 1000,
+  });
+}
+
+function clearRefreshCookie(res: express.Response): void {
+  res.clearCookie(REFRESH_COOKIE_NAME, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/api/auth',
+  });
+}
+
+function parseCookies(cookieHeader: string | undefined): Record<string, string> {
+  if (!cookieHeader) {
+    return {};
+  }
+
+  return cookieHeader.split(';').reduce<Record<string, string>>((cookies, cookie) => {
+    const separatorIndex = cookie.indexOf('=');
+    if (separatorIndex === -1) {
+      return cookies;
+    }
+
+    const name = cookie.slice(0, separatorIndex).trim();
+    const value = cookie.slice(separatorIndex + 1).trim();
+    if (name) {
+      cookies[name] = decodeURIComponent(value);
+    }
+
+    return cookies;
+  }, {});
+}
+
+function getRefreshTokenFromRequest(req: express.Request): string | undefined {
+  return parseCookies(req.headers.cookie)[REFRESH_COOKIE_NAME];
+}
+
+async function findActiveRefreshToken(token: string): Promise<RefreshTokenRow | undefined> {
+  return dbGet<RefreshTokenRow>(`
+    SELECT id, user_id, expires_at, revoked_at
+    FROM refresh_tokens
+    WHERE token_hash = ?
+      AND revoked_at IS NULL
+      AND expires_at > datetime('now')
+  `, [hashRefreshToken(token)]);
+}
+
+async function sendAuthResponse(res: express.Response, user: AuthUser, status = 200): Promise<void> {
+  const serializedUser = serializeAuthUser(user);
+  const accessToken = createAccessToken(serializedUser);
+  const refreshToken = await createRefreshToken(user.id);
+
+  setRefreshCookie(res, refreshToken);
+  res.status(status).json({
+    user: serializedUser,
+    accessToken,
+    expiresIn: ACCESS_TOKEN_EXPIRES_IN_SECONDS,
+  });
+}
+
 export function serializePlant(plant: Plant): Plant {
   return {
     ...plant,
@@ -114,12 +363,13 @@ export function serializeCareTask(task: CareTask): CareTask {
 }
 
 function isDevelopmentAuthBypassEnabled(): boolean {
-  return process.env.NODE_ENV === 'development' && !process.env.API_TOKEN;
+  return process.env.NODE_ENV === 'development' && !process.env.API_TOKEN && !getConfiguredJwtSecret();
 }
 
 function requireAuth(req: express.Request, res: express.Response, next: express.NextFunction): void {
   const apiToken = process.env.API_TOKEN;
-  if (!apiToken) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
     if (isDevelopmentAuthBypassEnabled()) {
       next();
       return;
@@ -129,15 +379,156 @@ function requireAuth(req: express.Request, res: express.Response, next: express.
     return;
   }
 
-  const authHeader = req.headers.authorization;
-  if (!authHeader?.startsWith('Bearer ') || authHeader.slice(7) !== apiToken) {
+  const bearerToken = authHeader.slice(7);
+  if (apiToken && bearerToken === apiToken) {
+    next();
+    return;
+  }
+
+  const payload = verifyAccessToken(bearerToken);
+  if (!payload) {
     sendJsonError(res, 401, 'Unauthorized');
     return;
   }
+
+  (req as AuthenticatedRequest).authUserId = payload.sub;
   next();
 }
 
 // --- REST API ENDPOINTS --- //
+
+app.post('/api/auth/register', async (req, res) => {
+  try {
+    const data = registerSchema.parse(req.body);
+    const existingUser = await dbGet<{ id: string }>('SELECT id FROM users WHERE email = ?', [data.email]);
+    if (existingUser) {
+      sendJsonError(res, 409, 'Email already registered');
+      return;
+    }
+
+    const id = randomUUID();
+    const passwordHash = await hashPassword(data.password);
+    await dbRun(`
+      INSERT INTO users (id, email, name, password_hash)
+      VALUES (?, ?, ?, ?)
+    `, [id, data.email, data.name ?? getDefaultUserName(data.email), passwordHash]);
+
+    const user = await dbGet<AuthUser>('SELECT id, email, name, created_at FROM users WHERE id = ?', [id]);
+    if (!user) {
+      throw new Error('Failed to retrieve created user');
+    }
+
+    await sendAuthResponse(res, user, 201);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid registration data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to register user', err);
+    sendJsonError(res, 500, 'Failed to register user');
+  }
+});
+
+app.post('/api/auth/login', async (req, res) => {
+  try {
+    const data = loginSchema.parse(req.body);
+    const user = await dbGet<UserWithPassword>(
+      'SELECT id, email, name, password_hash, created_at FROM users WHERE email = ?',
+      [data.email],
+    );
+
+    if (!user || !(await verifyPassword(data.password, user.password_hash))) {
+      sendJsonError(res, 401, 'Invalid email or password');
+      return;
+    }
+
+    await sendAuthResponse(res, user);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid login data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to log in user', err);
+    sendJsonError(res, 500, 'Failed to log in user');
+  }
+});
+
+app.get('/api/auth/me', requireAuth, async (req, res) => {
+  try {
+    const userId = (req as AuthenticatedRequest).authUserId;
+    if (!userId) {
+      sendJsonError(res, 401, 'User authentication required');
+      return;
+    }
+
+    const user = await dbGet<AuthUser>(
+      'SELECT id, email, name, created_at FROM users WHERE id = ?',
+      [userId],
+    );
+    if (!user) {
+      sendJsonError(res, 401, 'User authentication required');
+      return;
+    }
+
+    res.json(serializeAuthUser(user));
+  } catch (err) {
+    logger.error('Failed to fetch authenticated user', err);
+    sendJsonError(res, 500, 'Failed to fetch authenticated user');
+  }
+});
+
+app.post('/api/auth/refresh', async (req, res) => {
+  try {
+    const refreshToken = getRefreshTokenFromRequest(req);
+    if (!refreshToken) {
+      sendJsonError(res, 401, 'Refresh token required');
+      return;
+    }
+
+    const tokenRow = await findActiveRefreshToken(refreshToken);
+    if (!tokenRow) {
+      clearRefreshCookie(res);
+      sendJsonError(res, 401, 'Invalid refresh token');
+      return;
+    }
+
+    const user = await dbGet<AuthUser>(
+      'SELECT id, email, name, created_at FROM users WHERE id = ?',
+      [tokenRow.user_id],
+    );
+    if (!user) {
+      await dbRun('UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE id = ?', [tokenRow.id]);
+      clearRefreshCookie(res);
+      sendJsonError(res, 401, 'Invalid refresh token');
+      return;
+    }
+
+    await dbRun('UPDATE refresh_tokens SET revoked_at = datetime(\'now\') WHERE id = ?', [tokenRow.id]);
+    await sendAuthResponse(res, user);
+  } catch (err) {
+    logger.error('Failed to refresh auth token', err);
+    sendJsonError(res, 500, 'Failed to refresh auth token');
+  }
+});
+
+app.post('/api/auth/logout', async (req, res) => {
+  try {
+    const refreshToken = getRefreshTokenFromRequest(req);
+    if (refreshToken) {
+      await dbRun(`
+        UPDATE refresh_tokens
+        SET revoked_at = datetime('now')
+        WHERE token_hash = ? AND revoked_at IS NULL
+      `, [hashRefreshToken(refreshToken)]);
+    }
+
+    clearRefreshCookie(res);
+    res.json({ success: true });
+  } catch (err) {
+    logger.error('Failed to log out user', err);
+    sendJsonError(res, 500, 'Failed to log out user');
+  }
+});
 
 // Get all plants
 app.get('/api/plants', async (req, res) => {

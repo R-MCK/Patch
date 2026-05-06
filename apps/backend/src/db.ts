@@ -84,6 +84,38 @@ export async function initDatabase() {
     )
   `);
 
+    await dbRun(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      email TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+    await dbRun(`
+    CREATE TABLE IF NOT EXISTS refresh_tokens (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      token_hash TEXT NOT NULL UNIQUE,
+      expires_at DATETIME NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      revoked_at DATETIME,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token_hash
+    ON refresh_tokens(token_hash)
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id
+    ON refresh_tokens(user_id)
+  `);
+
     // Insert seed data if empty
     const gardenCount = await dbGet<{ count: number }>('SELECT COUNT(*) as count FROM gardens');
     if (gardenCount?.count === 0) {
