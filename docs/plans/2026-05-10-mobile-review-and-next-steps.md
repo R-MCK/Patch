@@ -151,6 +151,11 @@ Sources:
 - Token persistence now consistently happens through `PatchApiClient` token callback wiring.
 - File: `apps/mobile/src/auth/AuthProvider.tsx`
 
+9. Cross-screen local data consistency:
+- Added a lightweight in-memory data-change subscription in `usePatchData` so all mounted hook instances reload local SQLite after any mutation and after sync completion.
+- Fixes stale lists when creating/updating data from modal flows (e.g., create plant/task) and returning to tab screens.
+- File: `apps/mobile/src/data/usePatchData.ts`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

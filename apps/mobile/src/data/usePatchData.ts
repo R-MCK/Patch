@@ -33,6 +33,20 @@ function createLocalId() {
 let isDbInitialized = false
 let inFlightSync: Promise<void> | null = null
 let lastSuccessfulSharedSyncAt = 0
+const dataChangeListeners = new Set<() => void>()
+
+function subscribeToDataChanges(listener: () => void) {
+  dataChangeListeners.add(listener)
+  return () => {
+    dataChangeListeners.delete(listener)
+  }
+}
+
+function notifyDataChanged() {
+  dataChangeListeners.forEach((listener) => {
+    listener()
+  })
+}
 
 async function runSharedSync(force = false) {
   const now = Date.now()
@@ -119,6 +133,12 @@ export function usePatchData() {
     }
   }, [loadLocalData])
 
+  useEffect(() => {
+    return subscribeToDataChanges(() => {
+      loadLocalData()
+    })
+  }, [loadLocalData])
+
   const waterPlant = useCallback(
     async (plantId: string) => {
       const taskId = createLocalId()
@@ -126,11 +146,11 @@ export function usePatchData() {
         INSERT INTO care_tasks (id, plant_id, task_type, scheduled_date, completed_date, sync_status)
         VALUES (?, ?, 'Watering', datetime('now'), datetime('now'), 'pending_create')
       `, [taskId, plantId])
-      
-      loadLocalData()
-      runSharedSync(true).then(loadLocalData).catch(console.error)
+
+      notifyDataChanged()
+      runSharedSync(true).then(notifyDataChanged).catch(console.error)
     },
-    [loadLocalData],
+    [],
   )
 
   const createPlant = useCallback(
@@ -157,11 +177,11 @@ export function usePatchData() {
         data.growth_stage || null, 
         data.garden_id || null
       ])
-      
-      loadLocalData()
-      runSharedSync(true).then(loadLocalData).catch(console.error)
+
+      notifyDataChanged()
+      runSharedSync(true).then(notifyDataChanged).catch(console.error)
     },
-    [loadLocalData],
+    [],
   )
 
   const createGarden = useCallback(
@@ -186,11 +206,11 @@ export function usePatchData() {
         data.climate_zone || null, 
         data.soil_type || null
       ])
-      
-      loadLocalData()
-      runSharedSync(true).then(loadLocalData).catch(console.error)
+
+      notifyDataChanged()
+      runSharedSync(true).then(notifyDataChanged).catch(console.error)
     },
-    [loadLocalData],
+    [],
   )
 
   const createCareTask = useCallback(
@@ -214,11 +234,11 @@ export function usePatchData() {
         data.frequency || null,
         data.notes || null
       ])
-      
-      loadLocalData()
-      runSharedSync(true).then(loadLocalData).catch(console.error)
+
+      notifyDataChanged()
+      runSharedSync(true).then(notifyDataChanged).catch(console.error)
     },
-    [loadLocalData],
+    [],
   )
 
   const completeCareTask = useCallback(
@@ -234,10 +254,10 @@ export function usePatchData() {
         WHERE id = ?
       `, [taskId])
 
-      loadLocalData()
-      runSharedSync(true).then(loadLocalData).catch(console.error)
+      notifyDataChanged()
+      runSharedSync(true).then(notifyDataChanged).catch(console.error)
     },
-    [loadLocalData],
+    [],
   )
 
   useEffect(() => {
