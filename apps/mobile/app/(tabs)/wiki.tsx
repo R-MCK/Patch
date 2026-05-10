@@ -1,16 +1,24 @@
-import { RefreshControl } from 'react-native'
+import { Pressable, RefreshControl } from 'react-native'
 import { patchColors } from '@patch/core'
+import { Ionicons } from '@expo/vector-icons'
 import { Screen } from '../../src/components/Screen'
 import { StatCard } from '../../src/components/StatCard'
 import { StateMessage } from '../../src/components/StateMessage'
 import { usePatchData } from '../../src/data/usePatchData'
+import { useAuth } from '../../src/auth/AuthProvider'
 
 export default function WikiScreen() {
   const { wikiEntries, isLoading, isRefreshing, error, refresh } = usePatchData()
+  const { signOut } = useAuth()
 
   return (
     <Screen 
       title="Wiki"
+      action={(
+        <Pressable hitSlop={8} accessibilityRole="button" accessibilityLabel="Sign out" onPress={() => { void signOut() }}>
+          <Ionicons name="log-out-outline" size={28} color={patchColors.textSecondary} />
+        </Pressable>
+      )}
       refreshControl={
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
-import { useRouter } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
 import { usePatchData } from '../src/data/usePatchData'
@@ -74,7 +74,14 @@ export default function AddTaskScreen() {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Select Plant *</Text>
           {plants.length === 0 ? (
-            <Text style={styles.emptyText}>You need to add a plant first.</Text>
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>You need to add a plant first.</Text>
+              <Link href="/add-plant" asChild>
+                <Pressable style={styles.addPlantButton}>
+                  <Text style={styles.addPlantButtonText}>Add your first plant</Text>
+                </Pressable>
+              </Link>
+            </View>
           ) : (
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillContainer}>
               {plants.map(plant => (
@@ -202,6 +209,21 @@ const styles = StyleSheet.create({
   emptyText: {
     color: patchColors.textSecondary,
     fontSize: 15,
+  },
+  emptyState: {
+    gap: patchSpacing.sm,
+  },
+  addPlantButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: patchColors.primary,
+    borderRadius: 8,
+    paddingHorizontal: patchSpacing.md,
+    paddingVertical: patchSpacing.sm,
+  },
+  addPlantButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '700',
   },
   pillContainer: {
     gap: patchSpacing.sm,

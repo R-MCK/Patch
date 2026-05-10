@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import type { CareTask, Plant } from '@patch/core'
 import { patchColors, patchSpacing } from '@patch/core'
 
 interface TaskRowProps {
   task: CareTask
   plant?: Plant
+  onComplete?: (taskId: string) => void
+  isCompleting?: boolean
 }
 
 const dateFormatter = new Intl.DateTimeFormat(undefined, {
@@ -12,7 +14,9 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
   day: 'numeric',
 })
 
-export function TaskRow({ task, plant }: TaskRowProps) {
+export function TaskRow({ task, plant, onComplete, isCompleting }: TaskRowProps) {
+  const isCompleted = Boolean(task.completedDate)
+
   return (
     <View style={styles.row}>
       <View style={styles.marker} />
@@ -20,6 +24,18 @@ export function TaskRow({ task, plant }: TaskRowProps) {
         <Text style={styles.title}>{task.taskType}</Text>
         <Text style={styles.detail}>{plant?.name ?? 'Unknown plant'}</Text>
       </View>
+      {isCompleted ? (
+        <Text style={styles.doneText}>Done</Text>
+      ) : onComplete ? (
+        <Pressable
+          accessibilityRole="button"
+          disabled={isCompleting}
+          onPress={() => onComplete(task.id)}
+          style={({ pressed }) => [styles.completeButton, (pressed || isCompleting) ? styles.buttonPressed : null]}
+        >
+          <Text style={styles.completeButtonText}>{isCompleting ? 'Saving' : 'Complete'}</Text>
+        </Pressable>
+      ) : null}
       <Text style={styles.date}>{dateFormatter.format(task.scheduledDate)}</Text>
     </View>
   )
@@ -60,5 +76,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
+  completeButton: {
+    backgroundColor: patchColors.primary,
+    borderRadius: 8,
+    paddingHorizontal: patchSpacing.sm,
+    paddingVertical: 6,
+  },
+  completeButtonText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  doneText: {
+    color: patchColors.primary,
+    fontSize: 12,
+    fontWeight: '800',
+  },
+  buttonPressed: {
+    opacity: 0.72,
+  },
 })
-

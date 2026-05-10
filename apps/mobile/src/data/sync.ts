@@ -14,8 +14,8 @@ export async function syncPull() {
         g.id,
         g.name,
         g.gardenType || null,
-        g.width || null,
-        g.length || null,
+        g.width ?? null,
+        g.length ?? null,
         g.climateZone || null,
         g.soilType || null,
       ])
@@ -68,7 +68,7 @@ export async function syncPull() {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced')
       `, [
         w.id,
-        w.commonName || null,
+        w.commonName || w.title,
         w.scientificName || null,
         w.category || null,
         w.entryDescription || null,
@@ -94,15 +94,34 @@ export async function syncPush() {
     const pendingGardens = db.getAllSync<DbGarden & { sync_status: string }>("SELECT * FROM gardens WHERE sync_status = 'pending_create'")
     for (const g of pendingGardens) {
       try {
-        await patchApiClient.createGarden({
+        const created = await patchApiClient.createGarden({
           name: g.name,
           garden_type: g.garden_type || undefined,
-          width: g.width || undefined,
-          length: g.length || undefined,
+          width: g.width ?? undefined,
+          length: g.length ?? undefined,
           climate_zone: g.climate_zone || undefined,
           soil_type: g.soil_type || undefined,
         })
-        db.runSync("UPDATE gardens SET sync_status = 'synced' WHERE id = ?", [g.id])
+
+        if (created.id === g.id) {
+          db.runSync("UPDATE gardens SET sync_status = 'synced' WHERE id = ?", [g.id])
+          continue
+        }
+
+        db.runSync(`
+          INSERT OR REPLACE INTO gardens (id, name, garden_type, width, length, climate_zone, soil_type, sync_status)
+          VALUES (?, ?, ?, ?, ?, ?, ?, 'synced')
+        `, [
+          created.id,
+          created.name,
+          created.gardenType || null,
+          created.width ?? null,
+          created.length ?? null,
+          created.climateZone || null,
+          created.soilType || null,
+        ])
+        db.runSync("UPDATE plants SET garden_id = ? WHERE garden_id = ?", [created.id, g.id])
+        db.runSync("DELETE FROM gardens WHERE id = ?", [g.id])
       } catch (err) {
         console.error('Failed to push garden', g.id, err)
       }
@@ -112,7 +131,7 @@ export async function syncPush() {
     const pendingPlants = db.getAllSync<DbPlant & { sync_status: string }>("SELECT * FROM plants WHERE sync_status = 'pending_create'")
     for (const p of pendingPlants) {
       try {
-        await patchApiClient.createPlant({
+        const created = await patchApiClient.createPlant({
           name: p.name,
           species: p.species || undefined,
           variety: p.variety || undefined,
@@ -121,7 +140,28 @@ export async function syncPush() {
           growth_stage: p.growth_stage || undefined,
           garden_id: p.garden_id || undefined,
         })
-        db.runSync("UPDATE plants SET sync_status = 'synced' WHERE id = ?", [p.id])
+
+        if (created.id === p.id) {
+          db.runSync("UPDATE plants SET sync_status = 'synced' WHERE id = ?", [p.id])
+          continue
+        }
+
+        db.runSync(`
+          INSERT OR REPLACE INTO plants (id, name, species, variety, planting_date, location, health_status, growth_stage, garden_id, sync_status)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced')
+        `, [
+          created.id,
+          created.name,
+          created.species || null,
+          created.variety || null,
+          created.plantingDate?.toISOString() || null,
+          created.location || null,
+          created.healthStatus || null,
+          created.growthStage || null,
+          created.gardenId || null,
+        ])
+        db.runSync("UPDATE care_tasks SET plant_id = ? WHERE plant_id = ?", [created.id, p.id])
+        db.runSync("DELETE FROM plants WHERE id = ?", [p.id])
       } catch (err) {
         console.error('Failed to push plant', p.id, err)
       }
@@ -131,16 +171,42 @@ export async function syncPush() {
     const pendingTasks = db.getAllSync<DbCareTask & { sync_status: string, notes?: string }>("SELECT * FROM care_tasks WHERE sync_status = 'pending_create'")
     for (const t of pendingTasks) {
       try {
-        await patchApiClient.createCareTask(t.plant_id, {
+        const createdTask = await patchApiClient.createCareTask(t.plant_id, {
           task_type: t.task_type,
           scheduled_date: t.scheduled_date,
           is_recurring: !!t.is_recurring,
           frequency: t.frequency || undefined,
           notes: t.notes || undefined,
         })
-        db.runSync("UPDATE care_tasks SET sync_status = 'synced' WHERE id = ?", [t.id])
+
+        if (t.completed_date) {
+          await patchApiClient.completeTask(createdTask.id, t.completed_date)
+        }
+
+        if (createdTask.id === t.id) {
+          db.runSync("UPDATE care_tasks SET sync_status = 'synced' WHERE id = ?", [t.id])
+          continue
+        }
+
+        db.runSync("UPDATE care_tasks SET id = ?, sync_status = 'synced' WHERE id = ?", [createdTask.id, t.id])
       } catch (err) {
         console.error('Failed to push task', t.id, err)
+      }
+    }
+
+    // 4. Push task updates (e.g. complete actions)
+    const pendingTaskUpdates = db.getAllSync<DbCareTask & { sync_status: string }>(`
+      SELECT * FROM care_tasks
+      WHERE sync_status = 'pending_update'
+    `)
+    for (const t of pendingTaskUpdates) {
+      try {
+        if (t.completed_date) {
+          await patchApiClient.completeTask(t.id, t.completed_date)
+        }
+        db.runSync("UPDATE care_tasks SET sync_status = 'synced' WHERE id = ?", [t.id])
+      } catch (err) {
+        console.error('Failed to push task update', t.id, err)
       }
     }
 

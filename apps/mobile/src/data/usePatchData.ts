@@ -4,7 +4,6 @@ import { isDueToday, isOverdue, mapDbPlantToPlant, mapDbCareTaskToCareTask, mapD
 import type { DbPlant, DbCareTask, DbGarden, DbWikiEntry } from '@patch/core'
 import { db, initDatabase } from './db'
 import { syncWithBackend } from './sync'
-import { randomUUID } from 'crypto'
 
 interface PatchDataState {
   plants: Plant[]
@@ -20,7 +19,40 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Something went wrong'
 }
 
+const SHARED_SYNC_COOLDOWN_MS = 30_000
+
+function createLocalId() {
+  const randomUuid = globalThis.crypto?.randomUUID
+  if (typeof randomUuid === 'function') {
+    return randomUuid.call(globalThis.crypto)
+  }
+
+  return `local-${Date.now()}-${Math.random().toString(16).slice(2)}`
+}
+
 let isDbInitialized = false
+let inFlightSync: Promise<void> | null = null
+let lastSuccessfulSharedSyncAt = 0
+
+async function runSharedSync(force = false) {
+  const now = Date.now()
+  const recentlySynced = now - lastSuccessfulSharedSyncAt < SHARED_SYNC_COOLDOWN_MS
+
+  if (!force && recentlySynced) {
+    return
+  }
+
+  if (!inFlightSync) {
+    inFlightSync = (async () => {
+      await syncWithBackend()
+      lastSuccessfulSharedSyncAt = Date.now()
+    })().finally(() => {
+      inFlightSync = null
+    })
+  }
+
+  await inFlightSync
+}
 
 export function usePatchData() {
   const [state, setState] = useState<PatchDataState>({
@@ -34,12 +66,12 @@ export function usePatchData() {
   })
 
   const loadLocalData = useCallback(() => {
-    if (!isDbInitialized) {
-      initDatabase()
-      isDbInitialized = true
-    }
-
     try {
+      if (!isDbInitialized) {
+        initDatabase()
+        isDbInitialized = true
+      }
+
       const dbPlants = db.getAllSync<DbPlant>('SELECT * FROM plants')
       const dbTasks = db.getAllSync<DbCareTask>('SELECT * FROM care_tasks')
       const dbGardens = db.getAllSync<DbGarden>('SELECT * FROM gardens')
@@ -76,7 +108,7 @@ export function usePatchData() {
 
     // Trigger background sync
     try {
-      await syncWithBackend()
+      await runSharedSync(mode === 'refresh')
       // Reload local data after sync
       loadLocalData()
     } catch (error) {
@@ -89,14 +121,14 @@ export function usePatchData() {
 
   const waterPlant = useCallback(
     async (plantId: string) => {
-      const taskId = crypto.randomUUID()
+      const taskId = createLocalId()
       db.runSync(`
         INSERT INTO care_tasks (id, plant_id, task_type, scheduled_date, completed_date, sync_status)
         VALUES (?, ?, 'Watering', datetime('now'), datetime('now'), 'pending_create')
       `, [taskId, plantId])
       
       loadLocalData()
-      syncWithBackend().then(loadLocalData).catch(console.error)
+      runSharedSync(true).then(loadLocalData).catch(console.error)
     },
     [loadLocalData],
   )
@@ -111,7 +143,7 @@ export function usePatchData() {
       growth_stage?: string
       garden_id?: string
     }) => {
-      const id = crypto.randomUUID()
+      const id = createLocalId()
       db.runSync(`
         INSERT INTO plants (id, name, species, variety, location, health_status, growth_stage, garden_id, sync_status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending_create')
@@ -127,7 +159,7 @@ export function usePatchData() {
       ])
       
       loadLocalData()
-      syncWithBackend().then(loadLocalData).catch(console.error)
+      runSharedSync(true).then(loadLocalData).catch(console.error)
     },
     [loadLocalData],
   )
@@ -141,7 +173,7 @@ export function usePatchData() {
       climate_zone?: string
       soil_type?: string
     }) => {
-      const id = crypto.randomUUID()
+      const id = createLocalId()
       db.runSync(`
         INSERT INTO gardens (id, name, garden_type, width, length, climate_zone, soil_type, sync_status)
         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending_create')
@@ -149,14 +181,14 @@ export function usePatchData() {
         id, 
         data.name, 
         data.garden_type || null, 
-        data.width || null, 
-        data.length || null, 
+        data.width ?? null, 
+        data.length ?? null, 
         data.climate_zone || null, 
         data.soil_type || null
       ])
       
       loadLocalData()
-      syncWithBackend().then(loadLocalData).catch(console.error)
+      runSharedSync(true).then(loadLocalData).catch(console.error)
     },
     [loadLocalData],
   )
@@ -169,7 +201,7 @@ export function usePatchData() {
       frequency?: string
       notes?: string
     }) => {
-      const id = crypto.randomUUID()
+      const id = createLocalId()
       db.runSync(`
         INSERT INTO care_tasks (id, plant_id, task_type, scheduled_date, is_recurring, frequency, notes, sync_status)
         VALUES (?, ?, ?, ?, ?, ?, ?, 'pending_create')
@@ -184,7 +216,26 @@ export function usePatchData() {
       ])
       
       loadLocalData()
-      syncWithBackend().then(loadLocalData).catch(console.error)
+      runSharedSync(true).then(loadLocalData).catch(console.error)
+    },
+    [loadLocalData],
+  )
+
+  const completeCareTask = useCallback(
+    async (taskId: string) => {
+      db.runSync(`
+        UPDATE care_tasks
+        SET
+          completed_date = datetime('now'),
+          sync_status = CASE
+            WHEN sync_status = 'pending_create' THEN 'pending_create'
+            ELSE 'pending_update'
+          END
+        WHERE id = ?
+      `, [taskId])
+
+      loadLocalData()
+      runSharedSync(true).then(loadLocalData).catch(console.error)
     },
     [loadLocalData],
   )
@@ -214,5 +265,6 @@ export function usePatchData() {
     createPlant,
     createGarden,
     createCareTask,
+    completeCareTask,
   }
 }
