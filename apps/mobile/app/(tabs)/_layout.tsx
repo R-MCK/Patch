@@ -1,19 +1,13 @@
 import { Ionicons } from '@expo/vector-icons'
 import { Redirect, Tabs } from 'expo-router'
-import { ActivityIndicator, Text, View } from 'react-native'
-import { patchColors } from '@patch/core'
 import { useAuth } from '../../src/auth/AuthProvider'
+import { SessionLoadingView } from '../../src/components/SessionLoadingView'
 
 export default function TabsLayout() {
   const { isAuthenticated, isBootstrapping } = useAuth()
 
   if (isBootstrapping) {
-    return (
-      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', gap: 12, backgroundColor: '#f7faf7' }}>
-        <ActivityIndicator color={patchColors.primary} />
-        <Text style={{ color: patchColors.textSecondary }}>Restoring session...</Text>
-      </View>
-    )
+    return <SessionLoadingView />
   }
 
   if (!isAuthenticated) {

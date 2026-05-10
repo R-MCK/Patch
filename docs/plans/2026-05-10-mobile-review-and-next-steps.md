@@ -235,6 +235,10 @@ Sources:
 - Reduces reliance on visual proximity for field meaning in screen readers.
 - Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`
 
+26. Bootstrap loading component reuse:
+- Reused `SessionLoadingView` in tab layout bootstrap path to eliminate duplicate inline loading UI and keep auth-restore visuals consistent.
+- File: `apps/mobile/app/(tabs)/_layout.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
