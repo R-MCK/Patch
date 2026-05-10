@@ -49,13 +49,28 @@ export function SyncStatusBanner({
   }
 
   if (!lastSyncedAt) {
+    if (pendingChangesCount > 0) {
+      return (
+        <Text style={styles.metaText}>
+          {pendingChangesCount} local change(s) queued for sync.
+        </Text>
+      )
+    }
+
     return null
   }
 
   return (
-    <Text style={styles.metaText}>
-      Last synced {new Date(lastSyncedAt).toLocaleTimeString()}
-    </Text>
+    <View style={styles.metaContainer}>
+      <Text style={styles.metaText}>
+        Last synced {new Date(lastSyncedAt).toLocaleTimeString()}
+      </Text>
+      {pendingChangesCount > 0 ? (
+        <Text style={styles.metaText}>
+          {pendingChangesCount} local change(s) queued for sync.
+        </Text>
+      ) : null}
+    </View>
   )
 }
 
@@ -113,5 +128,8 @@ const styles = StyleSheet.create({
     color: patchColors.textSecondary,
     fontSize: 12,
     marginTop: -patchSpacing.xs,
+  },
+  metaContainer: {
+    gap: 2,
   },
 })

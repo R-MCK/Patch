@@ -211,6 +211,11 @@ Sources:
 - Set notes input `submitBehavior="blurAndSubmit"` for more reliable multiline submit on modern React Native.
 - File: `apps/mobile/app/add-task.tsx`
 
+21. Queued-change visibility when not actively syncing:
+- Updated sync banner to show pending local change count even outside active sync/error states.
+- Prevents ambiguous “Last synced” messaging when local edits are queued for upload.
+- File: `apps/mobile/src/components/SyncStatusBanner.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
