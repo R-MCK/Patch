@@ -156,6 +156,10 @@ Sources:
 - Fixes stale lists when creating/updating data from modal flows (e.g., create plant/task) and returning to tab screens.
 - File: `apps/mobile/src/data/usePatchData.ts`
 
+10. Keyboard-safe create forms:
+- Added `KeyboardAvoidingView` wrappers to add flows so form content and controls are less likely to be obscured while typing on iOS/Android keyboards.
+- Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

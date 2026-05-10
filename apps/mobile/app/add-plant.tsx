@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import { Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
@@ -54,93 +54,99 @@ export default function AddPlantScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Cancel adding plant"
-          onPress={() => router.back()}
-          style={styles.headerButton}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.cancelText}>Cancel</Text>
-        </Pressable>
-        <Text style={styles.title}>New Plant</Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Save new plant"
-          onPress={handleSave}
-          style={styles.headerButton}
-          disabled={isSubmitting || !name.trim()}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color={patchColors.primary} />
-          ) : (
-            <Text style={[styles.saveText, !name.trim() && styles.disabledText]}>Save</Text>
+      <KeyboardAvoidingView
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        keyboardVerticalOffset={Platform.select({ ios: 12, android: 0 })}
+        style={styles.container}
+      >
+        <View style={styles.header}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cancel adding plant"
+            onPress={() => router.back()}
+            style={styles.headerButton}
+            disabled={isSubmitting}
+          >
+            <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
+          <Text style={styles.title}>New Plant</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Save new plant"
+            onPress={handleSave}
+            style={styles.headerButton}
+            disabled={isSubmitting || !name.trim()}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color={patchColors.primary} />
+            ) : (
+              <Text style={[styles.saveText, !name.trim() && styles.disabledText]}>Save</Text>
+            )}
+          </Pressable>
+        </View>
+
+        <ScrollView contentContainerStyle={styles.content}>
+          {error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
           )}
-        </Pressable>
-      </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        )}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Basic Info</Text>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Name *</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={(text) => {
+                  setName(text)
+                  setError(null)
+                }}
+                placeholder="e.g. Heirloom Tomato"
+                placeholderTextColor={patchColors.textSecondary}
+                autoFocus
+              />
+            </View>
+            
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Species</Text>
+              <TextInput
+                style={styles.input}
+                value={species}
+                onChangeText={setSpecies}
+                placeholder="e.g. Solanum lycopersicum"
+                placeholderTextColor={patchColors.textSecondary}
+              />
+            </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Basic Info</Text>
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Name *</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={(text) => {
-                setName(text)
-                setError(null)
-              }}
-              placeholder="e.g. Heirloom Tomato"
-              placeholderTextColor={patchColors.textSecondary}
-              autoFocus
-            />
-          </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Species</Text>
-            <TextInput
-              style={styles.input}
-              value={species}
-              onChangeText={setSpecies}
-              placeholder="e.g. Solanum lycopersicum"
-              placeholderTextColor={patchColors.textSecondary}
-            />
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Variety</Text>
+              <TextInput
+                style={styles.input}
+                value={variety}
+                onChangeText={setVariety}
+                placeholder="e.g. Brandywine"
+                placeholderTextColor={patchColors.textSecondary}
+              />
+            </View>
           </View>
 
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Variety</Text>
-            <TextInput
-              style={styles.input}
-              value={variety}
-              onChangeText={setVariety}
-              placeholder="e.g. Brandywine"
-              placeholderTextColor={patchColors.textSecondary}
-            />
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Location</Text>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Where is it?</Text>
+              <TextInput
+                style={styles.input}
+                value={location}
+                onChangeText={setLocation}
+                placeholder="e.g. Front Porch, Raised Bed 1"
+                placeholderTextColor={patchColors.textSecondary}
+              />
+            </View>
           </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Location</Text>
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Where is it?</Text>
-            <TextInput
-              style={styles.input}
-              value={location}
-              onChangeText={setLocation}
-              placeholder="e.g. Front Porch, Raised Bed 1"
-              placeholderTextColor={patchColors.textSecondary}
-            />
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
@@ -149,6 +155,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: patchColors.surface,
+  },
+  container: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import { Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
@@ -50,79 +50,85 @@ export default function AddGardenScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Cancel adding garden"
-          onPress={() => router.back()}
-          style={styles.headerButton}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.cancelText}>Cancel</Text>
-        </Pressable>
-        <Text style={styles.title}>New Garden</Text>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Save new garden"
-          onPress={handleSave}
-          style={styles.headerButton}
-          disabled={isSubmitting || !name.trim()}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color={patchColors.primary} />
-          ) : (
-            <Text style={[styles.saveText, !name.trim() && styles.disabledText]}>Save</Text>
-          )}
-        </Pressable>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        )}
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Basic Info</Text>
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Name *</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={(text) => {
-                setName(text)
-                setError(null)
-              }}
-              placeholder="e.g. Backyard Raised Bed"
-              placeholderTextColor={patchColors.textSecondary}
-              autoFocus
-            />
-          </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Garden Type</Text>
-            <TextInput
-              style={styles.input}
-              value={gardenType}
-              onChangeText={setGardenType}
-              placeholder="e.g. Raised Bed, In-Ground"
-              placeholderTextColor={patchColors.textSecondary}
-            />
-          </View>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Climate Zone</Text>
-            <TextInput
-              style={styles.input}
-              value={climateZone}
-              onChangeText={setClimateZone}
-              placeholder="e.g. 9b"
-              placeholderTextColor={patchColors.textSecondary}
-            />
-          </View>
+      <KeyboardAvoidingView
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        keyboardVerticalOffset={Platform.select({ ios: 12, android: 0 })}
+        style={styles.container}
+      >
+        <View style={styles.header}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cancel adding garden"
+            onPress={() => router.back()}
+            style={styles.headerButton}
+            disabled={isSubmitting}
+          >
+            <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
+          <Text style={styles.title}>New Garden</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Save new garden"
+            onPress={handleSave}
+            style={styles.headerButton}
+            disabled={isSubmitting || !name.trim()}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color={patchColors.primary} />
+            ) : (
+              <Text style={[styles.saveText, !name.trim() && styles.disabledText]}>Save</Text>
+            )}
+          </Pressable>
         </View>
-      </ScrollView>
+
+        <ScrollView contentContainerStyle={styles.content}>
+          {error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Basic Info</Text>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Name *</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={(text) => {
+                  setName(text)
+                  setError(null)
+                }}
+                placeholder="e.g. Backyard Raised Bed"
+                placeholderTextColor={patchColors.textSecondary}
+                autoFocus
+              />
+            </View>
+            
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Garden Type</Text>
+              <TextInput
+                style={styles.input}
+                value={gardenType}
+                onChangeText={setGardenType}
+                placeholder="e.g. Raised Bed, In-Ground"
+                placeholderTextColor={patchColors.textSecondary}
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Climate Zone</Text>
+              <TextInput
+                style={styles.input}
+                value={climateZone}
+                onChangeText={setClimateZone}
+                placeholder="e.g. 9b"
+                placeholderTextColor={patchColors.textSecondary}
+              />
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
@@ -131,6 +137,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: patchColors.surface,
+  },
+  container: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

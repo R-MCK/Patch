@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
+import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import { Link, Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
@@ -56,112 +56,118 @@ export default function AddTaskScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Cancel adding task"
-          onPress={() => router.back()}
-          style={styles.headerButton}
-          disabled={isSubmitting}
-        >
-          <Text style={styles.cancelText}>Cancel</Text>
-        </Pressable>
-        <Text style={styles.title}>New Task</Text>
-        <Pressable 
-          accessibilityRole="button"
-          accessibilityLabel="Save new task"
-          onPress={handleSave} 
-          style={styles.headerButton} 
-          disabled={isSubmitting || !selectedPlantId || !taskType.trim()}
-        >
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color={patchColors.primary} />
-          ) : (
-            <Text style={[styles.saveText, (!selectedPlantId || !taskType.trim()) && styles.disabledText]}>Save</Text>
-          )}
-        </Pressable>
-      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        keyboardVerticalOffset={Platform.select({ ios: 12, android: 0 })}
+        style={styles.container}
+      >
+        <View style={styles.header}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cancel adding task"
+            onPress={() => router.back()}
+            style={styles.headerButton}
+            disabled={isSubmitting}
+          >
+            <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
+          <Text style={styles.title}>New Task</Text>
+          <Pressable 
+            accessibilityRole="button"
+            accessibilityLabel="Save new task"
+            onPress={handleSave} 
+            style={styles.headerButton} 
+            disabled={isSubmitting || !selectedPlantId || !taskType.trim()}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color={patchColors.primary} />
+            ) : (
+              <Text style={[styles.saveText, (!selectedPlantId || !taskType.trim()) && styles.disabledText]}>Save</Text>
+            )}
+          </Pressable>
+        </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        )}
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>1. Select Plant *</Text>
-          {plants.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>You need to add a plant first.</Text>
-              <Link href="/add-plant" asChild>
-                <Pressable style={styles.addPlantButton}>
-                  <Text style={styles.addPlantButtonText}>Add your first plant</Text>
-                </Pressable>
-              </Link>
+        <ScrollView contentContainerStyle={styles.content}>
+          {error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
             </View>
-          ) : (
+          )}
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>1. Select Plant *</Text>
+            {plants.length === 0 ? (
+              <View style={styles.emptyState}>
+                <Text style={styles.emptyText}>You need to add a plant first.</Text>
+                <Link href="/add-plant" asChild>
+                  <Pressable style={styles.addPlantButton}>
+                    <Text style={styles.addPlantButtonText}>Add your first plant</Text>
+                  </Pressable>
+                </Link>
+              </View>
+            ) : (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillContainer}>
+                {plants.map(plant => (
+                  <Pressable 
+                    key={plant.id} 
+                    style={[styles.pill, selectedPlantId === plant.id && styles.pillSelected]}
+                    onPress={() => setSelectedPlantId(plant.id)}
+                  >
+                    <Text style={[styles.pillText, selectedPlantId === plant.id && styles.pillTextSelected]}>
+                      {plant.name}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            )}
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>2. Task Type *</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillContainer}>
-              {plants.map(plant => (
+              {COMMON_TASKS.map(task => (
                 <Pressable 
-                  key={plant.id} 
-                  style={[styles.pill, selectedPlantId === plant.id && styles.pillSelected]}
-                  onPress={() => setSelectedPlantId(plant.id)}
+                  key={task} 
+                  style={[styles.pill, taskType === task && styles.pillSelected]}
+                  onPress={() => {
+                    setTaskType(task)
+                    setError(null)
+                  }}
                 >
-                  <Text style={[styles.pillText, selectedPlantId === plant.id && styles.pillTextSelected]}>
-                    {plant.name}
+                  <Text style={[styles.pillText, taskType === task && styles.pillTextSelected]}>
+                    {task}
                   </Text>
                 </Pressable>
               ))}
             </ScrollView>
-          )}
-        </View>
+            
+            <TextInput
+              style={[styles.input, { marginTop: patchSpacing.sm }]}
+              value={taskType}
+              onChangeText={(text) => {
+                setTaskType(text)
+                setError(null)
+              }}
+              placeholder="Or type a custom task..."
+              placeholderTextColor={patchColors.textSecondary}
+            />
+          </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>2. Task Type *</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillContainer}>
-            {COMMON_TASKS.map(task => (
-              <Pressable 
-                key={task} 
-                style={[styles.pill, taskType === task && styles.pillSelected]}
-                onPress={() => {
-                  setTaskType(task)
-                  setError(null)
-                }}
-              >
-                <Text style={[styles.pillText, taskType === task && styles.pillTextSelected]}>
-                  {task}
-                </Text>
-              </Pressable>
-            ))}
-          </ScrollView>
-          
-          <TextInput
-            style={[styles.input, { marginTop: patchSpacing.sm }]}
-            value={taskType}
-            onChangeText={(text) => {
-              setTaskType(text)
-              setError(null)
-            }}
-            placeholder="Or type a custom task..."
-            placeholderTextColor={patchColors.textSecondary}
-          />
-        </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Notes</Text>
+            <TextInput
+              style={[styles.input, { height: 100 }]}
+              value={notes}
+              onChangeText={setNotes}
+              placeholder="Any additional details?"
+              placeholderTextColor={patchColors.textSecondary}
+              multiline
+              textAlignVertical="top"
+            />
+          </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Notes</Text>
-          <TextInput
-            style={[styles.input, { height: 100 }]}
-            value={notes}
-            onChangeText={setNotes}
-            placeholder="Any additional details?"
-            placeholderTextColor={patchColors.textSecondary}
-            multiline
-            textAlignVertical="top"
-          />
-        </View>
-
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
@@ -170,6 +176,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: patchColors.surface,
+  },
+  container: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
