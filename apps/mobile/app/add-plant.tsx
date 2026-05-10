@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
 import { usePatchData } from '../src/data/usePatchData'
+import { useAuth } from '../src/auth/AuthProvider'
 
 export default function AddPlantScreen() {
   const router = useRouter()
   const { createPlant } = usePatchData()
+  const { isAuthenticated, isBootstrapping } = useAuth()
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -16,6 +18,14 @@ export default function AddPlantScreen() {
   const [species, setSpecies] = useState('')
   const [variety, setVariety] = useState('')
   const [location, setLocation] = useState('')
+
+  if (isBootstrapping) {
+    return null
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />
+  }
 
   const handleSave = async () => {
     if (!name.trim()) {

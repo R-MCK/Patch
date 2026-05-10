@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
-import { Link, useRouter } from 'expo-router'
+import { Link, Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
 import { usePatchData } from '../src/data/usePatchData'
+import { useAuth } from '../src/auth/AuthProvider'
 
 const COMMON_TASKS = ['Watering', 'Fertilizing', 'Pruning', 'Pest Control', 'Harvesting']
 
 export default function AddTaskScreen() {
   const router = useRouter()
   const { plants, createCareTask } = usePatchData()
+  const { isAuthenticated, isBootstrapping } = useAuth()
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -17,6 +19,14 @@ export default function AddTaskScreen() {
   const [selectedPlantId, setSelectedPlantId] = useState<string | null>(null)
   const [taskType, setTaskType] = useState('')
   const [notes, setNotes] = useState('')
+
+  if (isBootstrapping) {
+    return null
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />
+  }
 
   const handleSave = async () => {
     if (!selectedPlantId) {

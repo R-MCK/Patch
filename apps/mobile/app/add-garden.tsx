@@ -1,13 +1,15 @@
 import { useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
-import { useRouter } from 'expo-router'
+import { Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
 import { usePatchData } from '../src/data/usePatchData'
+import { useAuth } from '../src/auth/AuthProvider'
 
 export default function AddGardenScreen() {
   const router = useRouter()
   const { createGarden } = usePatchData()
+  const { isAuthenticated, isBootstrapping } = useAuth()
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -15,6 +17,14 @@ export default function AddGardenScreen() {
   const [name, setName] = useState('')
   const [gardenType, setGardenType] = useState('')
   const [climateZone, setClimateZone] = useState('')
+
+  if (isBootstrapping) {
+    return null
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />
+  }
 
   const handleSave = async () => {
     if (!name.trim()) {
