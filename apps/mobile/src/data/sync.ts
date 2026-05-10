@@ -2,6 +2,10 @@ import { db } from './db'
 import { patchApiClient } from '../api/client'
 import type { DbPlant, DbGarden, DbCareTask, DbWikiEntry } from '@patch/core'
 
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : 'Unknown sync error'
+}
+
 export async function syncPull() {
   try {
     // 1. Pull Gardens
@@ -131,11 +135,14 @@ export async function syncPull() {
     })
   } catch (error) {
     console.error('Failed to pull from remote', error)
+    throw error
   }
 }
 
 export async function syncPush() {
   try {
+    const failures: string[] = []
+
     // 1. Push Gardens
     const pendingGardens = db.getAllSync<DbGarden & { sync_status: string }>("SELECT * FROM gardens WHERE sync_status = 'pending_create'")
     for (const g of pendingGardens) {
@@ -170,6 +177,7 @@ export async function syncPush() {
         db.runSync("DELETE FROM gardens WHERE id = ?", [g.id])
       } catch (err) {
         console.error('Failed to push garden', g.id, err)
+        failures.push(`garden:${g.id}:${getErrorMessage(err)}`)
       }
     }
 
@@ -210,6 +218,7 @@ export async function syncPush() {
         db.runSync("DELETE FROM plants WHERE id = ?", [p.id])
       } catch (err) {
         console.error('Failed to push plant', p.id, err)
+        failures.push(`plant:${p.id}:${getErrorMessage(err)}`)
       }
     }
 
@@ -237,6 +246,7 @@ export async function syncPush() {
         db.runSync("UPDATE care_tasks SET id = ?, sync_status = 'synced' WHERE id = ?", [createdTask.id, t.id])
       } catch (err) {
         console.error('Failed to push task', t.id, err)
+        failures.push(`task:${t.id}:${getErrorMessage(err)}`)
       }
     }
 
@@ -253,11 +263,16 @@ export async function syncPush() {
         db.runSync("UPDATE care_tasks SET sync_status = 'synced' WHERE id = ?", [t.id])
       } catch (err) {
         console.error('Failed to push task update', t.id, err)
+        failures.push(`task-update:${t.id}:${getErrorMessage(err)}`)
       }
     }
 
+    if (failures.length > 0) {
+      throw new Error(`Failed to push ${failures.length} local change(s). First error: ${failures[0]}`)
+    }
   } catch (error) {
     console.error('Failed to push to remote', error)
+    throw error
   }
 }
 

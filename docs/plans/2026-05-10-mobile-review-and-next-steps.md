@@ -174,6 +174,11 @@ Sources:
 - Gives users an immediate retry path without requiring pull-to-refresh gestures.
 - Files: `apps/mobile/src/components/SyncStatusBanner.tsx`, `apps/mobile/app/(tabs)/index.tsx`, `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/(tabs)/wiki.tsx`
 
+14. Sync error propagation correctness:
+- Updated sync engine to rethrow pull and push failures after logging so upstream sync state reflects real failures.
+- Push path now aggregates per-row failures and surfaces an error summary when any local pending rows fail to sync.
+- File: `apps/mobile/src/data/sync.ts`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
