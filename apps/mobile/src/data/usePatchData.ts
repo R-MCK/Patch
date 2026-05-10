@@ -15,6 +15,12 @@ interface PatchDataState {
   error: string | null
 }
 
+interface SharedSyncState {
+  isSyncing: boolean
+  lastSyncedAt: number | null
+  lastSyncError: string | null
+}
+
 function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Something went wrong'
 }
@@ -34,6 +40,12 @@ let isDbInitialized = false
 let inFlightSync: Promise<void> | null = null
 let lastSuccessfulSharedSyncAt = 0
 const dataChangeListeners = new Set<() => void>()
+const syncStateListeners = new Set<(state: SharedSyncState) => void>()
+const sharedSyncState: SharedSyncState = {
+  isSyncing: false,
+  lastSyncedAt: null,
+  lastSyncError: null,
+}
 
 function subscribeToDataChanges(listener: () => void) {
   dataChangeListeners.add(listener)
@@ -48,6 +60,24 @@ function notifyDataChanged() {
   })
 }
 
+function subscribeToSyncState(listener: (state: SharedSyncState) => void) {
+  syncStateListeners.add(listener)
+  return () => {
+    syncStateListeners.delete(listener)
+  }
+}
+
+function notifySyncStateChanged() {
+  syncStateListeners.forEach((listener) => {
+    listener(sharedSyncState)
+  })
+}
+
+function updateSyncState(next: Partial<SharedSyncState>) {
+  Object.assign(sharedSyncState, next)
+  notifySyncStateChanged()
+}
+
 async function runSharedSync(force = false) {
   const now = Date.now()
   const recentlySynced = now - lastSuccessfulSharedSyncAt < SHARED_SYNC_COOLDOWN_MS
@@ -57,9 +87,29 @@ async function runSharedSync(force = false) {
   }
 
   if (!inFlightSync) {
+    updateSyncState({
+      isSyncing: true,
+      lastSyncError: null,
+    })
+
     inFlightSync = (async () => {
-      await syncWithBackend()
-      lastSuccessfulSharedSyncAt = Date.now()
+      try {
+        await syncWithBackend()
+        lastSuccessfulSharedSyncAt = Date.now()
+        updateSyncState({
+          lastSyncedAt: lastSuccessfulSharedSyncAt,
+          lastSyncError: null,
+        })
+      } catch (error) {
+        updateSyncState({
+          lastSyncError: getErrorMessage(error),
+        })
+        throw error
+      } finally {
+        updateSyncState({
+          isSyncing: false,
+        })
+      }
     })().finally(() => {
       inFlightSync = null
     })
@@ -78,6 +128,7 @@ export function usePatchData() {
     isRefreshing: false,
     error: null,
   })
+  const [syncState, setSyncState] = useState<SharedSyncState>(sharedSyncState)
 
   const loadLocalData = useCallback(() => {
     try {
@@ -138,6 +189,12 @@ export function usePatchData() {
       loadLocalData()
     })
   }, [loadLocalData])
+
+  useEffect(() => {
+    return subscribeToSyncState((nextState) => {
+      setSyncState({ ...nextState })
+    })
+  }, [])
 
   const waterPlant = useCallback(
     async (plantId: string) => {
@@ -279,6 +336,7 @@ export function usePatchData() {
 
   return {
     ...state,
+    ...syncState,
     ...summary,
     refresh: () => load('refresh'),
     waterPlant,

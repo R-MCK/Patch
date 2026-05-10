@@ -160,6 +160,11 @@ Sources:
 - Added `KeyboardAvoidingView` wrappers to add flows so form content and controls are less likely to be obscured while typing on iOS/Android keyboards.
 - Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`
 
+11. Sync-status UX feedback:
+- Added shared sync metadata (`isSyncing`, `lastSyncedAt`, `lastSyncError`) in `usePatchData`.
+- Today screen now surfaces syncing, offline fallback, and last sync time so users understand data freshness.
+- Files: `apps/mobile/src/data/usePatchData.ts`, `apps/mobile/app/(tabs)/index.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
