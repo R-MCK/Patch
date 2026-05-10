@@ -88,7 +88,11 @@ export default function AddTaskScreen() {
           </Pressable>
         </View>
 
-        <ScrollView contentContainerStyle={styles.content}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+        >
           {error && (
             <View style={styles.errorContainer}>
               <Text style={styles.errorText}>{error}</Text>
@@ -168,6 +172,7 @@ export default function AddTaskScreen() {
             <Text style={styles.sectionTitle}>Notes</Text>
             <TextInput
               autoCapitalize="sentences"
+              blurOnSubmit
               ref={notesInputRef}
               returnKeyType="done"
               style={[styles.input, { height: 100 }]}

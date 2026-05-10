@@ -200,6 +200,12 @@ Sources:
 - Added selected-state accessibility metadata for plant/task choice pills to improve VoiceOver/TalkBack clarity.
 - File: `apps/mobile/app/add-task.tsx`
 
+19. Keyboard interaction reliability in create flows:
+- Added `keyboardShouldPersistTaps="handled"` and `keyboardDismissMode="on-drag"` to create-form scroll containers.
+- Improves tap responsiveness on pills/buttons while keyboard is open and provides smoother dismissal behavior.
+- Also set notes field in add-task to submit on `Done` more reliably with `blurOnSubmit`.
+- Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
