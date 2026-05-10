@@ -63,6 +63,7 @@ function notifyDataChanged() {
 
 function subscribeToSyncState(listener: (state: SharedSyncState) => void) {
   syncStateListeners.add(listener)
+  listener(sharedSyncState)
   return () => {
     syncStateListeners.delete(listener)
   }
@@ -130,7 +131,7 @@ export function usePatchData() {
     isRefreshing: false,
     error: null,
   })
-  const [syncState, setSyncState] = useState<SharedSyncState>(sharedSyncState)
+  const [syncState, setSyncState] = useState<SharedSyncState>({ ...sharedSyncState })
 
   const loadLocalData = useCallback(() => {
     try {

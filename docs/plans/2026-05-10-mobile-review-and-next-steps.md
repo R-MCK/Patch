@@ -189,6 +189,12 @@ Sources:
 - Reduced extra taps and improved form completion speed on iOS/Android keyboards.
 - Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`
 
+17. Sync-state subscription consistency:
+- Updated sync-state subscription to emit the current shared snapshot immediately on subscribe.
+- Initialized hook-local sync state from a cloned snapshot to avoid shared-reference drift.
+- Prevents mount-timing gaps where a screen could miss current sync metadata.
+- File: `apps/mobile/src/data/usePatchData.ts`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
