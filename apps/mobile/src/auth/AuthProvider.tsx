@@ -6,7 +6,6 @@ import {
   getPatchAccessToken,
   getPatchApiToken,
   hydrateStoredPatchAccessToken,
-  persistPatchAccessToken,
 } from '../api/authTokens'
 import { clearLocalUserData, initDatabase } from '../data/db'
 
@@ -87,14 +86,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signIn = useCallback(async (email: string, password: string) => {
     setError(null)
     const response = await patchApiClient.login({ email, password })
-    await persistPatchAccessToken(response.accessToken)
     setUser(response.user)
   }, [])
 
   const signUp = useCallback(async (name: string, email: string, password: string) => {
     setError(null)
     const response = await patchApiClient.register({ name, email, password })
-    await persistPatchAccessToken(response.accessToken)
     setUser(response.user)
   }, [])
 

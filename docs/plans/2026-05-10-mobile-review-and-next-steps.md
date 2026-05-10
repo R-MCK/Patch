@@ -146,6 +146,11 @@ Sources:
 - Added submit-on-keyboard behavior for final password confirmation fields.
 - Files: `apps/mobile/app/login.tsx`, `apps/mobile/app/register.tsx`
 
+8. Auth token write de-duplication:
+- Removed duplicate SecureStore token writes from `AuthProvider` sign-in/sign-up paths.
+- Token persistence now consistently happens through `PatchApiClient` token callback wiring.
+- File: `apps/mobile/src/auth/AuthProvider.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
