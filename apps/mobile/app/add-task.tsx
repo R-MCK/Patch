@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import { Link, Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -19,6 +19,7 @@ export default function AddTaskScreen() {
   const [selectedPlantId, setSelectedPlantId] = useState<string | null>(null)
   const [taskType, setTaskType] = useState('')
   const [notes, setNotes] = useState('')
+  const notesInputRef = useRef<TextInput>(null)
 
   if (isBootstrapping) {
     return null
@@ -110,6 +111,9 @@ export default function AddTaskScreen() {
                 {plants.map(plant => (
                   <Pressable 
                     key={plant.id} 
+                    accessibilityRole="button"
+                    accessibilityLabel={`Select plant ${plant.name}`}
+                    accessibilityState={{ selected: selectedPlantId === plant.id }}
                     style={[styles.pill, selectedPlantId === plant.id && styles.pillSelected]}
                     onPress={() => setSelectedPlantId(plant.id)}
                   >
@@ -125,12 +129,15 @@ export default function AddTaskScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>2. Task Type *</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillContainer}>
-              {COMMON_TASKS.map(task => (
-                <Pressable 
-                  key={task} 
-                  style={[styles.pill, taskType === task && styles.pillSelected]}
-                  onPress={() => {
-                    setTaskType(task)
+            {COMMON_TASKS.map(task => (
+              <Pressable 
+                key={task} 
+                accessibilityRole="button"
+                accessibilityLabel={`Select task type ${task}`}
+                accessibilityState={{ selected: taskType === task }}
+                style={[styles.pill, taskType === task && styles.pillSelected]}
+                onPress={() => {
+                  setTaskType(task)
                     setError(null)
                   }}
                 >
@@ -142,23 +149,35 @@ export default function AddTaskScreen() {
             </ScrollView>
             
             <TextInput
+              autoCapitalize="words"
+              blurOnSubmit={false}
               style={[styles.input, { marginTop: patchSpacing.sm }]}
               value={taskType}
               onChangeText={(text) => {
                 setTaskType(text)
                 setError(null)
               }}
+              onSubmitEditing={() => notesInputRef.current?.focus()}
               placeholder="Or type a custom task..."
               placeholderTextColor={patchColors.textSecondary}
+              returnKeyType="next"
             />
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Notes</Text>
             <TextInput
+              autoCapitalize="sentences"
+              ref={notesInputRef}
+              returnKeyType="done"
               style={[styles.input, { height: 100 }]}
               value={notes}
               onChangeText={setNotes}
+              onSubmitEditing={() => {
+                if (!isSubmitting && selectedPlantId && taskType.trim()) {
+                  void handleSave()
+                }
+              }}
               placeholder="Any additional details?"
               placeholderTextColor={patchColors.textSecondary}
               multiline

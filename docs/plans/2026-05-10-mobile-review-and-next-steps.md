@@ -195,6 +195,11 @@ Sources:
 - Prevents mount-timing gaps where a screen could miss current sync metadata.
 - File: `apps/mobile/src/data/usePatchData.ts`
 
+18. Task creation flow ergonomics:
+- Added keyboard return-key progression from custom task input to notes field.
+- Added selected-state accessibility metadata for plant/task choice pills to improve VoiceOver/TalkBack clarity.
+- File: `apps/mobile/app/add-task.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
