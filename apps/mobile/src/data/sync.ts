@@ -8,8 +8,17 @@ export async function syncPull() {
     const gardens = await patchApiClient.getGardens(1000, 0)
     gardens.data.forEach((g) => {
       db.runSync(`
-        INSERT OR REPLACE INTO gardens (id, name, garden_type, width, length, climate_zone, soil_type, sync_status)
+        INSERT INTO gardens (id, name, garden_type, width, length, climate_zone, soil_type, sync_status)
         VALUES (?, ?, ?, ?, ?, ?, ?, 'synced')
+        ON CONFLICT(id) DO UPDATE SET
+          name = excluded.name,
+          garden_type = excluded.garden_type,
+          width = excluded.width,
+          length = excluded.length,
+          climate_zone = excluded.climate_zone,
+          soil_type = excluded.soil_type,
+          sync_status = 'synced'
+        WHERE gardens.sync_status = 'synced'
       `, [
         g.id,
         g.name,
@@ -25,8 +34,19 @@ export async function syncPull() {
     const plants = await patchApiClient.getPlantRows(1000, 0)
     plants.data.forEach((p) => {
       db.runSync(`
-        INSERT OR REPLACE INTO plants (id, name, species, variety, planting_date, location, health_status, growth_stage, garden_id, sync_status)
+        INSERT INTO plants (id, name, species, variety, planting_date, location, health_status, growth_stage, garden_id, sync_status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced')
+        ON CONFLICT(id) DO UPDATE SET
+          name = excluded.name,
+          species = excluded.species,
+          variety = excluded.variety,
+          planting_date = excluded.planting_date,
+          location = excluded.location,
+          health_status = excluded.health_status,
+          growth_stage = excluded.growth_stage,
+          garden_id = excluded.garden_id,
+          sync_status = 'synced'
+        WHERE plants.sync_status = 'synced'
       `, [
         p.id,
         p.name,
@@ -45,8 +65,18 @@ export async function syncPull() {
       const tasks = await patchApiClient.getPlantTaskRows(plant.id)
       tasks.forEach((t) => {
         db.runSync(`
-          INSERT OR REPLACE INTO care_tasks (id, plant_id, task_type, scheduled_date, completed_date, is_recurring, frequency, notes, sync_status)
+          INSERT INTO care_tasks (id, plant_id, task_type, scheduled_date, completed_date, is_recurring, frequency, notes, sync_status)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'synced')
+          ON CONFLICT(id) DO UPDATE SET
+            plant_id = excluded.plant_id,
+            task_type = excluded.task_type,
+            scheduled_date = excluded.scheduled_date,
+            completed_date = excluded.completed_date,
+            is_recurring = excluded.is_recurring,
+            frequency = excluded.frequency,
+            notes = excluded.notes,
+            sync_status = 'synced'
+          WHERE care_tasks.sync_status = 'synced'
         `, [
           t.id,
           t.plant_id,
@@ -64,8 +94,24 @@ export async function syncPull() {
     const wikis = await patchApiClient.getWikiEntries(1000, 0)
     wikis.data.forEach((w) => {
       db.runSync(`
-        INSERT OR REPLACE INTO wiki_entries (id, common_name, scientific_name, category, entry_description, sunlight, watering, soil, temperature, spacing, planting_depth, germination_time, companion_plants, antagonist_plants, sync_status)
+        INSERT INTO wiki_entries (id, common_name, scientific_name, category, entry_description, sunlight, watering, soil, temperature, spacing, planting_depth, germination_time, companion_plants, antagonist_plants, sync_status)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'synced')
+        ON CONFLICT(id) DO UPDATE SET
+          common_name = excluded.common_name,
+          scientific_name = excluded.scientific_name,
+          category = excluded.category,
+          entry_description = excluded.entry_description,
+          sunlight = excluded.sunlight,
+          watering = excluded.watering,
+          soil = excluded.soil,
+          temperature = excluded.temperature,
+          spacing = excluded.spacing,
+          planting_depth = excluded.planting_depth,
+          germination_time = excluded.germination_time,
+          companion_plants = excluded.companion_plants,
+          antagonist_plants = excluded.antagonist_plants,
+          sync_status = 'synced'
+        WHERE wiki_entries.sync_status = 'synced'
       `, [
         w.id,
         w.commonName || w.title,
