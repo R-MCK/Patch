@@ -9,7 +9,7 @@ import { SyncStatusBanner } from '../../src/components/SyncStatusBanner'
 import { usePatchData } from '../../src/data/usePatchData'
 
 export default function GardensScreen() {
-  const { gardens, isLoading, isRefreshing, error, refresh, isSyncing, lastSyncError, lastSyncedAt } = usePatchData()
+  const { gardens, isLoading, isRefreshing, error, refresh, isSyncing, lastSyncError, lastSyncedAt, pendingChangesCount } = usePatchData()
 
   return (
     <Screen 
@@ -25,7 +25,13 @@ export default function GardensScreen() {
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }
     >
-      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} onRetry={refresh} />
+      <SyncStatusBanner
+        isSyncing={isSyncing}
+        lastSyncError={lastSyncError}
+        lastSyncedAt={lastSyncedAt}
+        pendingChangesCount={pendingChangesCount}
+        onRetry={refresh}
+      />
       {isLoading ? <StateMessage title="Loading gardens" isLoading /> : null}
       {error ? <StateMessage title="Could not load gardens" message={error} /> : null}
       {!isLoading && !error && gardens.length === 0 ? (

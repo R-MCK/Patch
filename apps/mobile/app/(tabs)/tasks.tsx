@@ -10,7 +10,7 @@ import { TaskRow } from '../../src/components/TaskRow'
 import { usePatchData } from '../../src/data/usePatchData'
 
 export default function TasksScreen() {
-  const { dueToday, error, isLoading, isRefreshing, overdue, plants, refresh, upcoming, completeCareTask, isSyncing, lastSyncError, lastSyncedAt } = usePatchData()
+  const { dueToday, error, isLoading, isRefreshing, overdue, plants, refresh, upcoming, completeCareTask, isSyncing, lastSyncError, lastSyncedAt, pendingChangesCount } = usePatchData()
   const [completingTaskId, setCompletingTaskId] = useState<string | null>(null)
   const plantsById = new Map(plants.map((plant) => [plant.id, plant]))
 
@@ -37,7 +37,13 @@ export default function TasksScreen() {
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }
     >
-      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} onRetry={refresh} />
+      <SyncStatusBanner
+        isSyncing={isSyncing}
+        lastSyncError={lastSyncError}
+        lastSyncedAt={lastSyncedAt}
+        pendingChangesCount={pendingChangesCount}
+        onRetry={refresh}
+      />
       {isLoading ? <StateMessage title="Loading tasks" isLoading /> : null}
       {error ? <StateMessage title="Could not load tasks" message={error} /> : null}
       {!isLoading && !error && overdue.length + dueToday.length + upcoming.length === 0 ? (

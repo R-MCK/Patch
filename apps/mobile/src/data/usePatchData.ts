@@ -10,6 +10,7 @@ interface PatchDataState {
   tasks: CareTask[]
   gardens: Garden[]
   wikiEntries: WikiEntry[]
+  pendingChangesCount: number
   isLoading: boolean
   isRefreshing: boolean
   error: string | null
@@ -124,6 +125,7 @@ export function usePatchData() {
     tasks: [],
     gardens: [],
     wikiEntries: [],
+    pendingChangesCount: 0,
     isLoading: true,
     isRefreshing: false,
     error: null,
@@ -141,6 +143,10 @@ export function usePatchData() {
       const dbTasks = db.getAllSync<DbCareTask>('SELECT * FROM care_tasks')
       const dbGardens = db.getAllSync<DbGarden>('SELECT * FROM gardens')
       const dbWikis = db.getAllSync<DbWikiEntry>('SELECT * FROM wiki_entries')
+      const pendingPlants = db.getFirstSync<{ count: number }>("SELECT COUNT(*) as count FROM plants WHERE sync_status LIKE 'pending_%'")?.count ?? 0
+      const pendingTasks = db.getFirstSync<{ count: number }>("SELECT COUNT(*) as count FROM care_tasks WHERE sync_status LIKE 'pending_%'")?.count ?? 0
+      const pendingGardens = db.getFirstSync<{ count: number }>("SELECT COUNT(*) as count FROM gardens WHERE sync_status LIKE 'pending_%'")?.count ?? 0
+      const pendingChangesCount = pendingPlants + pendingTasks + pendingGardens
 
       setState(current => ({
         ...current,
@@ -148,6 +154,7 @@ export function usePatchData() {
         tasks: dbTasks.map(t => mapDbCareTaskToCareTask(t)),
         gardens: dbGardens.map(g => mapDbGardenToGarden(g)),
         wikiEntries: dbWikis.map(w => mapDbWikiEntryToWikiEntry(w)),
+        pendingChangesCount,
         isLoading: false,
         error: null,
       }))

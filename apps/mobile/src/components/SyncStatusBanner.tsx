@@ -5,14 +5,23 @@ interface SyncStatusBannerProps {
   isSyncing: boolean
   lastSyncError: string | null
   lastSyncedAt: number | null
+  pendingChangesCount: number
   onRetry?: () => void
 }
 
-export function SyncStatusBanner({ isSyncing, lastSyncError, lastSyncedAt, onRetry }: SyncStatusBannerProps) {
+export function SyncStatusBanner({
+  isSyncing,
+  lastSyncError,
+  lastSyncedAt,
+  pendingChangesCount,
+  onRetry,
+}: SyncStatusBannerProps) {
   if (isSyncing) {
     return (
       <View style={[styles.container, styles.syncing]}>
-        <Text style={styles.syncingText}>Syncing latest updates…</Text>
+        <Text style={styles.syncingText}>
+          Syncing latest updates{pendingChangesCount > 0 ? ` (${pendingChangesCount} pending)` : ''}…
+        </Text>
       </View>
     )
   }
@@ -22,6 +31,9 @@ export function SyncStatusBanner({ isSyncing, lastSyncError, lastSyncedAt, onRet
       <View style={[styles.container, styles.offline]}>
         <Text style={styles.offlineTitle}>Working offline</Text>
         <Text style={styles.offlineText}>Could not sync latest changes. Pull to retry when online.</Text>
+        {pendingChangesCount > 0 ? (
+          <Text style={styles.pendingText}>{pendingChangesCount} local change(s) pending sync.</Text>
+        ) : null}
         {onRetry ? (
           <Pressable
             accessibilityRole="button"
@@ -73,6 +85,12 @@ const styles = StyleSheet.create({
   offlineText: {
     color: '#9a3412',
     fontSize: 12,
+  },
+  pendingText: {
+    color: '#9a3412',
+    fontSize: 12,
+    fontWeight: '600',
+    marginTop: patchSpacing.xs,
   },
   retryButton: {
     alignSelf: 'flex-start',

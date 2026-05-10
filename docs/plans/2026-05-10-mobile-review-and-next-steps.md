@@ -179,6 +179,11 @@ Sources:
 - Push path now aggregates per-row failures and surfaces an error summary when any local pending rows fail to sync.
 - File: `apps/mobile/src/data/sync.ts`
 
+15. Pending-changes visibility:
+- Added `pendingChangesCount` to mobile data state by counting `pending_%` rows in local plants/gardens/tasks tables.
+- Sync banner now displays queued local changes while syncing/offline so users understand what is waiting to upload.
+- Files: `apps/mobile/src/data/usePatchData.ts`, `apps/mobile/src/components/SyncStatusBanner.tsx`, `apps/mobile/app/(tabs)/index.tsx`, `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/(tabs)/wiki.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

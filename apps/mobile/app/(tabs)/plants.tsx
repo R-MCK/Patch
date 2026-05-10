@@ -10,7 +10,7 @@ import { SyncStatusBanner } from '../../src/components/SyncStatusBanner'
 import { usePatchData } from '../../src/data/usePatchData'
 
 export default function PlantsScreen() {
-  const { plants, isLoading, isRefreshing, error, refresh, waterPlant, isSyncing, lastSyncError, lastSyncedAt } = usePatchData()
+  const { plants, isLoading, isRefreshing, error, refresh, waterPlant, isSyncing, lastSyncError, lastSyncedAt, pendingChangesCount } = usePatchData()
   const [wateringPlantId, setWateringPlantId] = useState<string | null>(null)
 
   async function handleWaterPlant(plantId: string) {
@@ -36,7 +36,13 @@ export default function PlantsScreen() {
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }
     >
-      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} onRetry={refresh} />
+      <SyncStatusBanner
+        isSyncing={isSyncing}
+        lastSyncError={lastSyncError}
+        lastSyncedAt={lastSyncedAt}
+        pendingChangesCount={pendingChangesCount}
+        onRetry={refresh}
+      />
       {isLoading ? <StateMessage title="Loading plants" isLoading /> : null}
       {error ? <StateMessage title="Could not load plants" message={error} /> : null}
       {!isLoading && !error && plants.length === 0 ? (
