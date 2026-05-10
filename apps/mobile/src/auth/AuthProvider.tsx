@@ -8,6 +8,7 @@ import {
   hydrateStoredPatchAccessToken,
   persistPatchAccessToken,
 } from '../api/authTokens'
+import { clearLocalUserData, initDatabase } from '../data/db'
 
 interface AuthContextValue {
   user: AuthUser | null
@@ -92,6 +93,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Continue sign-out even if backend request fails.
     } finally {
       await clearStoredPatchAccessToken()
+      initDatabase()
+      clearLocalUserData()
       setUser(null)
     }
   }, [])

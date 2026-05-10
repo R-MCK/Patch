@@ -63,3 +63,11 @@ export function initDatabase() {
     );
   `)
 }
+
+export function clearLocalUserData() {
+  db.execSync(`
+    DELETE FROM care_tasks;
+    DELETE FROM plants;
+    DELETE FROM gardens;
+  `)
+}
