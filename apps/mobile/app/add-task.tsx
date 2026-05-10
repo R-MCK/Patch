@@ -111,7 +111,12 @@ export default function AddTaskScreen() {
                 </Link>
               </View>
             ) : (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillContainer}>
+              <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.pillContainer}
+                keyboardShouldPersistTaps="handled"
+              >
                 {plants.map(plant => (
                   <Pressable 
                     key={plant.id} 
@@ -132,7 +137,12 @@ export default function AddTaskScreen() {
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>2. Task Type *</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.pillContainer}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.pillContainer}
+              keyboardShouldPersistTaps="handled"
+            >
             {COMMON_TASKS.map(task => (
               <Pressable 
                 key={task} 
@@ -175,6 +185,7 @@ export default function AddTaskScreen() {
               blurOnSubmit
               ref={notesInputRef}
               returnKeyType="done"
+              submitBehavior="blurAndSubmit"
               style={[styles.input, { height: 100 }]}
               value={notes}
               onChangeText={setNotes}

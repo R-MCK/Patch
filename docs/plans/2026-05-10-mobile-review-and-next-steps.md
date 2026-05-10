@@ -206,6 +206,11 @@ Sources:
 - Also set notes field in add-task to submit on `Done` more reliably with `blurOnSubmit`.
 - Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`
 
+20. Task-form nested keyboard handling:
+- Added `keyboardShouldPersistTaps="handled"` to horizontal plant/task selector lists in add-task.
+- Set notes input `submitBehavior="blurAndSubmit"` for more reliable multiline submit on modern React Native.
+- File: `apps/mobile/app/add-task.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
