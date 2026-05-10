@@ -5,11 +5,12 @@ import { Link } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { Screen } from '../../src/components/Screen'
 import { StateMessage } from '../../src/components/StateMessage'
+import { SyncStatusBanner } from '../../src/components/SyncStatusBanner'
 import { TaskRow } from '../../src/components/TaskRow'
 import { usePatchData } from '../../src/data/usePatchData'
 
 export default function TasksScreen() {
-  const { dueToday, error, isLoading, isRefreshing, overdue, plants, refresh, upcoming, completeCareTask } = usePatchData()
+  const { dueToday, error, isLoading, isRefreshing, overdue, plants, refresh, upcoming, completeCareTask, isSyncing, lastSyncError, lastSyncedAt } = usePatchData()
   const [completingTaskId, setCompletingTaskId] = useState<string | null>(null)
   const plantsById = new Map(plants.map((plant) => [plant.id, plant]))
 
@@ -36,6 +37,7 @@ export default function TasksScreen() {
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }
     >
+      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} />
       {isLoading ? <StateMessage title="Loading tasks" isLoading /> : null}
       {error ? <StateMessage title="Could not load tasks" message={error} /> : null}
       {!isLoading && !error && overdue.length + dueToday.length + upcoming.length === 0 ? (

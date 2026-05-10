@@ -5,10 +5,11 @@ import { Ionicons } from '@expo/vector-icons'
 import { Screen } from '../../src/components/Screen'
 import { StatCard } from '../../src/components/StatCard'
 import { StateMessage } from '../../src/components/StateMessage'
+import { SyncStatusBanner } from '../../src/components/SyncStatusBanner'
 import { usePatchData } from '../../src/data/usePatchData'
 
 export default function GardensScreen() {
-  const { gardens, isLoading, isRefreshing, error, refresh } = usePatchData()
+  const { gardens, isLoading, isRefreshing, error, refresh, isSyncing, lastSyncError, lastSyncedAt } = usePatchData()
 
   return (
     <Screen 
@@ -24,6 +25,7 @@ export default function GardensScreen() {
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }
     >
+      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} />
       {isLoading ? <StateMessage title="Loading gardens" isLoading /> : null}
       {error ? <StateMessage title="Could not load gardens" message={error} /> : null}
       {!isLoading && !error && gardens.length === 0 ? (

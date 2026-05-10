@@ -165,6 +165,10 @@ Sources:
 - Today screen now surfaces syncing, offline fallback, and last sync time so users understand data freshness.
 - Files: `apps/mobile/src/data/usePatchData.ts`, `apps/mobile/app/(tabs)/index.tsx`
 
+12. Consistent sync feedback across tabs:
+- Added reusable `SyncStatusBanner` component and surfaced sync/offline/freshness state in Plants, Gardens, Tasks, and Wiki tabs.
+- Files: `apps/mobile/src/components/SyncStatusBanner.tsx`, `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/(tabs)/wiki.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

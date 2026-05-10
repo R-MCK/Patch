@@ -1,11 +1,12 @@
-import { Pressable, RefreshControl, StyleSheet, Text } from 'react-native'
+import { Pressable, RefreshControl } from 'react-native'
 import { useState } from 'react'
-import { patchColors, patchSpacing } from '@patch/core'
+import { patchColors } from '@patch/core'
 import { Link } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { Screen } from '../../src/components/Screen'
 import { StatCard } from '../../src/components/StatCard'
 import { StateMessage } from '../../src/components/StateMessage'
+import { SyncStatusBanner } from '../../src/components/SyncStatusBanner'
 import { TaskRow } from '../../src/components/TaskRow'
 import { usePatchData } from '../../src/data/usePatchData'
 
@@ -51,13 +52,7 @@ export default function TodayScreen() {
     >
       <StatCard label="Due today" value={String(dueToday.length)} helper="Care tasks scheduled for today." />
       <StatCard label="Overdue" value={String(overdue.length)} helper="Tasks that need attention first." />
-      {isSyncing ? <StateMessage title="Syncing updates…" isLoading /> : null}
-      {!isSyncing && lastSyncError ? (
-        <StateMessage title="Working offline" message="Could not sync latest changes. Pull to retry when online." />
-      ) : null}
-      {lastSyncedAt ? (
-        <Text style={styles.syncMeta}>Last synced {new Date(lastSyncedAt).toLocaleTimeString()}</Text>
-      ) : null}
+      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} />
       {isLoading ? <StateMessage title="Loading care plan" isLoading /> : null}
       {error ? <StateMessage title="Could not load today" message={error} /> : null}
       {!isLoading && !error && dueToday.length === 0 && overdue.length === 0 ? (
@@ -75,11 +70,3 @@ export default function TodayScreen() {
     </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  syncMeta: {
-    color: patchColors.textSecondary,
-    fontSize: 12,
-    marginTop: -patchSpacing.xs,
-  },
-})
