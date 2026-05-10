@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Link, Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -13,6 +13,7 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [localError, setLocalError] = useState<string | null>(null)
+  const passwordInputRef = useRef<TextInput>(null)
 
   const canSubmit = email.trim().length > 0 && password.length >= 8 && !isSubmitting
 
@@ -65,12 +66,17 @@ export default function LoginScreen() {
           <View style={styles.field}>
             <Text style={styles.label}>Email</Text>
             <TextInput
+              autoComplete="email"
               autoCapitalize="none"
               autoCorrect={false}
+              blurOnSubmit={false}
               keyboardType="email-address"
+              onSubmitEditing={() => passwordInputRef.current?.focus()}
               placeholder="you@example.com"
               placeholderTextColor={patchColors.textSecondary}
+              returnKeyType="next"
               style={styles.input}
+              textContentType="emailAddress"
               value={email}
               onChangeText={(text) => {
                 setEmail(text)
@@ -83,12 +89,21 @@ export default function LoginScreen() {
           <View style={styles.field}>
             <Text style={styles.label}>Password</Text>
             <TextInput
+              autoComplete="password"
               autoCapitalize="none"
               autoCorrect={false}
+              onSubmitEditing={() => {
+                if (canSubmit) {
+                  void handleSignIn()
+                }
+              }}
               secureTextEntry
               placeholder="At least 8 characters"
               placeholderTextColor={patchColors.textSecondary}
+              ref={passwordInputRef}
+              returnKeyType="done"
               style={styles.input}
+              textContentType="password"
               value={password}
               onChangeText={(text) => {
                 setPassword(text)

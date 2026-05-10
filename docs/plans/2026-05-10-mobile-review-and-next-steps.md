@@ -141,6 +141,11 @@ Sources:
 - Added contextual accessibility labels/hints for in-list action buttons (`Water <plant>`, `Complete <task> for <plant>`).
 - Files: `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`, `apps/mobile/src/components/PlantCard.tsx`, `apps/mobile/src/components/TaskRow.tsx`
 
+7. Auth form input ergonomics:
+- Added platform autofill hints (`autoComplete`, `textContentType`) and keyboard return flow (`next`/`done`) for login/register fields.
+- Added submit-on-keyboard behavior for final password confirmation fields.
+- Files: `apps/mobile/app/login.tsx`, `apps/mobile/app/register.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

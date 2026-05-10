@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState, type RefObject } from 'react'
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import { Link, Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -15,6 +15,9 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [localError, setLocalError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const emailInputRef = useRef<TextInput>(null)
+  const passwordInputRef = useRef<TextInput>(null)
+  const confirmPasswordInputRef = useRef<TextInput>(null)
 
   const canSubmit = name.trim().length > 0
     && email.trim().length > 0
@@ -84,6 +87,11 @@ export default function RegisterScreen() {
               setLocalError(null)
               clearError()
             }}
+            autoComplete="name"
+            textContentType="name"
+            returnKeyType="next"
+            onSubmitEditing={() => emailInputRef.current?.focus()}
+            blurOnSubmit={false}
             placeholder="Your name"
           />
           <Field
@@ -97,6 +105,12 @@ export default function RegisterScreen() {
             placeholder="you@example.com"
             keyboardType="email-address"
             autoCapitalize="none"
+            autoComplete="email"
+            textContentType="emailAddress"
+            inputRef={emailInputRef}
+            returnKeyType="next"
+            onSubmitEditing={() => passwordInputRef.current?.focus()}
+            blurOnSubmit={false}
           />
           <Field
             label="Password"
@@ -109,6 +123,12 @@ export default function RegisterScreen() {
             placeholder="At least 8 characters"
             secureTextEntry
             autoCapitalize="none"
+            autoComplete="password"
+            textContentType="newPassword"
+            inputRef={passwordInputRef}
+            returnKeyType="next"
+            onSubmitEditing={() => confirmPasswordInputRef.current?.focus()}
+            blurOnSubmit={false}
           />
           <Field
             label="Confirm Password"
@@ -121,6 +141,15 @@ export default function RegisterScreen() {
             placeholder="Repeat password"
             secureTextEntry
             autoCapitalize="none"
+            autoComplete="password"
+            textContentType="newPassword"
+            inputRef={confirmPasswordInputRef}
+            returnKeyType="done"
+            onSubmitEditing={() => {
+              if (canSubmit) {
+                void handleRegister()
+              }
+            }}
           />
 
           {localError || error ? (
@@ -164,6 +193,17 @@ interface FieldProps {
   keyboardType?: 'default' | 'email-address'
   secureTextEntry?: boolean
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters'
+  autoComplete?: 'name' | 'email' | 'password' | 'off'
+  textContentType?:
+    | 'name'
+    | 'emailAddress'
+    | 'password'
+    | 'newPassword'
+    | 'none'
+  inputRef?: RefObject<TextInput | null>
+  returnKeyType?: 'next' | 'done'
+  onSubmitEditing?: () => void
+  blurOnSubmit?: boolean
 }
 
 function Field({
@@ -174,18 +214,30 @@ function Field({
   keyboardType = 'default',
   secureTextEntry = false,
   autoCapitalize = 'sentences',
+  autoComplete = 'off',
+  textContentType = 'none',
+  inputRef,
+  returnKeyType = 'done',
+  onSubmitEditing,
+  blurOnSubmit = true,
 }: FieldProps) {
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        autoComplete={autoComplete}
         autoCapitalize={autoCapitalize}
         autoCorrect={false}
+        blurOnSubmit={blurOnSubmit}
         keyboardType={keyboardType}
+        onSubmitEditing={onSubmitEditing}
         placeholder={placeholder}
         placeholderTextColor={patchColors.textSecondary}
+        ref={inputRef}
+        returnKeyType={returnKeyType}
         secureTextEntry={secureTextEntry}
         style={styles.input}
+        textContentType={textContentType}
         value={value}
         onChangeText={onChangeText}
       />
