@@ -135,6 +135,12 @@ Sources:
 - `isAuthenticated` now respects an available local token during bootstrap fallback so offline users can still access cached data.
 - File: `apps/mobile/src/auth/AuthProvider.tsx`
 
+6. Accessibility and touch-target improvements:
+- Added missing semantic labels for tab header icon actions (`Add plant`, `Add garden`, `Add task`).
+- Added explicit button labels for modal header actions (`Cancel` / `Save`) and set minimum 44pt header button height for add flows.
+- Added contextual accessibility labels/hints for in-list action buttons (`Water <plant>`, `Complete <task> for <plant>`).
+- Files: `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`, `apps/mobile/src/components/PlantCard.tsx`, `apps/mobile/src/components/TaskRow.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

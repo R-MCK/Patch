@@ -57,11 +57,19 @@ export default function AddTaskScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.headerButton} disabled={isSubmitting}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cancel adding task"
+          onPress={() => router.back()}
+          style={styles.headerButton}
+          disabled={isSubmitting}
+        >
           <Text style={styles.cancelText}>Cancel</Text>
         </Pressable>
         <Text style={styles.title}>New Task</Text>
         <Pressable 
+          accessibilityRole="button"
+          accessibilityLabel="Save new task"
           onPress={handleSave} 
           style={styles.headerButton} 
           disabled={isSubmitting || !selectedPlantId || !taskType.trim()}
@@ -179,8 +187,10 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: patchSpacing.xs,
+    minHeight: 44,
     minWidth: 60,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   cancelText: {
     fontSize: 17,

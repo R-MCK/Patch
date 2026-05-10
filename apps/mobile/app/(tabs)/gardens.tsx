@@ -15,7 +15,7 @@ export default function GardensScreen() {
       title="Gardens"
       action={
         <Link href="/add-garden" asChild>
-          <Pressable hitSlop={8}>
+          <Pressable hitSlop={8} accessibilityRole="button" accessibilityLabel="Add garden">
             <Ionicons name="add-circle" size={32} color={patchColors.primary} />
           </Pressable>
         </Link>

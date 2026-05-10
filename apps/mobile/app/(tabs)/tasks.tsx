@@ -27,7 +27,7 @@ export default function TasksScreen() {
       title="Tasks"
       action={
         <Link href="/add-task" asChild>
-          <Pressable hitSlop={8}>
+          <Pressable hitSlop={8} accessibilityRole="button" accessibilityLabel="Add task">
             <Ionicons name="add-circle" size={32} color={patchColors.primary} />
           </Pressable>
         </Link>

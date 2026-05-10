@@ -29,6 +29,8 @@ export function TaskRow({ task, plant, onComplete, isCompleting }: TaskRowProps)
       ) : onComplete ? (
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel={`Complete ${task.taskType}${plant?.name ? ` for ${plant.name}` : ''}`}
+          accessibilityHint="Marks this care task as done"
           disabled={isCompleting}
           onPress={() => onComplete(task.id)}
           style={({ pressed }) => [styles.completeButton, (pressed || isCompleting) ? styles.buttonPressed : null]}

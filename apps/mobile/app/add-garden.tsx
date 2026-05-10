@@ -51,11 +51,23 @@ export default function AddGardenScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.headerButton} disabled={isSubmitting}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Cancel adding garden"
+          onPress={() => router.back()}
+          style={styles.headerButton}
+          disabled={isSubmitting}
+        >
           <Text style={styles.cancelText}>Cancel</Text>
         </Pressable>
         <Text style={styles.title}>New Garden</Text>
-        <Pressable onPress={handleSave} style={styles.headerButton} disabled={isSubmitting || !name.trim()}>
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Save new garden"
+          onPress={handleSave}
+          style={styles.headerButton}
+          disabled={isSubmitting || !name.trim()}
+        >
           {isSubmitting ? (
             <ActivityIndicator size="small" color={patchColors.primary} />
           ) : (
@@ -136,8 +148,10 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: patchSpacing.xs,
+    minHeight: 44,
     minWidth: 60,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   cancelText: {
     fontSize: 17,
