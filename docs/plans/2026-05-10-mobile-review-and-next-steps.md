@@ -169,6 +169,11 @@ Sources:
 - Added reusable `SyncStatusBanner` component and surfaced sync/offline/freshness state in Plants, Gardens, Tasks, and Wiki tabs.
 - Files: `apps/mobile/src/components/SyncStatusBanner.tsx`, `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/(tabs)/wiki.tsx`
 
+13. Sync retry affordance:
+- Added explicit `Retry now` action in offline sync banner and wired it to each tab’s `refresh` handler.
+- Gives users an immediate retry path without requiring pull-to-refresh gestures.
+- Files: `apps/mobile/src/components/SyncStatusBanner.tsx`, `apps/mobile/app/(tabs)/index.tsx`, `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/(tabs)/wiki.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

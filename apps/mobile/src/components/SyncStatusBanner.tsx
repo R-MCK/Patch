@@ -1,13 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { patchColors, patchSpacing } from '@patch/core'
 
 interface SyncStatusBannerProps {
   isSyncing: boolean
   lastSyncError: string | null
   lastSyncedAt: number | null
+  onRetry?: () => void
 }
 
-export function SyncStatusBanner({ isSyncing, lastSyncError, lastSyncedAt }: SyncStatusBannerProps) {
+export function SyncStatusBanner({ isSyncing, lastSyncError, lastSyncedAt, onRetry }: SyncStatusBannerProps) {
   if (isSyncing) {
     return (
       <View style={[styles.container, styles.syncing]}>
@@ -21,6 +22,16 @@ export function SyncStatusBanner({ isSyncing, lastSyncError, lastSyncedAt }: Syn
       <View style={[styles.container, styles.offline]}>
         <Text style={styles.offlineTitle}>Working offline</Text>
         <Text style={styles.offlineText}>Could not sync latest changes. Pull to retry when online.</Text>
+        {onRetry ? (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Retry sync"
+            onPress={onRetry}
+            style={({ pressed }) => [styles.retryButton, pressed ? styles.retryButtonPressed : null]}
+          >
+            <Text style={styles.retryText}>Retry now</Text>
+          </Pressable>
+        ) : null}
       </View>
     )
   }
@@ -62,6 +73,23 @@ const styles = StyleSheet.create({
   offlineText: {
     color: '#9a3412',
     fontSize: 12,
+  },
+  retryButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#fdba74',
+    borderRadius: 8,
+    marginTop: patchSpacing.xs,
+    minHeight: 36,
+    justifyContent: 'center',
+    paddingHorizontal: patchSpacing.sm,
+  },
+  retryButtonPressed: {
+    opacity: 0.75,
+  },
+  retryText: {
+    color: '#7c2d12',
+    fontSize: 12,
+    fontWeight: '700',
   },
   metaText: {
     color: patchColors.textSecondary,

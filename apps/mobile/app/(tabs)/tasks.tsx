@@ -37,7 +37,7 @@ export default function TasksScreen() {
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }
     >
-      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} />
+      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} onRetry={refresh} />
       {isLoading ? <StateMessage title="Loading tasks" isLoading /> : null}
       {error ? <StateMessage title="Could not load tasks" message={error} /> : null}
       {!isLoading && !error && overdue.length + dueToday.length + upcoming.length === 0 ? (

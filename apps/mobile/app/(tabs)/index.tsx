@@ -52,7 +52,7 @@ export default function TodayScreen() {
     >
       <StatCard label="Due today" value={String(dueToday.length)} helper="Care tasks scheduled for today." />
       <StatCard label="Overdue" value={String(overdue.length)} helper="Tasks that need attention first." />
-      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} />
+      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} onRetry={refresh} />
       {isLoading ? <StateMessage title="Loading care plan" isLoading /> : null}
       {error ? <StateMessage title="Could not load today" message={error} /> : null}
       {!isLoading && !error && dueToday.length === 0 && overdue.length === 0 ? (

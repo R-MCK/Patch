@@ -36,7 +36,7 @@ export default function PlantsScreen() {
         <RefreshControl refreshing={isRefreshing} tintColor={patchColors.primary} onRefresh={refresh} />
       }
     >
-      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} />
+      <SyncStatusBanner isSyncing={isSyncing} lastSyncError={lastSyncError} lastSyncedAt={lastSyncedAt} onRetry={refresh} />
       {isLoading ? <StateMessage title="Loading plants" isLoading /> : null}
       {error ? <StateMessage title="Could not load plants" message={error} /> : null}
       {!isLoading && !error && plants.length === 0 ? (
