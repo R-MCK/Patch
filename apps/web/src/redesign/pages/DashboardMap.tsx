@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Monogram,
   HomeGlyph,
@@ -23,13 +24,16 @@ import CapturePill from '../components/CapturePill'
 import { usePlantStore } from '@/stores/plantStore'
 import { useGardenStore } from '@/stores/gardenStore'
 import type { Plant, Garden } from '@/types'
+import type { CareTask } from '@patch/core'
+import { isOverdue } from '@patch/core'
+import { api } from '@/lib/api'
 
 // --- Static helpers (hoisted out of render to satisfy react-hooks/static-components) ---
 
 const NAV_ITEMS = [
-  { Icon: HomeGlyph, active: true,  label: 'Today',     href: '/' },
+  { Icon: HomeGlyph, active: false, label: 'Today',     href: '/today' },
   { Icon: LeafGlyph, active: false, label: 'Plants',    href: '/plants' },
-  { Icon: MapGlyph,  active: false, label: 'Gardens',   href: '/dashboard/seasons' },
+  { Icon: MapGlyph,  active: true,  label: 'Map',       href: '/dashboard/map' },
   { Icon: BookGlyph, active: false, label: 'Almanac',   href: '/dashboard/almanac' },
   { Icon: PencilGlyph, active: false, label: 'Designer', href: '/design' },
   { Icon: HeartGlyph,  active: false, label: 'Community', href: '#' },
@@ -61,33 +65,40 @@ const formattedDate = (): string => {
   })
 }
 
-// Heuristic placeholder for overdue count: count plants in garden where last activity is missing
-// or planting_date is older than 14 days and there's no recent watering signal in the Plant model.
-// TODO: replace with backend aggregation or per-plant CareTask scan in Phase 5.
-const overdueHeuristic = (plants: Plant[]): number => {
-  const now = Date.now()
-  const fortnight = 14 * 24 * 60 * 60 * 1000
-  return plants.filter((p) => {
-    const planted = p.plantingDate ?? p.plantedDate
-    if (!planted) return false
-    return now - planted.getTime() > fortnight
-  }).length
-}
-
 // --- Page ---
 
 export const DashboardMap = () => {
+  const navigate = useNavigate()
   const plants = usePlantStore((s) => s.plants)
   const fetchPlants = usePlantStore((s) => s.fetchPlants)
   const isLoadingPlants = usePlantStore((s) => s.isLoading)
 
   const gardens = useGardenStore((s) => s.gardens)
   const fetchGardens = useGardenStore((s) => s.fetchGardens)
+  const [tasksByPlant, setTasksByPlant] = useState<Record<string, CareTask[]>>({})
 
   useEffect(() => {
     fetchPlants().catch(() => { /* error captured into store */ })
     fetchGardens().catch(() => { /* error captured into store */ })
   }, [fetchPlants, fetchGardens])
+
+  useEffect(() => {
+    if (plants.length === 0) return
+    let cancelled = false
+    void (async () => {
+      const entries = await Promise.all(
+        plants.map(async (plant) => {
+          const tasks = await api.getTasks(plant.id).catch(() => [] as CareTask[])
+          return [plant.id, tasks] as const
+        }),
+      )
+      if (cancelled) return
+      setTasksByPlant(Object.fromEntries(entries))
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [plants])
 
   const plantsByGarden = useMemo(() => {
     const map = new Map<string, Plant[]>()
@@ -169,7 +180,11 @@ export const DashboardMap = () => {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
               {gardens.map((g) => {
                 const gardenPlants = plantsByGarden.get(g.id) ?? []
-                const overdue = overdueHeuristic(gardenPlants)
+                const overdue = gardenPlants.reduce((count, plant) => {
+                  const tasks = tasksByPlant[plant.id] ?? []
+                  const hasOverdue = tasks.some((task) => isOverdue(task))
+                  return count + (hasOverdue ? 1 : 0)
+                }, 0)
                 return (
                   <GardenCard
                     key={g.id}
@@ -188,8 +203,7 @@ export const DashboardMap = () => {
                 body="Sketch a bed, name it, and Patch will start keeping its journal alongside yours."
                 cta={{
                   label: 'New garden',
-                  // TODO Phase 5 — wire to creation flow / Capture modal.
-                  onClick: () => { /* stub */ },
+                  onClick: () => navigate('/design'),
                 }}
               />
             </PaperCard>
@@ -203,7 +217,7 @@ export const DashboardMap = () => {
         </section>
       </main>
 
-      <CapturePill icon={<PlusGlyph size={14} />} />
+      <CapturePill icon={<PlusGlyph size={14} />} onClick={() => navigate('/capture')} />
     </PaperBackdrop>
   )
 }
@@ -217,10 +231,8 @@ interface GardenCardProps {
 const GardenCard = ({ garden, plantCount, overdueCount }: GardenCardProps) => {
   const dims = garden.width && garden.length ? `${garden.width} × ${garden.length} ft` : (garden.gardenType ?? 'Patch')
 
-  // NOTE: PlantTrackerPackets does not yet support a garden filter param (Phase 2 scope).
-  // For now we link to /plants without a filter; revisit when Phase 2 lands ?garden=:id.
   return (
-    <Link to="/plants" style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
+    <Link to={`/plants?garden=${encodeURIComponent(garden.id)}`} style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}>
       <PaperCard hover="lift" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
         <div
           aria-hidden

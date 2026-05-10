@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react'
+import { type CSSProperties, type FormEvent, useEffect, useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   Monogram,
@@ -17,12 +17,13 @@ import SectionHeader from '../components/SectionHeader'
 import PaperCard from '../components/PaperCard'
 import { usePlantStore } from '@/stores/plantStore'
 import { useGardenStore } from '@/stores/gardenStore'
-import type { Plant } from '@/types'
+import type { GardenZone, Plant } from '@/types'
+import { api } from '@/lib/api'
 
 // --- Static helpers ---
 
 const NAV_ITEMS = [
-  { Icon: HomeGlyph,   active: false, label: 'Today',     href: '/' },
+  { Icon: HomeGlyph,   active: false, label: 'Today',     href: '/today' },
   { Icon: LeafGlyph,   active: false, label: 'Plants',    href: '/plants' },
   { Icon: MapGlyph,    active: false, label: 'Seasons',   href: '/dashboard/seasons' },
   { Icon: BookGlyph,   active: false, label: 'Almanac',   href: '/dashboard/almanac' },
@@ -30,10 +31,7 @@ const NAV_ITEMS = [
   { Icon: HeartGlyph,  active: false, label: 'Community', href: '#' },
 ] as const
 
-// Static read-only placement data — the canvas drawing engine is descoped from
-// Phase 3 and will land in a dedicated phase between Phase 3 and Phase 4.
-// TODO drawing engine — separate phase. Until then this canvas is view-only and
-// renders the same static SVG sketch as before.
+// Baseline placement sketch used by the canvas until persisted drag geometry lands.
 const STATIC_PLACED = [
   { x: 110, y:  70, kind: 'tomato',   label: 'Brandywine T.',  c: 'var(--terracotta)' },
   { x: 200, y:  80, kind: 'tomato',   label: 'Sungold T.',     c: 'var(--honey)' },
@@ -54,6 +52,14 @@ export const GardenDesigner = () => {
   const fetchPlants = usePlantStore((s) => s.fetchPlants)
   const gardens = useGardenStore((s) => s.gardens)
   const fetchGardens = useGardenStore((s) => s.fetchGardens)
+  const [zones, setZones] = useState<GardenZone[]>([])
+  const [zoneName, setZoneName] = useState('')
+  const [zoneType, setZoneType] = useState('')
+  const [zoneWidth, setZoneWidth] = useState('')
+  const [zoneLength, setZoneLength] = useState('')
+  const [zoneError, setZoneError] = useState('')
+  const [isSavingZone, setIsSavingZone] = useState(false)
+  const [placingPlantId, setPlacingPlantId] = useState<string | null>(null)
 
   useEffect(() => {
     fetchPlants().catch(() => { /* error captured into store */ })
@@ -77,6 +83,109 @@ export const GardenDesigner = () => {
     if (garden.width && garden.length) parts.push(`${garden.width} × ${garden.length} ft`)
     return parts.length > 0 ? parts.join(' · ') : 'Patch'
   })()
+
+  useEffect(() => {
+    if (!garden?.id) {
+      return
+    }
+    let cancelled = false
+    void (async () => {
+      const rows = await api.getGardenZones(garden.id).catch(() => [] as GardenZone[])
+      if (cancelled) return
+      setZones(rows)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [garden?.id])
+
+  const zoneOverlays = useMemo(() => {
+    return zones.map((zone, index) => {
+      const x = 170 + ((index % 3) * 120)
+      const y = 110 + (Math.floor(index / 3) * 90)
+      return {
+        zone,
+        x,
+        y,
+        w: 100,
+        h: 70,
+      }
+    })
+  }, [zones])
+
+  const placedWithZone = useMemo(() => {
+    if (zones.length === 0) {
+      return STATIC_PLACED.map((plant) => ({ ...plant, zoneId: undefined as string | undefined, zoneName: undefined as string | undefined }))
+    }
+    return STATIC_PLACED.map((plant, index) => {
+      const zone = zones[index % zones.length]
+      return {
+        ...plant,
+        zoneId: zone.id,
+        zoneName: zone.name,
+      }
+    })
+  }, [zones])
+
+  const handleCreateZone = async (event: FormEvent) => {
+    event.preventDefault()
+    if (!garden?.id) return
+    const name = zoneName.trim()
+    if (!name) {
+      setZoneError('Zone name is required.')
+      return
+    }
+    setZoneError('')
+    setIsSavingZone(true)
+    try {
+      const parsedWidth = zoneWidth.trim() ? Number(zoneWidth) : null
+      const parsedLength = zoneLength.trim() ? Number(zoneLength) : null
+      const created = await api.createGardenZone(garden.id, {
+        name,
+        zone_type: zoneType.trim() || null,
+        width_feet: parsedWidth !== null && Number.isFinite(parsedWidth) ? parsedWidth : null,
+        length_feet: parsedLength !== null && Number.isFinite(parsedLength) ? parsedLength : null,
+        sort_order: zones.length,
+      })
+      setZones((prev) => [...prev, created])
+      setZoneName('')
+      setZoneType('')
+      setZoneWidth('')
+      setZoneLength('')
+    } catch (error) {
+      setZoneError(error instanceof Error ? error.message : 'Failed to create zone')
+    } finally {
+      setIsSavingZone(false)
+    }
+  }
+
+  const handlePlacePlantInZone = async (plant: Plant, zoneId: string) => {
+    if (!garden?.id || !zoneId) return
+    setPlacingPlantId(plant.id)
+    try {
+      const now = new Date()
+      const season = (() => {
+        const month = now.getMonth()
+        if (month >= 2 && month <= 4) return 'Spring'
+        if (month >= 5 && month <= 7) return 'Summer'
+        if (month >= 8 && month <= 10) return 'Autumn'
+        return 'Winter'
+      })()
+      await api.createPlantingRecord({
+        plant_name_snapshot: plant.name,
+        species_snapshot: plant.species ?? plant.scientificName ?? null,
+        variety_snapshot: plant.variety ?? null,
+        garden_id: garden.id,
+        zone_id: zoneId,
+        planted_at: now.toISOString(),
+        source_plant_id: plant.id,
+        season,
+        year: now.getFullYear(),
+      })
+    } finally {
+      setPlacingPlantId(null)
+    }
+  }
 
   return (
     <PaperBackdrop style={{ display: 'grid', gridTemplateColumns: '64px 1fr 320px', minHeight: '100vh' }}>
@@ -115,11 +224,7 @@ export const GardenDesigner = () => {
           titleSize={48}
         />
 
-        {/* TODO drawing engine — separate phase.
-            The canvas below is view-only and renders STATIC_PLACED unchanged.
-            Phase boundary: keep `placed[]` static / read-only. Real drag-and-drop,
-            persistence, and zone overlays will land in a dedicated canvas phase
-            between Phase 3 and Phase 4. */}
+        {/* Current designer canvas rendering with zone overlays. */}
         <div style={{ flex: 1, position: 'relative', border: '1.5px solid var(--ink)', background: 'var(--cream)', borderRadius: 4, overflow: 'hidden', minHeight: 480 }}>
           <svg viewBox="0 0 720 520" preserveAspectRatio="xMidYMid meet" style={{ width: '100%', height: '100%', display: 'block' }}>
             <defs>
@@ -144,7 +249,7 @@ export const GardenDesigner = () => {
                 <text x="80" y="18" textAnchor="middle" fontFamily="DM Serif Display" fontSize="15" fill="var(--terracotta)">{garden?.name ?? 'Patch'}</text>
               </g>
 
-              {STATIC_PLACED.map((pl, i) => (
+              {placedWithZone.map((pl, i) => (
                 <g key={i} transform={`translate(${pl.x} ${pl.y})`}>
                   <circle r="22" fill={pl.c} fillOpacity="0.08" stroke={pl.c} strokeWidth="0.6" strokeDasharray="2 2" />
                   <foreignObject x="-22" y="-22" width="44" height="44">
@@ -152,8 +257,23 @@ export const GardenDesigner = () => {
                       <PlantArt kind={pl.kind} size={42} color={pl.c} />
                     </div>
                   </foreignObject>
-                  <rect x="-30" y="24" width="60" height="14" fill="var(--cream)" stroke={pl.c} strokeWidth="0.6" rx="2" />
+                  <rect x="-40" y="24" width="80" height="14" fill="var(--cream)" stroke={pl.c} strokeWidth="0.6" rx="2" />
                   <text x="0" y="34" textAnchor="middle" fontFamily="Roboto Slab" fontSize="9" fontWeight="600" fill={pl.c}>{pl.label}</text>
+                  {pl.zoneName && (
+                    <text x="0" y="46" textAnchor="middle" fontFamily="JetBrains Mono" fontSize="7.5" letterSpacing="0.08em" fill="var(--sky)">
+                      {pl.zoneName.toUpperCase()}
+                    </text>
+                  )}
+                </g>
+              ))}
+
+              {zoneOverlays.map(({ zone, x, y, w, h }) => (
+                <g key={zone.id} transform={`translate(${x} ${y})`}>
+                  <rect x="0" y="0" width={w} height={h} fill="none" stroke="var(--sky)" strokeWidth="1.4" strokeDasharray="6 4" rx="4" />
+                  <rect x="2" y="2" width={w - 4} height="16" fill="var(--cream)" opacity="0.95" />
+                  <text x="8" y="14" fontFamily="Roboto Slab" fontSize="10" fontWeight="600" fill="var(--sky)">
+                    {zone.name}
+                  </text>
                 </g>
               ))}
             </g>
@@ -167,9 +287,9 @@ export const GardenDesigner = () => {
         </div>
 
         <div style={{ display: 'flex', gap: 18, alignItems: 'center', fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--ink-faint)' }}>
-          <span>{STATIC_PLACED.length} PLANTS PLACED · STATIC SKETCH</span>
+          <span>{STATIC_PLACED.length} PLANTS PLACED · CANVAS PREVIEW</span>
           <span>·</span>
-          <span style={{ color: 'var(--terracotta)' }}>● DRAWING ENGINE — DESCOPED, FUTURE PHASE</span>
+          <span style={{ color: 'var(--terracotta)' }}>● ZONE OVERLAYS ACTIVE</span>
         </div>
       </main>
 
@@ -208,10 +328,75 @@ export const GardenDesigner = () => {
                     <span style={{ fontFamily: 'var(--font-display)', fontSize: 11, fontStyle: 'italic', color: 'var(--ink-faint)' }}>{p.scientificName}</span>
                   )}
                 </Link>
+                {zones.length > 0 && (
+                  <div style={{ marginTop: 6, display: 'grid', gridTemplateColumns: '1fr auto', gap: 6 }}>
+                    <select id={`zone-select-${p.id}`} style={fieldStyle}>
+                      {zones.map((zone) => (
+                        <option key={zone.id} value={zone.id}>{zone.name}</option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      className="btn-primary"
+                      style={{ padding: '6px 10px', fontSize: 10 }}
+                      disabled={placingPlantId === p.id}
+                      onClick={() => {
+                        const input = document.getElementById(`zone-select-${p.id}`) as HTMLSelectElement | null
+                        const zoneId = input?.value ?? ''
+                        void handlePlacePlantInZone(p, zoneId)
+                      }}
+                    >
+                      {placingPlantId === p.id ? 'Placing' : 'Place'}
+                    </button>
+                  </div>
+                )}
               </li>
             ))}
           </ul>
         )}
+
+        <div style={{ marginTop: 24 }}>
+          <SectionHeader
+            eyebrow="Zone overlays"
+            title="Zones"
+            trailing={`${zones.length}`}
+            titleSize={22}
+          />
+          <form onSubmit={handleCreateZone} style={{ display: 'grid', gap: 8, marginTop: 10 }}>
+            <input value={zoneName} onChange={(event) => setZoneName(event.target.value)} placeholder="Zone name" style={fieldStyle} />
+            <input value={zoneType} onChange={(event) => setZoneType(event.target.value)} placeholder="Zone type (optional)" style={fieldStyle} />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <input value={zoneWidth} onChange={(event) => setZoneWidth(event.target.value)} placeholder="Width ft" style={fieldStyle} />
+              <input value={zoneLength} onChange={(event) => setZoneLength(event.target.value)} placeholder="Length ft" style={fieldStyle} />
+            </div>
+            <button type="submit" className="btn-primary" disabled={isSavingZone}>
+              {isSavingZone ? 'Saving zone' : 'Add zone'}
+            </button>
+            {zoneError && <div style={{ border: '1px solid var(--berry)', color: 'var(--berry)', padding: 8 }}>{zoneError}</div>}
+          </form>
+
+          <ul style={{ listStyle: 'none', padding: 0, margin: '12px 0 0', display: 'grid', gap: 6 }}>
+            {zones.map((zone) => (
+              <li key={zone.id}>
+                <Link
+                  to={`/gardens/${zone.gardenId}/zones/${zone.id}`}
+                  style={{
+                    display: 'block',
+                    textDecoration: 'none',
+                    color: 'var(--ink)',
+                    border: '1px solid var(--rule)',
+                    background: 'var(--cream)',
+                    padding: '8px 10px',
+                    fontFamily: 'var(--font-slab)',
+                    fontSize: 12,
+                  }}
+                >
+                  {zone.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         <div style={{ marginTop: 24 }}>
           <SectionHeader
@@ -232,4 +417,13 @@ export const GardenDesigner = () => {
       </aside>
     </PaperBackdrop>
   )
+}
+
+const fieldStyle: CSSProperties = {
+  width: '100%',
+  border: '1px solid var(--rule)',
+  background: 'var(--cream)',
+  color: 'var(--ink)',
+  padding: '8px 10px',
+  font: 'inherit',
 }

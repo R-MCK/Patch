@@ -1,10 +1,13 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { Monogram, FlowerGlyph, SunGlyph, LeafGlyph, MoonGlyph } from '../glyphs'
 import AlmanacLayout from '../components/AlmanacLayout'
 import HeroCard from '../components/HeroCard'
 import PaperCard from '../components/PaperCard'
 import SectionHeader from '../components/SectionHeader'
+import { getCurrentSeason } from '../services/SeasonService'
 import type { ReactNode } from 'react'
+import { useProfileStore } from '@/stores/profileStore'
 
 type GlyphComponent = typeof FlowerGlyph
 
@@ -69,18 +72,22 @@ const SEASONS: readonly SeasonContent[] = [
   },
 ] as const
 
-const seasonForMonth = (monthIndex: number): SeasonKey => {
-  for (const s of SEASONS) {
-    if (s.months.includes(monthIndex)) return s.key
-  }
-  return 'spring'
-}
-
 // --- Page ---
 
 export const DashboardSeasons = () => {
-  const now = new Date()
-  const currentSeason = seasonForMonth(now.getMonth())
+  const profile = useProfileStore((s) => s.profile)
+  const profileLoaded = useProfileStore((s) => s.hasLoaded)
+  const fetchProfile = useProfileStore((s) => s.fetchProfile)
+
+  useEffect(() => {
+    if (!profileLoaded) {
+      void fetchProfile()
+    }
+  }, [profileLoaded, fetchProfile])
+
+  const seasonSummary = getCurrentSeason(profile)
+  const currentSeason = toSeasonKey(seasonSummary.season)
+  const locationLabel = [profile?.region, profile?.country].filter(Boolean).join(', ') || 'Northern fallback'
 
   return (
     <AlmanacLayout header={<SeasonsHeader />}>
@@ -92,7 +99,7 @@ export const DashboardSeasons = () => {
               The <em style={{ color: 'var(--terracotta)' }}>seasons</em>, at a glance.
             </>
           }
-          subtitle="What's growing, what to plant, and what to bring in — by quarter of the year. Northern hemisphere boundaries; Phase 5 will hook UserProfile + wiki for true regional accuracy."
+          subtitle={`What's growing, what to plant, and what to bring in — tuned for ${seasonSummary.hemisphere} hemisphere (${locationLabel}).`}
           titleSize={56}
         />
 
@@ -107,10 +114,9 @@ export const DashboardSeasons = () => {
         </div>
 
         <PaperCard style={{ padding: 18 }}>
-          <div style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--terracotta)', lineHeight: 1.1 }}>~ Coming soon ~</div>
+          <div style={{ fontFamily: 'var(--font-hand)', fontSize: 22, color: 'var(--terracotta)', lineHeight: 1.1 }}>~ Seasonal window ~</div>
           <div style={{ fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', marginTop: 6, lineHeight: 1.55 }}>
-            Phase 5 will hook this view to your <em>UserProfile</em> (zone, hemisphere) and the wiki to suggest plants
-            and harvest windows specific to your patch.
+            {seasonSummary.plantingWindow}. Profile location drives hemisphere, and Milestone B will deepen this with planting records.
           </div>
         </PaperCard>
       </div>
@@ -127,7 +133,7 @@ const SeasonsHeader = () => (
       <div style={{ fontFamily: 'var(--font-display)', fontSize: 22, lineHeight: 1, color: 'var(--ink)' }}>Patch</div>
     </div>
     <nav style={{ display: 'flex', gap: 28, fontFamily: 'var(--font-slab)', fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-      <Link to="/" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Today</Link>
+      <Link to="/today" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Today</Link>
       <Link to="/plants" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Plants</Link>
       <Link to="/dashboard/almanac" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Almanac</Link>
       <Link to="/dashboard/seasons" style={{ color: 'var(--ink)', textDecoration: 'none' }}>Seasons</Link>
@@ -180,6 +186,13 @@ interface SeasonListProps {
   eyebrow: ReactNode
   items: readonly string[]
   accent: string
+}
+
+function toSeasonKey(season: string): SeasonKey {
+  if (season === 'Spring') return 'spring'
+  if (season === 'Summer') return 'summer'
+  if (season === 'Autumn') return 'fall'
+  return 'winter'
 }
 
 const SeasonList = ({ eyebrow, items, accent }: SeasonListProps) => (

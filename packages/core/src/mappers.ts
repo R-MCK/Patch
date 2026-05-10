@@ -1,14 +1,23 @@
 import type {
+  DbGardenZone,
   DbGarden,
   DbGardenDesign,
   DbNote,
+  DbObservation,
+  DbPlantingRecord,
   DbPhoto,
+  DbUserProfile,
   DbWikiEntry,
+  GardenZone,
   Garden,
   GardenDesign,
   GardenType,
   Note,
+  Observation,
+  ObservationType,
+  PlantingRecord,
   Photo,
+  UserProfile,
   WikiCategoryName,
   WikiEntry,
 } from './types'
@@ -73,7 +82,7 @@ export function mapDbWikiEntryToWikiEntry(dbWikiEntry: DbWikiEntry, now = new Da
 export function mapDbNoteToNote(dbNote: DbNote, now = new Date()): Note {
   return {
     id: dbNote.id,
-    title: dbNote.title,
+    title: dbNote.title ?? 'Field note',
     content: dbNote.content,
     isArchived: toBoolean(dbNote.is_archived),
     plantId: dbNote.plant_id ?? undefined,
@@ -92,6 +101,83 @@ export function mapDbPhotoToPhoto(dbPhoto: DbPhoto, now = new Date()): Photo {
     capturedAt: dbPhoto.captured_at ? new Date(dbPhoto.captured_at) : now,
     createdAt: dbPhoto.created_at ? new Date(dbPhoto.created_at) : now,
     updatedAt: dbPhoto.updated_at ? new Date(dbPhoto.updated_at) : now,
+  }
+}
+
+export function mapDbUserProfileToUserProfile(
+  dbUserProfile: DbUserProfile,
+  now = new Date(),
+): UserProfile {
+  return {
+    userId: dbUserProfile.user_id,
+    country: dbUserProfile.country ?? undefined,
+    region: dbUserProfile.region ?? undefined,
+    postcode: dbUserProfile.postcode ?? undefined,
+    units: toUnits(dbUserProfile.units),
+    experienceLevel: dbUserProfile.experience_level ?? undefined,
+    goals: dbUserProfile.goals ?? undefined,
+    climateNotes: dbUserProfile.climate_notes ?? undefined,
+    createdAt: dbUserProfile.created_at ? new Date(dbUserProfile.created_at) : now,
+    updatedAt: dbUserProfile.updated_at ? new Date(dbUserProfile.updated_at) : now,
+  }
+}
+
+export function mapDbGardenZoneToGardenZone(dbGardenZone: DbGardenZone, now = new Date()): GardenZone {
+  return {
+    id: dbGardenZone.id,
+    gardenId: dbGardenZone.garden_id,
+    name: dbGardenZone.name,
+    zoneType: dbGardenZone.zone_type ?? undefined,
+    widthFeet: dbGardenZone.width_feet ?? undefined,
+    lengthFeet: dbGardenZone.length_feet ?? undefined,
+    sortOrder: dbGardenZone.sort_order ?? undefined,
+    photoId: dbGardenZone.photo_id ?? undefined,
+    notes: dbGardenZone.notes ?? undefined,
+    createdAt: dbGardenZone.created_at ? new Date(dbGardenZone.created_at) : now,
+    updatedAt: dbGardenZone.updated_at ? new Date(dbGardenZone.updated_at) : now,
+  }
+}
+
+export function mapDbPlantingRecordToPlantingRecord(
+  dbPlantingRecord: DbPlantingRecord,
+  now = new Date(),
+): PlantingRecord {
+  return {
+    id: dbPlantingRecord.id,
+    plantNameSnapshot: dbPlantingRecord.plant_name_snapshot,
+    speciesSnapshot: dbPlantingRecord.species_snapshot ?? undefined,
+    varietySnapshot: dbPlantingRecord.variety_snapshot ?? undefined,
+    gardenId: dbPlantingRecord.garden_id ?? undefined,
+    zoneId: dbPlantingRecord.zone_id ?? undefined,
+    plantedAt: new Date(dbPlantingRecord.planted_at),
+    removedAt: dbPlantingRecord.removed_at ? new Date(dbPlantingRecord.removed_at) : undefined,
+    harvestedAt: dbPlantingRecord.harvested_at ? new Date(dbPlantingRecord.harvested_at) : undefined,
+    sourcePlantId: dbPlantingRecord.source_plant_id ?? undefined,
+    outcome: dbPlantingRecord.outcome ?? undefined,
+    season: dbPlantingRecord.season ?? undefined,
+    year: dbPlantingRecord.year ?? undefined,
+    createdAt: dbPlantingRecord.created_at ? new Date(dbPlantingRecord.created_at) : now,
+    updatedAt: dbPlantingRecord.updated_at ? new Date(dbPlantingRecord.updated_at) : now,
+  }
+}
+
+export function mapDbObservationToObservation(dbObservation: DbObservation, now = new Date()): Observation {
+  return {
+    id: dbObservation.id,
+    observationType: toObservationType(dbObservation.observation_type),
+    textContent: dbObservation.text_content ?? undefined,
+    imageData: dbObservation.image_data ?? undefined,
+    thumbnailData: dbObservation.thumbnail_data ?? undefined,
+    audioData: dbObservation.audio_data ?? undefined,
+    transcript: dbObservation.transcript ?? undefined,
+    plantId: dbObservation.plant_id ?? undefined,
+    gardenId: dbObservation.garden_id ?? undefined,
+    zoneId: dbObservation.zone_id ?? undefined,
+    plantingRecordId: dbObservation.planting_record_id ?? undefined,
+    tags: toStringArray(dbObservation.tags),
+    observedAt: dbObservation.observed_at ? new Date(dbObservation.observed_at) : now,
+    createdAt: dbObservation.created_at ? new Date(dbObservation.created_at) : now,
+    updatedAt: dbObservation.updated_at ? new Date(dbObservation.updated_at) : now,
   }
 }
 
@@ -132,4 +218,35 @@ function toSlug(value: string): string {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
+}
+
+function toUnits(value: string | null | undefined): UserProfile['units'] {
+  return value === 'imperial' || value === 'metric' ? value : undefined
+}
+
+function toObservationType(value: string | null | undefined): ObservationType {
+  return value === 'textNote'
+    || value === 'photo'
+    || value === 'audio'
+    || value === 'taskComplete'
+    || value === 'general'
+    ? value
+    : 'general'
+}
+
+function toStringArray(value: string[] | string | null | undefined): string[] {
+  if (Array.isArray(value)) {
+    return value.filter((entry): entry is string => typeof entry === 'string')
+  }
+  if (typeof value === 'string') {
+    try {
+      const parsed = JSON.parse(value) as unknown
+      return Array.isArray(parsed)
+        ? parsed.filter((entry): entry is string => typeof entry === 'string')
+        : []
+    } catch {
+      return []
+    }
+  }
+  return []
 }

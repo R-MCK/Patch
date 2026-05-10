@@ -1,9 +1,13 @@
 import sqlite3 from 'sqlite3';
 import { promisify } from 'util';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { logger } from './types.js';
+import { migrateLegacyNotesAndPhotosToObservations } from './migrations/2026-10-observations.js';
 
-export const db = new sqlite3.Database(path.join(__dirname, 'patch.db'));
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export const db = new sqlite3.Database(path.join(dirname, 'patch.db'));
 
 type SqlParams = readonly unknown[];
 type DbRunResult = sqlite3.RunResult;
@@ -107,6 +111,52 @@ export async function initDatabase() {
   `);
 
     await dbRun(`
+    CREATE TABLE IF NOT EXISTS user_profiles (
+      user_id TEXT PRIMARY KEY,
+      country TEXT,
+      region TEXT,
+      postcode TEXT,
+      units TEXT,
+      experience_level TEXT,
+      goals TEXT,
+      climate_notes TEXT,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+    await dbRun(`
+    CREATE TABLE IF NOT EXISTS notes (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      plant_id TEXT,
+      title TEXT,
+      content TEXT NOT NULL,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (plant_id) REFERENCES plants(id) ON DELETE SET NULL
+    )
+  `);
+
+    await dbRun(`
+    CREATE TABLE IF NOT EXISTS photos (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      plant_id TEXT,
+      image_data TEXT,
+      thumbnail_data TEXT,
+      caption TEXT,
+      captured_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (plant_id) REFERENCES plants(id) ON DELETE SET NULL
+    )
+  `);
+
+    await dbRun(`
     CREATE INDEX IF NOT EXISTS idx_refresh_tokens_token_hash
     ON refresh_tokens(token_hash)
   `);
@@ -115,6 +165,128 @@ export async function initDatabase() {
     CREATE INDEX IF NOT EXISTS idx_refresh_tokens_user_id
     ON refresh_tokens(user_id)
   `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_notes_user_id
+    ON notes(user_id)
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_notes_plant_id
+    ON notes(plant_id)
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_photos_user_id
+    ON photos(user_id)
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_photos_plant_id
+    ON photos(plant_id)
+  `);
+
+    await dbRun(`
+    CREATE TABLE IF NOT EXISTS garden_zones (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      garden_id TEXT NOT NULL,
+      name TEXT NOT NULL,
+      zone_type TEXT,
+      width_feet REAL,
+      length_feet REAL,
+      sort_order INTEGER,
+      photo_id TEXT,
+      notes TEXT,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (garden_id) REFERENCES gardens(id) ON DELETE CASCADE
+    )
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_garden_zones_garden_id
+    ON garden_zones(garden_id)
+  `);
+
+    await dbRun(`
+    CREATE TABLE IF NOT EXISTS planting_records (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      plant_name_snapshot TEXT NOT NULL,
+      species_snapshot TEXT,
+      variety_snapshot TEXT,
+      garden_id TEXT,
+      zone_id TEXT,
+      planted_at DATETIME NOT NULL,
+      removed_at DATETIME,
+      harvested_at DATETIME,
+      source_plant_id TEXT,
+      outcome TEXT,
+      season TEXT,
+      year INTEGER,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (garden_id) REFERENCES gardens(id) ON DELETE SET NULL,
+      FOREIGN KEY (zone_id) REFERENCES garden_zones(id) ON DELETE SET NULL,
+      FOREIGN KEY (source_plant_id) REFERENCES plants(id) ON DELETE SET NULL
+    )
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_planting_records_garden_id
+    ON planting_records(garden_id)
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_planting_records_zone_id
+    ON planting_records(zone_id)
+  `);
+
+    await dbRun(`
+    CREATE TABLE IF NOT EXISTS observations (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      observation_type TEXT NOT NULL,
+      text_content TEXT,
+      image_data TEXT,
+      thumbnail_data TEXT,
+      audio_data TEXT,
+      transcript TEXT,
+      plant_id TEXT,
+      garden_id TEXT,
+      zone_id TEXT,
+      planting_record_id TEXT,
+      tags TEXT,
+      observed_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+      FOREIGN KEY (plant_id) REFERENCES plants(id) ON DELETE SET NULL,
+      FOREIGN KEY (garden_id) REFERENCES gardens(id) ON DELETE SET NULL,
+      FOREIGN KEY (zone_id) REFERENCES garden_zones(id) ON DELETE SET NULL,
+      FOREIGN KEY (planting_record_id) REFERENCES planting_records(id) ON DELETE SET NULL
+    )
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_observations_user_id
+    ON observations(user_id)
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_observations_plant_id
+    ON observations(plant_id)
+  `);
+
+    await dbRun(`
+    CREATE INDEX IF NOT EXISTS idx_observations_zone_id
+    ON observations(zone_id)
+  `);
+
+    await migrateLegacyNotesAndPhotosToObservations(dbRun, dbGet);
 
     // Insert seed data if empty
     const gardenCount = await dbGet<{ count: number }>('SELECT COUNT(*) as count FROM gardens');
