@@ -184,6 +184,11 @@ Sources:
 - Sync banner now displays queued local changes while syncing/offline so users understand what is waiting to upload.
 - Files: `apps/mobile/src/data/usePatchData.ts`, `apps/mobile/src/components/SyncStatusBanner.tsx`, `apps/mobile/app/(tabs)/index.tsx`, `apps/mobile/app/(tabs)/plants.tsx`, `apps/mobile/app/(tabs)/gardens.tsx`, `apps/mobile/app/(tabs)/tasks.tsx`, `apps/mobile/app/(tabs)/wiki.tsx`
 
+16. Create-form keyboard flow:
+- Added `next`/`done` return-key navigation and submit-on-done behavior for add-plant and add-garden forms.
+- Reduced extra taps and improved form completion speed on iOS/Android keyboards.
+- Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

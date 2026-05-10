@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import { Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -18,6 +18,9 @@ export default function AddPlantScreen() {
   const [species, setSpecies] = useState('')
   const [variety, setVariety] = useState('')
   const [location, setLocation] = useState('')
+  const speciesInputRef = useRef<TextInput>(null)
+  const varietyInputRef = useRef<TextInput>(null)
+  const locationInputRef = useRef<TextInput>(null)
 
   if (isBootstrapping) {
     return null
@@ -97,7 +100,11 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Name *</Text>
               <TextInput
+                autoCapitalize="words"
+                blurOnSubmit={false}
                 style={styles.input}
+                onSubmitEditing={() => speciesInputRef.current?.focus()}
+                returnKeyType="next"
                 value={name}
                 onChangeText={(text) => {
                   setName(text)
@@ -112,7 +119,12 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Species</Text>
               <TextInput
+                autoCapitalize="words"
+                blurOnSubmit={false}
+                ref={speciesInputRef}
+                returnKeyType="next"
                 style={styles.input}
+                onSubmitEditing={() => varietyInputRef.current?.focus()}
                 value={species}
                 onChangeText={setSpecies}
                 placeholder="e.g. Solanum lycopersicum"
@@ -123,7 +135,12 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Variety</Text>
               <TextInput
+                autoCapitalize="words"
+                blurOnSubmit={false}
+                ref={varietyInputRef}
+                returnKeyType="next"
                 style={styles.input}
+                onSubmitEditing={() => locationInputRef.current?.focus()}
                 value={variety}
                 onChangeText={setVariety}
                 placeholder="e.g. Brandywine"
@@ -137,7 +154,15 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Where is it?</Text>
               <TextInput
+                autoCapitalize="words"
+                ref={locationInputRef}
+                returnKeyType="done"
                 style={styles.input}
+                onSubmitEditing={() => {
+                  if (!isSubmitting && name.trim()) {
+                    void handleSave()
+                  }
+                }}
                 value={location}
                 onChangeText={setLocation}
                 placeholder="e.g. Front Porch, Raised Bed 1"

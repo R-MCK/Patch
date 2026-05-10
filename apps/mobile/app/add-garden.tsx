@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
 import { Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -17,6 +17,8 @@ export default function AddGardenScreen() {
   const [name, setName] = useState('')
   const [gardenType, setGardenType] = useState('')
   const [climateZone, setClimateZone] = useState('')
+  const gardenTypeInputRef = useRef<TextInput>(null)
+  const climateZoneInputRef = useRef<TextInput>(null)
 
   if (isBootstrapping) {
     return null
@@ -93,7 +95,11 @@ export default function AddGardenScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Name *</Text>
               <TextInput
+                autoCapitalize="words"
+                blurOnSubmit={false}
                 style={styles.input}
+                onSubmitEditing={() => gardenTypeInputRef.current?.focus()}
+                returnKeyType="next"
                 value={name}
                 onChangeText={(text) => {
                   setName(text)
@@ -108,7 +114,12 @@ export default function AddGardenScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Garden Type</Text>
               <TextInput
+                autoCapitalize="words"
+                blurOnSubmit={false}
+                ref={gardenTypeInputRef}
+                returnKeyType="next"
                 style={styles.input}
+                onSubmitEditing={() => climateZoneInputRef.current?.focus()}
                 value={gardenType}
                 onChangeText={setGardenType}
                 placeholder="e.g. Raised Bed, In-Ground"
@@ -119,7 +130,15 @@ export default function AddGardenScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Climate Zone</Text>
               <TextInput
+                autoCapitalize="characters"
+                ref={climateZoneInputRef}
+                returnKeyType="done"
                 style={styles.input}
+                onSubmitEditing={() => {
+                  if (!isSubmitting && name.trim()) {
+                    void handleSave()
+                  }
+                }}
                 value={climateZone}
                 onChangeText={setClimateZone}
                 placeholder="e.g. 9b"
