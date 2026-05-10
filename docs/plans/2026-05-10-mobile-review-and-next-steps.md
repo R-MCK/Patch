@@ -216,6 +216,11 @@ Sources:
 - Prevents ambiguous “Last synced” messaging when local edits are queued for upload.
 - File: `apps/mobile/src/components/SyncStatusBanner.tsx`
 
+22. Consistent multiline submit behavior:
+- Applied `submitBehavior="blurAndSubmit"` to final done fields in add-plant and add-garden.
+- Aligns keyboard submit handling with the add-task notes field on modern React Native.
+- Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

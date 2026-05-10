@@ -161,6 +161,7 @@ export default function AddPlantScreen() {
                 autoCapitalize="words"
                 ref={locationInputRef}
                 returnKeyType="done"
+                submitBehavior="blurAndSubmit"
                 style={styles.input}
                 onSubmitEditing={() => {
                   if (!isSubmitting && name.trim()) {

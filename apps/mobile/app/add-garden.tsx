@@ -137,6 +137,7 @@ export default function AddGardenScreen() {
                 autoCapitalize="characters"
                 ref={climateZoneInputRef}
                 returnKeyType="done"
+                submitBehavior="blurAndSubmit"
                 style={styles.input}
                 onSubmitEditing={() => {
                   if (!isSubmitting && name.trim()) {
