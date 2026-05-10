@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import type { AuthUser } from '@patch/api'
+import { PatchApiError, type AuthUser } from '@patch/api'
 import { patchApiClient } from '../api/client'
 import {
   clearStoredPatchAccessToken,
@@ -28,6 +28,10 @@ function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Authentication failed'
 }
 
+function isTokenAuthFailure(error: unknown) {
+  return error instanceof PatchApiError && (error.status === 401 || error.status === 403)
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -51,13 +55,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         await refreshUser()
       } catch (authError) {
-        // If a stored token is invalid/expired, clear it and allow sign in.
-        if (getPatchAccessToken()) {
+        const hasStoredToken = Boolean(getPatchAccessToken())
+        const shouldClearSession = hasStoredToken && isTokenAuthFailure(authError)
+
+        if (shouldClearSession) {
           await clearStoredPatchAccessToken()
+          initDatabase()
+          clearLocalUserData()
         }
         if (mounted) {
           setUser(null)
-          setError(getErrorMessage(authError))
+          if (shouldClearSession) {
+            setError(getErrorMessage(authError))
+          } else {
+            // Keep the persisted session for offline/network failures.
+            setError(null)
+          }
         }
       } finally {
         if (mounted) {
@@ -105,7 +118,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<AuthContextValue>(() => ({
     user,
-    isAuthenticated: Boolean(user),
+    isAuthenticated: Boolean(user || getPatchAccessToken() || getPatchApiToken()),
     isBootstrapping,
     error,
     signIn: async (email: string, password: string) => {

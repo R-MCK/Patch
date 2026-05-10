@@ -110,3 +110,34 @@ Sources:
 
 - `npm --workspace mobile run typecheck`
 - `npm run packages:check`
+
+## Additional Follow-Up Fixes Landed
+
+1. Sync pull conflict safety:
+- Pull upserts now avoid overwriting locally pending rows (`pending_create` / `pending_update`) for gardens, plants, tasks, and wiki entries.
+- This prevents local offline edits from being clobbered by remote pulls.
+- File: `apps/mobile/src/data/sync.ts`
+
+2. Auth protection for modal creation routes:
+- Added auth guards to `/add-plant`, `/add-garden`, and `/add-task` so deep links cannot bypass auth.
+- Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`
+
+3. Refreshed token persistence:
+- API client now persists refreshed access tokens via `setAuthToken`, preventing stale-token retries after refresh.
+- File: `apps/mobile/src/api/client.ts`
+
+4. Session privacy hardening:
+- Sign-out now clears local user data (`care_tasks`, `plants`, `gardens`) from SQLite.
+- File: `apps/mobile/src/data/db.ts`, `apps/mobile/src/auth/AuthProvider.tsx`
+
+5. Offline session bootstrap behavior:
+- Boot restore now clears local session only for real auth failures (`401/403`), not generic network failures.
+- `isAuthenticated` now respects an available local token during bootstrap fallback so offline users can still access cached data.
+- File: `apps/mobile/src/auth/AuthProvider.tsx`
+
+## Updated UX/Accessibility References
+
+- Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
+- Apple HIG, Accessibility: https://developer.apple.com/design/human-interface-guidelines/accessibility/
+- W3C WCAG 2.2 updates: https://www.w3.org/WAI/standards-guidelines/wcag/new-in-22/
+- W3C Focus Appearance (2.4.13): https://www.w3.org/WAI/WCAG22/Understanding/focus-appearance.html
