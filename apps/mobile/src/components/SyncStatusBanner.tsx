@@ -127,7 +127,6 @@ const styles = StyleSheet.create({
   metaText: {
     color: patchColors.textSecondary,
     fontSize: 12,
-    marginTop: -patchSpacing.xs,
   },
   metaContainer: {
     gap: 2,

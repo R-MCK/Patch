@@ -221,6 +221,10 @@ Sources:
 - Aligns keyboard submit handling with the add-task notes field on modern React Native.
 - Files: `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`
 
+23. Sync banner metadata spacing polish:
+- Removed legacy negative top margin from sync metadata text style to avoid cramped stacking when multiple sync lines are displayed.
+- File: `apps/mobile/src/components/SyncStatusBanner.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts
