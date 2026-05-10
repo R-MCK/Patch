@@ -225,6 +225,11 @@ Sources:
 - Removed legacy negative top margin from sync metadata text style to avoid cramped stacking when multiple sync lines are displayed.
 - File: `apps/mobile/src/components/SyncStatusBanner.tsx`
 
+24. Bootstrap loading UX:
+- Replaced `null` bootstrap returns with a shared `SessionLoadingView` on auth/create screens.
+- Prevents blank flashes while auth session state is restoring.
+- Files: `apps/mobile/src/components/SessionLoadingView.tsx`, `apps/mobile/app/login.tsx`, `apps/mobile/app/register.tsx`, `apps/mobile/app/add-plant.tsx`, `apps/mobile/app/add-garden.tsx`, `apps/mobile/app/add-task.tsx`
+
 ## Updated UX/Accessibility References
 
 - Apple HIG, Managing Accounts: https://developer.apple.com/design/human-interface-guidelines/managing-accounts

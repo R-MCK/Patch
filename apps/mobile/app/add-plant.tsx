@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
 import { usePatchData } from '../src/data/usePatchData'
 import { useAuth } from '../src/auth/AuthProvider'
+import { SessionLoadingView } from '../src/components/SessionLoadingView'
 
 export default function AddPlantScreen() {
   const router = useRouter()
@@ -23,7 +24,7 @@ export default function AddPlantScreen() {
   const locationInputRef = useRef<TextInput>(null)
 
   if (isBootstrapping) {
-    return null
+    return <SessionLoadingView />
   }
 
   if (!isAuthenticated) {

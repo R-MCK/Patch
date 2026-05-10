@@ -4,6 +4,7 @@ import { Link, Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
 import { useAuth } from '../src/auth/AuthProvider'
+import { SessionLoadingView } from '../src/components/SessionLoadingView'
 
 export default function LoginScreen() {
   const router = useRouter()
@@ -18,7 +19,7 @@ export default function LoginScreen() {
   const canSubmit = email.trim().length > 0 && password.length >= 8 && !isSubmitting
 
   if (isBootstrapping) {
-    return null
+    return <SessionLoadingView />
   }
 
   if (isAuthenticated) {
