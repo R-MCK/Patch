@@ -164,6 +164,8 @@ export default function AddTaskScreen() {
             </ScrollView>
             
             <TextInput
+              accessibilityLabel="Task type"
+              accessibilityHint="Required field"
               autoCapitalize="words"
               blurOnSubmit={false}
               style={[styles.input, { marginTop: patchSpacing.sm }]}
@@ -182,6 +184,7 @@ export default function AddTaskScreen() {
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Notes</Text>
             <TextInput
+              accessibilityLabel="Task notes"
               autoCapitalize="sentences"
               blurOnSubmit
               ref={notesInputRef}

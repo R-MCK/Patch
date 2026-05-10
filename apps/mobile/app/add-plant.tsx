@@ -105,6 +105,8 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Name *</Text>
               <TextInput
+                accessibilityLabel="Plant name"
+                accessibilityHint="Required field"
                 autoCapitalize="words"
                 blurOnSubmit={false}
                 style={styles.input}
@@ -124,6 +126,7 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Species</Text>
               <TextInput
+                accessibilityLabel="Plant species"
                 autoCapitalize="words"
                 blurOnSubmit={false}
                 ref={speciesInputRef}
@@ -140,6 +143,7 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Variety</Text>
               <TextInput
+                accessibilityLabel="Plant variety"
                 autoCapitalize="words"
                 blurOnSubmit={false}
                 ref={varietyInputRef}
@@ -159,6 +163,7 @@ export default function AddPlantScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Where is it?</Text>
               <TextInput
+                accessibilityLabel="Plant location"
                 autoCapitalize="words"
                 ref={locationInputRef}
                 returnKeyType="done"

@@ -100,6 +100,8 @@ export default function AddGardenScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Name *</Text>
               <TextInput
+                accessibilityLabel="Garden name"
+                accessibilityHint="Required field"
                 autoCapitalize="words"
                 blurOnSubmit={false}
                 style={styles.input}
@@ -119,6 +121,7 @@ export default function AddGardenScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Garden Type</Text>
               <TextInput
+                accessibilityLabel="Garden type"
                 autoCapitalize="words"
                 blurOnSubmit={false}
                 ref={gardenTypeInputRef}
@@ -135,6 +138,7 @@ export default function AddGardenScreen() {
             <View style={styles.formGroup}>
               <Text style={styles.label}>Climate Zone</Text>
               <TextInput
+                accessibilityLabel="Climate zone"
                 autoCapitalize="characters"
                 ref={climateZoneInputRef}
                 returnKeyType="done"
