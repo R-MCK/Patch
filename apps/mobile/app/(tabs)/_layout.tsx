@@ -1,7 +1,19 @@
 import { Ionicons } from '@expo/vector-icons'
-import { Tabs } from 'expo-router'
+import { Redirect, Tabs } from 'expo-router'
+import { useAuth } from '../../src/auth/AuthProvider'
+import { SessionLoadingView } from '../../src/components/SessionLoadingView'
 
 export default function TabsLayout() {
+  const { isAuthenticated, isBootstrapping } = useAuth()
+
+  if (isBootstrapping) {
+    return <SessionLoadingView />
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />
+  }
+
   return (
     <Tabs
       screenOptions={{

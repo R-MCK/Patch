@@ -1,13 +1,16 @@
-import { useState } from 'react'
-import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator } from 'react-native'
-import { useRouter } from 'expo-router'
+import { useRef, useState } from 'react'
+import { StyleSheet, Text, TextInput, View, Pressable, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native'
+import { Redirect, useRouter } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { patchColors, patchSpacing } from '@patch/core'
 import { usePatchData } from '../src/data/usePatchData'
+import { useAuth } from '../src/auth/AuthProvider'
+import { SessionLoadingView } from '../src/components/SessionLoadingView'
 
 export default function AddGardenScreen() {
   const router = useRouter()
   const { createGarden } = usePatchData()
+  const { isAuthenticated, isBootstrapping } = useAuth()
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -15,6 +18,16 @@ export default function AddGardenScreen() {
   const [name, setName] = useState('')
   const [gardenType, setGardenType] = useState('')
   const [climateZone, setClimateZone] = useState('')
+  const gardenTypeInputRef = useRef<TextInput>(null)
+  const climateZoneInputRef = useRef<TextInput>(null)
+
+  if (isBootstrapping) {
+    return <SessionLoadingView />
+  }
+
+  if (!isAuthenticated) {
+    return <Redirect href="/login" />
+  }
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -40,67 +53,111 @@ export default function AddGardenScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.headerButton} disabled={isSubmitting}>
-          <Text style={styles.cancelText}>Cancel</Text>
-        </Pressable>
-        <Text style={styles.title}>New Garden</Text>
-        <Pressable onPress={handleSave} style={styles.headerButton} disabled={isSubmitting || !name.trim()}>
-          {isSubmitting ? (
-            <ActivityIndicator size="small" color={patchColors.primary} />
-          ) : (
-            <Text style={[styles.saveText, !name.trim() && styles.disabledText]}>Save</Text>
-          )}
-        </Pressable>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.content}>
-        {error && (
-          <View style={styles.errorContainer}>
-            <Text style={styles.errorText}>{error}</Text>
-          </View>
-        )}
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Basic Info</Text>
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Name *</Text>
-            <TextInput
-              style={styles.input}
-              value={name}
-              onChangeText={(text) => {
-                setName(text)
-                setError(null)
-              }}
-              placeholder="e.g. Backyard Raised Bed"
-              placeholderTextColor={patchColors.textSecondary}
-              autoFocus
-            />
-          </View>
-          
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Garden Type</Text>
-            <TextInput
-              style={styles.input}
-              value={gardenType}
-              onChangeText={setGardenType}
-              placeholder="e.g. Raised Bed, In-Ground"
-              placeholderTextColor={patchColors.textSecondary}
-            />
-          </View>
-
-          <View style={styles.formGroup}>
-            <Text style={styles.label}>Climate Zone</Text>
-            <TextInput
-              style={styles.input}
-              value={climateZone}
-              onChangeText={setClimateZone}
-              placeholder="e.g. 9b"
-              placeholderTextColor={patchColors.textSecondary}
-            />
-          </View>
+      <KeyboardAvoidingView
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+        keyboardVerticalOffset={Platform.select({ ios: 12, android: 0 })}
+        style={styles.container}
+      >
+        <View style={styles.header}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Cancel adding garden"
+            onPress={() => router.back()}
+            style={styles.headerButton}
+            disabled={isSubmitting}
+          >
+            <Text style={styles.cancelText}>Cancel</Text>
+          </Pressable>
+          <Text style={styles.title}>New Garden</Text>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Save new garden"
+            onPress={handleSave}
+            style={styles.headerButton}
+            disabled={isSubmitting || !name.trim()}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color={patchColors.primary} />
+            ) : (
+              <Text style={[styles.saveText, !name.trim() && styles.disabledText]}>Save</Text>
+            )}
+          </Pressable>
         </View>
-      </ScrollView>
+
+        <ScrollView
+          contentContainerStyle={styles.content}
+          keyboardDismissMode="on-drag"
+          keyboardShouldPersistTaps="handled"
+        >
+          {error && (
+            <View style={styles.errorContainer}>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Basic Info</Text>
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Name *</Text>
+              <TextInput
+                accessibilityLabel="Garden name"
+                accessibilityHint="Required field"
+                autoCapitalize="words"
+                blurOnSubmit={false}
+                style={styles.input}
+                onSubmitEditing={() => gardenTypeInputRef.current?.focus()}
+                returnKeyType="next"
+                value={name}
+                onChangeText={(text) => {
+                  setName(text)
+                  setError(null)
+                }}
+                placeholder="e.g. Backyard Raised Bed"
+                placeholderTextColor={patchColors.textSecondary}
+                autoFocus
+              />
+            </View>
+            
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Garden Type</Text>
+              <TextInput
+                accessibilityLabel="Garden type"
+                autoCapitalize="words"
+                blurOnSubmit={false}
+                ref={gardenTypeInputRef}
+                returnKeyType="next"
+                style={styles.input}
+                onSubmitEditing={() => climateZoneInputRef.current?.focus()}
+                value={gardenType}
+                onChangeText={setGardenType}
+                placeholder="e.g. Raised Bed, In-Ground"
+                placeholderTextColor={patchColors.textSecondary}
+              />
+            </View>
+
+            <View style={styles.formGroup}>
+              <Text style={styles.label}>Climate Zone</Text>
+              <TextInput
+                accessibilityLabel="Climate zone"
+                autoCapitalize="characters"
+                ref={climateZoneInputRef}
+                returnKeyType="done"
+                submitBehavior="blurAndSubmit"
+                style={styles.input}
+                onSubmitEditing={() => {
+                  if (!isSubmitting && name.trim()) {
+                    void handleSave()
+                  }
+                }}
+                value={climateZone}
+                onChangeText={setClimateZone}
+                placeholder="e.g. 9b"
+                placeholderTextColor={patchColors.textSecondary}
+              />
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   )
 }
@@ -109,6 +166,9 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: patchColors.surface,
+  },
+  container: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',
@@ -126,8 +186,10 @@ const styles = StyleSheet.create({
   },
   headerButton: {
     padding: patchSpacing.xs,
+    minHeight: 44,
     minWidth: 60,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   cancelText: {
     fontSize: 17,

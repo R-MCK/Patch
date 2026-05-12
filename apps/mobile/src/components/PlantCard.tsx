@@ -22,6 +22,8 @@ export function PlantCard({ plant, isWatering, onWater }: PlantCardProps) {
         </View>
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel={`Water ${plant.name}`}
+          accessibilityHint="Marks a watering action for this plant"
           disabled={isWatering}
           onPress={() => onWater(plant.id)}
           style={({ pressed }) => [styles.button, pressed || isWatering ? styles.buttonPressed : null]}
@@ -98,4 +100,3 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
   },
 })
-

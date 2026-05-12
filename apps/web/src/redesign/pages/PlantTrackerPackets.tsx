@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { mapDbCareTaskToCareTask, isOverdue, isDueToday, type CareTask, type DbCareTask, type Plant } from '@patch/core'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { isOverdue, isDueToday, type CareTask, type Plant } from '@patch/core'
 
 import { Monogram, SearchGlyph, PlusGlyph, SunGlyph, DropGlyph, CalendarGlyph } from '../glyphs'
 import { PlantArt } from '../plant-art'
@@ -171,6 +171,10 @@ const SeedPacket = ({ plant, gardenName, urgency }: CardProps) => {
 // --- page -------------------------------------------------------------------
 
 export const PlantTrackerPackets = () => {
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const gardenFilter = searchParams.get('garden') ?? ''
+
   const plants = usePlantStore((s) => s.plants)
   const fetchPlants = usePlantStore((s) => s.fetchPlants)
   const isLoading = usePlantStore((s) => s.isLoading)
@@ -194,8 +198,8 @@ export const PlantTrackerPackets = () => {
       const entries = await Promise.all(
         plants.map(async (p) => {
           try {
-            const raw = (await api.getTasks(p.id)) as DbCareTask[]
-            const mapped = Array.isArray(raw) ? raw.map(mapDbCareTaskToCareTask) : []
+            const raw = await api.getTasks(p.id)
+            const mapped = Array.isArray(raw) ? raw : []
             return [p.id, mapped] as const
           } catch {
             return [p.id, [] as CareTask[]] as const
@@ -216,25 +220,30 @@ export const PlantTrackerPackets = () => {
     return map
   }, [gardens])
 
+  const visiblePlants = useMemo(
+    () => gardenFilter ? plants.filter((plant) => plant.gardenId === gardenFilter) : plants,
+    [plants, gardenFilter],
+  )
+
   const urgencyByPlant = useMemo(() => {
     const map = new Map<string, UrgencyInfo>()
     const now = new Date()
-    for (const p of plants) {
+    for (const p of visiblePlants) {
       map.set(p.id, computeUrgency(tasksByPlant[p.id] ?? [], now))
     }
     return map
-  }, [plants, tasksByPlant])
+  }, [visiblePlants, tasksByPlant])
 
   const overdueCount = useMemo(
-    () => plants.filter((p) => urgencyByPlant.get(p.id)?.level === 'overdue').length,
-    [plants, urgencyByPlant],
+    () => visiblePlants.filter((p) => urgencyByPlant.get(p.id)?.level === 'overdue').length,
+    [visiblePlants, urgencyByPlant],
   )
   const needWaterCount = useMemo(
-    () => plants.filter((p) => {
+    () => visiblePlants.filter((p) => {
       const lvl = urgencyByPlant.get(p.id)?.level
       return lvl === 'overdue' || lvl === 'due-today'
     }).length,
-    [plants, urgencyByPlant],
+    [visiblePlants, urgencyByPlant],
   )
 
   const filters = ['All plants', ...gardens.slice(0, 6).map((g) => g.name)]
@@ -247,10 +256,10 @@ export const PlantTrackerPackets = () => {
           <div style={{ fontFamily: 'var(--font-display)', fontSize: 20 }}>Patch</div>
         </div>
         <nav style={{ display: 'flex', gap: 26, fontFamily: 'var(--font-slab)', fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          <a href="/" style={{ color: 'var(--ink-soft)' }}>Today</a>
+          <a href="/today" style={{ color: 'var(--ink-soft)' }}>Today</a>
           <a href="/plants" style={{ color: 'var(--ink)', borderBottom: '2px solid var(--terracotta)', paddingBottom: 4 }}>Plants</a>
-          <a href="/gardens" style={{ color: 'var(--ink-soft)' }}>Gardens</a>
-          <a href="/wiki" style={{ color: 'var(--ink-soft)' }}>Wiki</a>
+          <a href="/dashboard/map" style={{ color: 'var(--ink-soft)' }}>Gardens</a>
+          <a href="/dashboard/almanac" style={{ color: 'var(--ink-soft)' }}>Almanac</a>
           <a href="/design" style={{ color: 'var(--ink-soft)' }}>Designer</a>
         </nav>
         <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
@@ -258,18 +267,18 @@ export const PlantTrackerPackets = () => {
     }>
       <section style={{ padding: '36px 36px 0' }}>
         <HeroCard
-          eyebrow={`The Patch · ${plants.length} in care · ${gardens.length} ${gardens.length === 1 ? 'garden' : 'gardens'}`}
+          eyebrow={`The Patch · ${visiblePlants.length} in care · ${gardens.length} ${gardens.length === 1 ? 'garden' : 'gardens'}`}
           title="The seed drawer"
           subtitle="Every plant on the patch, kept like a vintage packet on the shelf. Click one to open its long story."
           trailing={<>
             <Link to="/plants/ledger" className="btn-ghost" style={{ textDecoration: 'none' }}>Ledger view</Link>
             <LabeledIconButton variant="ghost" icon={<SearchGlyph size={14} />} label="Search" />
-            <LabeledIconButton variant="primary" icon={<PlusGlyph size={14} />} label="New plant" />
+            <LabeledIconButton variant="primary" icon={<PlusGlyph size={14} />} label="New plant" onClick={() => navigate('/capture')} />
           </>}
         />
 
         <div style={{ marginTop: 18, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', border: '1px solid var(--rule)', background: 'var(--cream)' }}>
-          <SummaryStat label="Total in care" value={plants.length} caption="all beds & pots" valueColor="var(--ink-2)" style={{ borderRight: '1px solid var(--rule)' }} />
+          <SummaryStat label="Total in care" value={visiblePlants.length} caption={gardenFilter ? 'filtered garden' : 'all beds & pots'} valueColor="var(--ink-2)" style={{ borderRight: '1px solid var(--rule)' }} />
           <SummaryStat label="Overdue" value={overdueCount} caption={overdueCount === 0 ? 'all caught up' : 'past their care date'} valueColor={overdueCount > 0 ? 'var(--ink-overdue)' : 'var(--moss)'} style={{ borderRight: '1px solid var(--rule)' }} />
           <SummaryStat label="Need water" value={needWaterCount} caption="due today or earlier" valueColor="var(--sky)" />
         </div>
@@ -296,18 +305,18 @@ export const PlantTrackerPackets = () => {
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--ink-faint)' }}>SORT · BY GARDEN</span>
       </div>
 
-      {plants.length === 0 && !isLoading ? (
+      {visiblePlants.length === 0 && !isLoading ? (
         <section style={{ padding: '60px 36px' }}>
           <EmptyState
             illustration={<PlantArt kind="sunflower" size={120} color="var(--moss)" />}
             title="Plant your first seed"
             body="Your seed drawer is empty. Add a plant to start its long story — every watering, every flower, every harvest."
-            cta={{ label: 'New plant', onClick: () => { /* TODO: hook up create flow */ } }}
+            cta={{ label: 'New plant', onClick: () => navigate('/capture') }}
           />
         </section>
       ) : (
         <section style={{ padding: '28px 36px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 20 }}>
-          {plants.map((p) => (
+          {visiblePlants.map((p) => (
             <SeedPacket
               key={p.id}
               plant={p}

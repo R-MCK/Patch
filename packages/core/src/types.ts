@@ -6,6 +6,19 @@ export interface User {
   createdAt: Date
 }
 
+export interface UserProfile {
+  userId: string
+  country?: string
+  region?: string
+  postcode?: string
+  units?: 'imperial' | 'metric'
+  experienceLevel?: string
+  goals?: string
+  climateNotes?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
 export interface Plant {
   id: string
   name: string
@@ -106,12 +119,64 @@ export interface Note {
 export interface Photo {
   id: string
   plantId: string
-  imageData?: ArrayBuffer
-  thumbnailData?: ArrayBuffer
+  imageData?: ArrayBuffer | string
+  thumbnailData?: ArrayBuffer | string
   imageUrl?: string
   thumbnailUrl?: string
   caption?: string
   capturedAt: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+export type ObservationType = 'textNote' | 'photo' | 'audio' | 'taskComplete' | 'general'
+
+export interface Observation {
+  id: string
+  observationType: ObservationType
+  textContent?: string
+  imageData?: string
+  thumbnailData?: string
+  audioData?: string
+  transcript?: string
+  plantId?: string
+  gardenId?: string
+  zoneId?: string
+  plantingRecordId?: string
+  tags: string[]
+  observedAt: Date
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface GardenZone {
+  id: string
+  gardenId: string
+  name: string
+  zoneType?: string
+  widthFeet?: number
+  lengthFeet?: number
+  sortOrder?: number
+  photoId?: string
+  notes?: string
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface PlantingRecord {
+  id: string
+  plantNameSnapshot: string
+  speciesSnapshot?: string
+  varietySnapshot?: string
+  gardenId?: string
+  zoneId?: string
+  plantedAt: Date
+  removedAt?: Date
+  harvestedAt?: Date
+  sourcePlantId?: string
+  outcome?: string
+  season?: string
+  year?: number
   createdAt: Date
   updatedAt: Date
 }
@@ -173,7 +238,8 @@ export interface DbWikiEntry {
 
 export interface DbNote {
   id: string
-  title: string
+  user_id?: string | null
+  title?: string | null
   content: string
   is_archived?: boolean | number | null
   plant_id?: string | null
@@ -183,11 +249,78 @@ export interface DbNote {
 
 export interface DbPhoto {
   id: string
+  user_id?: string | null
   plant_id: string
-  image_data?: ArrayBuffer | null
-  thumbnail_data?: ArrayBuffer | null
+  image_data?: ArrayBuffer | string | null
+  thumbnail_data?: ArrayBuffer | string | null
   caption?: string | null
   captured_at?: string | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export interface DbUserProfile {
+  user_id: string
+  country?: string | null
+  region?: string | null
+  postcode?: string | null
+  units?: string | null
+  experience_level?: string | null
+  goals?: string | null
+  climate_notes?: string | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export interface DbGardenZone {
+  id: string
+  user_id?: string | null
+  garden_id: string
+  name: string
+  zone_type?: string | null
+  width_feet?: number | null
+  length_feet?: number | null
+  sort_order?: number | null
+  photo_id?: string | null
+  notes?: string | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export interface DbPlantingRecord {
+  id: string
+  user_id?: string | null
+  plant_name_snapshot: string
+  species_snapshot?: string | null
+  variety_snapshot?: string | null
+  garden_id?: string | null
+  zone_id?: string | null
+  planted_at: string
+  removed_at?: string | null
+  harvested_at?: string | null
+  source_plant_id?: string | null
+  outcome?: string | null
+  season?: string | null
+  year?: number | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export interface DbObservation {
+  id: string
+  user_id?: string | null
+  observation_type: string
+  text_content?: string | null
+  image_data?: string | null
+  thumbnail_data?: string | null
+  audio_data?: string | null
+  transcript?: string | null
+  plant_id?: string | null
+  garden_id?: string | null
+  zone_id?: string | null
+  planting_record_id?: string | null
+  tags?: string[] | string | null
+  observed_at?: string | null
   created_at?: string | null
   updated_at?: string | null
 }

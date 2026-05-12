@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { PatchApiClient } from '@patch/api'
+import { Link, useNavigate } from 'react-router-dom'
 import {
   Monogram,
   SearchGlyph,
@@ -16,26 +15,14 @@ import SectionHeader from '../components/SectionHeader'
 import PaperCard from '../components/PaperCard'
 import EmptyState from '../components/EmptyState'
 import { usePlantStore } from '@/stores/plantStore'
-import type { Plant } from '@/types'
+import type { Plant, PlantingRecord } from '@/types'
 import type { CareTask } from '@patch/core'
+import { api } from '@/lib/api'
 
 // --- Static helpers ---
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 const MONTH_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-
-const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:3000').replace(/\/$/, '')
-const getAuthToken = () => {
-  const stored = localStorage.getItem('auth-storage')
-  if (!stored) return null
-  try {
-    const parsed = JSON.parse(stored) as { state?: { token?: string | null } }
-    return parsed.state?.token ?? null
-  } catch {
-    return null
-  }
-}
-const almanacApiClient = new PatchApiClient({ baseUrl: apiBaseUrl, getAuthToken })
 
 const monthAnchorId = (monthIndex: number) => `almanac-month-${monthIndex}`
 
@@ -52,37 +39,46 @@ interface CareEntry {
   taskType: string
 }
 
-type MonthEntry = PlantingEntry | CareEntry
+interface PlantingRecordEntry {
+  kind: 'plantingRecord'
+  date: Date
+  record: PlantingRecord
+}
+
+type MonthEntry = PlantingEntry | CareEntry | PlantingRecordEntry
 
 // --- Page ---
 
 export const DashboardAlmanac = () => {
+  const navigate = useNavigate()
   const plants = usePlantStore((s) => s.plants)
   const fetchPlants = usePlantStore((s) => s.fetchPlants)
 
   const [careTasks, setCareTasks] = useState<CareTask[]>([])
+  const [plantingRecords, setPlantingRecords] = useState<PlantingRecord[]>([])
   const fetchedRef = useRef(false)
 
   useEffect(() => {
     fetchPlants().catch(() => { /* error captured into store */ })
   }, [fetchPlants])
 
-  // Fetch care tasks for all plants once they're loaded.
-  // TODO Phase 5 — replace per-plant fan-out with a single backend
-  // /api/care/timeline?year= aggregation endpoint.
+  // Pull care tasks and planting records once source data is available.
   useEffect(() => {
     if (fetchedRef.current) return
     if (plants.length === 0) return
     fetchedRef.current = true
     let cancelled = false
-    Promise.all(
-      plants.map((p) =>
-        almanacApiClient.getPlantTasks(p.id).catch(() => [] as CareTask[]),
-      ),
-    ).then((results) => {
+    void (async () => {
+      const [tasksByPlant, records] = await Promise.all([
+        Promise.all(
+          plants.map((p) => api.getTasks(p.id).catch(() => [] as CareTask[])),
+        ),
+        api.getPlantingRecords().catch(() => [] as PlantingRecord[]),
+      ])
       if (cancelled) return
-      setCareTasks(results.flat())
-    })
+      setCareTasks(tasksByPlant.flat())
+      setPlantingRecords(records)
+    })()
     return () => {
       cancelled = true
     }
@@ -93,9 +89,17 @@ export const DashboardAlmanac = () => {
 
   const entriesByMonth = useMemo(() => {
     const buckets: MonthEntry[][] = Array.from({ length: 12 }, () => [])
+    for (const record of plantingRecords) {
+      if (record.plantedAt.getFullYear() !== year) continue
+      buckets[record.plantedAt.getMonth()].push({
+        kind: 'plantingRecord',
+        date: record.plantedAt,
+        record,
+      })
+    }
     for (const p of plants) {
       const planted = p.plantingDate ?? p.plantedDate
-      if (planted && planted.getFullYear() === year) {
+      if (planted && planted.getFullYear() === year && plantingRecords.length === 0) {
         buckets[planted.getMonth()].push({ kind: 'planting', date: planted, plant: p })
       }
     }
@@ -115,7 +119,7 @@ export const DashboardAlmanac = () => {
       list.sort((a, b) => a.date.getTime() - b.date.getTime())
     }
     return buckets
-  }, [plants, careTasks, year])
+  }, [plants, careTasks, plantingRecords, year])
 
   const totalEntries = entriesByMonth.reduce((sum, list) => sum + list.length, 0)
 
@@ -196,8 +200,7 @@ export const DashboardAlmanac = () => {
               body="Add a plant or complete a care task and it will be inscribed here, month by month."
               cta={{
                 label: 'Capture event',
-                // TODO Phase 5 — wire to capture flow.
-                onClick: () => { /* stub */ },
+                onClick: () => navigate('/capture'),
               }}
             />
           </PaperCard>
@@ -250,7 +253,7 @@ const AlmanacHeader = () => (
       </div>
     </div>
     <nav style={{ display: 'flex', gap: 28, fontFamily: 'var(--font-slab)', fontSize: 13, fontWeight: 500 }}>
-      <Link to="/" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Today</Link>
+      <Link to="/today" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Today</Link>
       <Link to="/plants" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Plants</Link>
       <Link to="/dashboard/almanac" style={{ color: 'var(--ink)', borderBottom: '2px solid var(--terracotta)', paddingBottom: 4, textDecoration: 'none' }}>Almanac</Link>
       <Link to="/dashboard/seasons" style={{ color: 'var(--ink-soft)', textDecoration: 'none' }}>Seasons</Link>
@@ -277,6 +280,24 @@ interface EntryProps {
 
 const AlmanacEntryCard = ({ entry }: EntryProps) => {
   const dateLabel = entry.date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })
+
+  if (entry.kind === 'plantingRecord') {
+    return (
+      <PaperCard hover="lift" style={{ padding: 16 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontFamily: 'var(--font-mono)', fontSize: 9, letterSpacing: '0.16em', color: 'var(--terracotta)', textTransform: 'uppercase' }}>
+          <PlusGlyph size={12} />
+          PLANTING RECORD · {dateLabel.toUpperCase()}
+        </div>
+        <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 18, color: 'var(--ink-2)', margin: '6px 0 2px' }}>{entry.record.plantNameSnapshot}</h4>
+        {entry.record.speciesSnapshot && (
+          <div style={{ fontFamily: 'var(--font-display)', fontSize: 12, fontStyle: 'italic', color: 'var(--ink-faint)' }}>{entry.record.speciesSnapshot}</div>
+        )}
+        <div style={{ marginTop: 8, fontFamily: 'var(--font-mono)', fontSize: 10, color: 'var(--ink-faint)' }}>
+          {entry.record.season ?? 'Season TBD'} {entry.record.year ?? ''}
+        </div>
+      </PaperCard>
+    )
+  }
 
   if (entry.kind === 'planting') {
     return (

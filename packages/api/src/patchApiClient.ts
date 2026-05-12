@@ -1,4 +1,10 @@
 import {
+  mapDbGardenZoneToGardenZone,
+  mapDbNoteToNote,
+  mapDbObservationToObservation,
+  mapDbPhotoToPhoto,
+  mapDbPlantingRecordToPlantingRecord,
+  mapDbUserProfileToUserProfile,
   mapDbCareTaskToCareTask,
   mapDbPlantToPlant,
   mapDbGardenToGarden,
@@ -7,9 +13,21 @@ import {
   type DbCareTask,
   type DbPlant,
   type DbGarden,
+  type DbGardenZone,
+  type DbNote,
+  type DbObservation,
+  type DbPhoto,
+  type DbPlantingRecord,
+  type DbUserProfile,
   type DbWikiEntry,
+  type GardenZone,
+  type Note,
+  type Observation,
   type PaginatedResponse,
+  type PlantingRecord,
+  type Photo,
   type Plant,
+  type UserProfile,
   type Garden,
   type WikiEntry,
 } from '@patch/core'
@@ -39,6 +57,56 @@ export interface AuthResponse {
 export interface WaterPlantResponse {
   success: boolean
   message: string
+}
+
+export interface UpsertUserProfileInput {
+  country?: string | null
+  region?: string | null
+  postcode?: string | null
+  units?: 'imperial' | 'metric' | null
+  experience_level?: string | null
+  goals?: string | null
+  climate_notes?: string | null
+}
+
+export interface CreateGardenZoneInput {
+  name: string
+  zone_type?: string | null
+  width_feet?: number | null
+  length_feet?: number | null
+  sort_order?: number | null
+  photo_id?: string | null
+  notes?: string | null
+}
+
+export interface CreatePlantingRecordInput {
+  plant_name_snapshot: string
+  species_snapshot?: string | null
+  variety_snapshot?: string | null
+  garden_id?: string | null
+  zone_id?: string | null
+  planted_at: string
+  removed_at?: string | null
+  harvested_at?: string | null
+  source_plant_id?: string | null
+  outcome?: string | null
+  season?: string | null
+  year?: number | null
+}
+
+export interface CreateObservationInput {
+  observation_type?: 'textNote' | 'photo' | 'audio' | 'taskComplete' | 'general'
+  text_content?: string | null
+  image_data?: string | null
+  thumbnail_data?: string | null
+  audio_data?: string | null
+  transcript?: string | null
+  plant_id?: string | null
+  garden_id?: string | null
+  zone_id?: string | null
+  planting_record_id?: string | null
+  tags?: string[] | null
+  observed_at?: string | null
 }
 
 export interface PatchApiErrorOptions {
@@ -168,6 +236,10 @@ export class PatchApiClient {
     return tasks.map((task) => mapDbCareTaskToCareTask(task))
   }
 
+  async getTasks(id: string): Promise<CareTask[]> {
+    return this.getPlantTasks(id)
+  }
+
   async getGardens(limit = 20, offset = 0): Promise<PaginatedResponse<Garden>> {
     const params = new URLSearchParams({
       limit: String(limit),
@@ -215,6 +287,16 @@ export class PatchApiClient {
     return mapDbCareTaskToCareTask(response)
   }
 
+  async completeTask(taskId: string, completedDate?: string): Promise<CareTask> {
+    const response = await this.request<DbCareTask>(`/api/tasks/${encodeURIComponent(taskId)}/complete`, {
+      method: 'POST',
+      body: JSON.stringify({
+        completed_date: completedDate ?? null,
+      }),
+    })
+    return mapDbCareTaskToCareTask(response)
+  }
+
   async getWikiEntries(limit = 20, offset = 0): Promise<PaginatedResponse<WikiEntry>> {
     const params = new URLSearchParams({
       limit: String(limit),
@@ -231,6 +313,161 @@ export class PatchApiClient {
   async getWikiEntry(id: string): Promise<WikiEntry> {
     const entry = await this.request<DbWikiEntry>(`/api/wiki/${encodeURIComponent(id)}`)
     return mapDbWikiEntryToWikiEntry(entry)
+  }
+
+  async getProfile(): Promise<UserProfile | null> {
+    const response = await this.request<{ profile: DbUserProfile | null } | DbUserProfile | null>('/api/profile')
+    const profile = response && 'profile' in response ? response.profile : response
+    return profile ? mapDbUserProfileToUserProfile(profile) : null
+  }
+
+  async updateProfile(data: UpsertUserProfileInput): Promise<UserProfile> {
+    const profile = await this.request<DbUserProfile>('/api/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+    return mapDbUserProfileToUserProfile(profile)
+  }
+
+  async getPlantNotes(plantId: string): Promise<Note[]> {
+    const notes = await this.request<DbNote[]>(`/api/plants/${encodeURIComponent(plantId)}/notes`)
+    return notes.map((note) => mapDbNoteToNote(note))
+  }
+
+  async createPlantNote(plantId: string, data: {
+    title?: string | null
+    content: string
+  }): Promise<Note> {
+    const note = await this.request<DbNote>(`/api/plants/${encodeURIComponent(plantId)}/notes`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    return mapDbNoteToNote(note)
+  }
+
+  async getPlantPhotos(plantId: string): Promise<Photo[]> {
+    const photos = await this.request<DbPhoto[]>(`/api/plants/${encodeURIComponent(plantId)}/photos`)
+    return photos.map((photo) => mapDbPhotoToPhoto(photo))
+  }
+
+  async createPlantPhoto(plantId: string, data: {
+    image_data: string
+    thumbnail_data?: string | null
+    caption?: string | null
+    captured_at?: string | null
+  }): Promise<Photo> {
+    const photo = await this.request<DbPhoto>(`/api/plants/${encodeURIComponent(plantId)}/photos`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    return mapDbPhotoToPhoto(photo)
+  }
+
+  async getGardenZones(gardenId: string): Promise<GardenZone[]> {
+    const rows = await this.request<DbGardenZone[]>(`/api/gardens/${encodeURIComponent(gardenId)}/zones`)
+    return rows.map((row) => mapDbGardenZoneToGardenZone(row))
+  }
+
+  async createGardenZone(gardenId: string, data: CreateGardenZoneInput): Promise<GardenZone> {
+    const row = await this.request<DbGardenZone>(`/api/gardens/${encodeURIComponent(gardenId)}/zones`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    return mapDbGardenZoneToGardenZone(row)
+  }
+
+  async updateGardenZone(zoneId: string, data: Partial<CreateGardenZoneInput>): Promise<GardenZone> {
+    const row = await this.request<DbGardenZone>(`/api/zones/${encodeURIComponent(zoneId)}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+    return mapDbGardenZoneToGardenZone(row)
+  }
+
+  async deleteGardenZone(zoneId: string): Promise<void> {
+    await this.request<void>(`/api/zones/${encodeURIComponent(zoneId)}`, {
+      method: 'DELETE',
+    })
+  }
+
+  async getZoneHistory(zoneId: string): Promise<PlantingRecord[]> {
+    const rows = await this.request<DbPlantingRecord[]>(`/api/zones/${encodeURIComponent(zoneId)}/history`)
+    return rows.map((row) => mapDbPlantingRecordToPlantingRecord(row))
+  }
+
+  async getZoneObservations(zoneId: string): Promise<Observation[]> {
+    const rows = await this.request<DbObservation[]>(`/api/zones/${encodeURIComponent(zoneId)}/observations`)
+    return rows.map((row) => mapDbObservationToObservation(row))
+  }
+
+  async getPlantObservations(plantId: string): Promise<Observation[]> {
+    const rows = await this.request<DbObservation[]>(`/api/plants/${encodeURIComponent(plantId)}/observations`)
+    return rows.map((row) => mapDbObservationToObservation(row))
+  }
+
+  async createPlantObservation(plantId: string, data: CreateObservationInput): Promise<Observation> {
+    const row = await this.request<DbObservation>(`/api/plants/${encodeURIComponent(plantId)}/observations`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    return mapDbObservationToObservation(row)
+  }
+
+  async getObservations(filters: { plant_id?: string; garden_id?: string; zone_id?: string } = {}): Promise<Observation[]> {
+    const params = new URLSearchParams()
+    if (filters.plant_id) params.set('plant_id', filters.plant_id)
+    if (filters.garden_id) params.set('garden_id', filters.garden_id)
+    if (filters.zone_id) params.set('zone_id', filters.zone_id)
+    const query = params.toString()
+    const rows = await this.request<DbObservation[]>(`/api/observations${query ? `?${query}` : ''}`)
+    return rows.map((row) => mapDbObservationToObservation(row))
+  }
+
+  async createObservation(data: CreateObservationInput): Promise<Observation> {
+    const row = await this.request<DbObservation>('/api/observations', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    return mapDbObservationToObservation(row)
+  }
+
+  async getPlantingRecords(filters: { garden_id?: string; zone_id?: string } = {}): Promise<PlantingRecord[]> {
+    const params = new URLSearchParams()
+    if (filters.garden_id) params.set('garden_id', filters.garden_id)
+    if (filters.zone_id) params.set('zone_id', filters.zone_id)
+    const query = params.toString()
+    const rows = await this.request<DbPlantingRecord[]>(`/api/planting-records${query ? `?${query}` : ''}`)
+    return rows.map((row) => mapDbPlantingRecordToPlantingRecord(row))
+  }
+
+  async createPlantingRecord(data: CreatePlantingRecordInput): Promise<PlantingRecord> {
+    const row = await this.request<DbPlantingRecord>('/api/planting-records', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    return mapDbPlantingRecordToPlantingRecord(row)
+  }
+
+  async updatePlantingRecord(recordId: string, data: Partial<CreatePlantingRecordInput>): Promise<PlantingRecord> {
+    const row = await this.request<DbPlantingRecord>(`/api/planting-records/${encodeURIComponent(recordId)}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+    return mapDbPlantingRecordToPlantingRecord(row)
+  }
+
+  async updateObservation(observationId: string, data: Partial<CreateObservationInput>): Promise<Observation> {
+    const row = await this.request<DbObservation>(`/api/observations/${encodeURIComponent(observationId)}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+    return mapDbObservationToObservation(row)
+  }
+
+  async deleteObservation(observationId: string): Promise<void> {
+    await this.request<void>(`/api/observations/${encodeURIComponent(observationId)}`, {
+      method: 'DELETE',
+    })
   }
 
   async createPlant(data: {

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { mapDbCareTaskToCareTask, isOverdue, isDueToday, type CareTask, type DbCareTask, type Plant } from '@patch/core'
+import { Link, useNavigate } from 'react-router-dom'
+import { isOverdue, isDueToday, type CareTask, type Plant } from '@patch/core'
 
 import { Monogram, SearchGlyph, PlusGlyph, SunGlyph, ChevronRightGlyph } from '../glyphs'
 import { PlantArt } from '../plant-art'
@@ -123,6 +123,7 @@ const compareRows = (a: Row, b: Row, key: SortKey): number => {
 // --- page -------------------------------------------------------------------
 
 export const PlantTrackerLedger = () => {
+  const navigate = useNavigate()
   const plants = usePlantStore((s) => s.plants)
   const fetchPlants = usePlantStore((s) => s.fetchPlants)
   const isLoading = usePlantStore((s) => s.isLoading)
@@ -146,8 +147,8 @@ export const PlantTrackerLedger = () => {
       const entries = await Promise.all(
         plants.map(async (p) => {
           try {
-            const raw = (await api.getTasks(p.id)) as DbCareTask[]
-            const mapped = Array.isArray(raw) ? raw.map(mapDbCareTaskToCareTask) : []
+            const raw = await api.getTasks(p.id)
+            const mapped = Array.isArray(raw) ? raw : []
             return [p.id, mapped] as const
           } catch {
             return [p.id, [] as CareTask[]] as const
@@ -228,10 +229,10 @@ export const PlantTrackerLedger = () => {
           </div>
         </div>
         <nav style={{ display: 'flex', gap: 26, fontFamily: 'var(--font-slab)', fontSize: 12, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          <a href="/" style={{ color: 'var(--ink-soft)' }}>Today</a>
+          <a href="/today" style={{ color: 'var(--ink-soft)' }}>Today</a>
           <a href="/plants" style={{ color: 'var(--ink)', borderBottom: '2px solid var(--terracotta)', paddingBottom: 4 }}>Plants</a>
-          <a href="/gardens" style={{ color: 'var(--ink-soft)' }}>Gardens</a>
-          <a href="/wiki" style={{ color: 'var(--ink-soft)' }}>Wiki</a>
+          <a href="/dashboard/map" style={{ color: 'var(--ink-soft)' }}>Gardens</a>
+          <a href="/dashboard/almanac" style={{ color: 'var(--ink-soft)' }}>Almanac</a>
           <a href="/design" style={{ color: 'var(--ink-soft)' }}>Designer</a>
         </nav>
         <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--terracotta)', color: 'var(--cream)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-display)', fontSize: 16 }}>R</div>
@@ -253,7 +254,7 @@ export const PlantTrackerLedger = () => {
           <div style={{ display: 'flex', gap: 6, justifyContent: 'flex-end' }}>
             <Link to="/plants" className="btn-ghost" style={{ textDecoration: 'none' }}>Packet view</Link>
             <LabeledIconButton variant="ghost" icon={<SearchGlyph size={12} />} label="Search" />
-            <LabeledIconButton variant="primary" icon={<PlusGlyph size={12} />} label="New entry" />
+            <LabeledIconButton variant="primary" icon={<PlusGlyph size={12} />} label="New entry" onClick={() => navigate('/capture')} />
           </div>
         </div>
       </section>
@@ -283,7 +284,7 @@ export const PlantTrackerLedger = () => {
             illustration={<PlantArt kind="sunflower" size={120} color="var(--moss)" />}
             title="No entries in the book yet"
             body="Once you add a plant, it will be catalogued here with its bed, age, and care log."
-            cta={{ label: 'New plant', onClick: () => { /* TODO */ } }}
+            cta={{ label: 'New plant', onClick: () => navigate('/capture') }}
           />
         </section>
       ) : (

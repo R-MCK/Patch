@@ -1,4 +1,7 @@
+import * as SecureStore from 'expo-secure-store'
+
 let patchAccessToken: string | null = null
+const PATCH_ACCESS_TOKEN_KEY = 'patch_access_token'
 
 function normalizeToken(token: string | null | undefined) {
   const trimmed = token?.trim()
@@ -15,6 +18,40 @@ export function clearPatchAccessToken() {
 
 export function getPatchAccessToken() {
   return patchAccessToken
+}
+
+export async function hydrateStoredPatchAccessToken() {
+  try {
+    const stored = await SecureStore.getItemAsync(PATCH_ACCESS_TOKEN_KEY)
+    setPatchAccessToken(stored)
+  } catch {
+    // Ignore secure storage read failures.
+  }
+}
+
+export async function persistPatchAccessToken(token: string | null | undefined) {
+  const normalized = normalizeToken(token)
+  setPatchAccessToken(normalized)
+
+  try {
+    if (!normalized) {
+      await SecureStore.deleteItemAsync(PATCH_ACCESS_TOKEN_KEY)
+      return
+    }
+
+    await SecureStore.setItemAsync(PATCH_ACCESS_TOKEN_KEY, normalized)
+  } catch {
+    // Ignore secure storage write failures.
+  }
+}
+
+export async function clearStoredPatchAccessToken() {
+  patchAccessToken = null
+  try {
+    await SecureStore.deleteItemAsync(PATCH_ACCESS_TOKEN_KEY)
+  } catch {
+    // Ignore secure storage delete failures.
+  }
 }
 
 export function getPatchApiToken() {

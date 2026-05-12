@@ -1,8 +1,9 @@
 import express from 'express';
 import cors from 'cors';
-import { createHash, createHmac, randomBytes, randomUUID, scrypt as cryptoScrypt, timingSafeEqual } from 'crypto';
-import { promisify } from 'util';
+import { createHash, randomBytes, randomUUID } from 'crypto';
 import { pathToFileURL } from 'url';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import { dbAll, dbGet, dbRun, initDatabase } from './db.js';
 import { startMcpServer } from './mcp-server.js';
@@ -45,6 +46,82 @@ const createTaskSchema = z.object({
   notes: z.string().nullable().optional(),
 });
 
+const completeTaskSchema = z.object({
+  completed_date: z.string().trim().nullable().optional(),
+});
+
+const upsertProfileSchema = z.object({
+  country: z.string().trim().max(120).nullable().optional(),
+  region: z.string().trim().max(120).nullable().optional(),
+  postcode: z.string().trim().max(40).nullable().optional(),
+  units: z.enum(['imperial', 'metric']).nullable().optional(),
+  experience_level: z.string().trim().max(80).nullable().optional(),
+  goals: z.string().trim().max(4000).nullable().optional(),
+  climate_notes: z.string().trim().max(4000).nullable().optional(),
+});
+
+const createNoteSchema = z.object({
+  plant_id: z.string().min(1).nullable().optional(),
+  title: z.string().trim().max(200).nullable().optional(),
+  content: z.string().trim().min(1).max(8000),
+});
+
+const createPhotoSchema = z.object({
+  plant_id: z.string().min(1).nullable().optional(),
+  image_data: z.string().trim().min(1),
+  thumbnail_data: z.string().trim().nullable().optional(),
+  caption: z.string().trim().max(500).nullable().optional(),
+  captured_at: z.string().trim().nullable().optional(),
+});
+
+const createGardenZoneSchema = z.object({
+  name: z.string().trim().min(1).max(160),
+  zone_type: z.string().trim().max(80).nullable().optional(),
+  width_feet: z.number().nullable().optional(),
+  length_feet: z.number().nullable().optional(),
+  sort_order: z.number().int().nullable().optional(),
+  photo_id: z.string().trim().min(1).nullable().optional(),
+  notes: z.string().trim().max(4000).nullable().optional(),
+});
+
+const updateGardenZoneSchema = createGardenZoneSchema.partial();
+
+const createPlantingRecordSchema = z.object({
+  plant_name_snapshot: z.string().trim().min(1).max(200),
+  species_snapshot: z.string().trim().max(200).nullable().optional(),
+  variety_snapshot: z.string().trim().max(200).nullable().optional(),
+  garden_id: z.string().trim().min(1).nullable().optional(),
+  zone_id: z.string().trim().min(1).nullable().optional(),
+  planted_at: z.string().trim().min(1),
+  removed_at: z.string().trim().nullable().optional(),
+  harvested_at: z.string().trim().nullable().optional(),
+  source_plant_id: z.string().trim().min(1).nullable().optional(),
+  outcome: z.string().trim().max(1000).nullable().optional(),
+  season: z.string().trim().max(40).nullable().optional(),
+  year: z.number().int().nullable().optional(),
+});
+
+const updatePlantingRecordSchema = createPlantingRecordSchema.partial();
+
+const observationTypeSchema = z.enum(['textNote', 'photo', 'audio', 'taskComplete', 'general']);
+
+const createObservationSchema = z.object({
+  observation_type: observationTypeSchema.default('general'),
+  text_content: z.string().trim().max(10000).nullable().optional(),
+  image_data: z.string().trim().nullable().optional(),
+  thumbnail_data: z.string().trim().nullable().optional(),
+  audio_data: z.string().trim().nullable().optional(),
+  transcript: z.string().trim().max(10000).nullable().optional(),
+  plant_id: z.string().trim().min(1).nullable().optional(),
+  garden_id: z.string().trim().min(1).nullable().optional(),
+  zone_id: z.string().trim().min(1).nullable().optional(),
+  planting_record_id: z.string().trim().min(1).nullable().optional(),
+  tags: z.array(z.string().trim().min(1)).max(50).nullable().optional(),
+  observed_at: z.string().trim().nullable().optional(),
+});
+
+const updateObservationSchema = createObservationSchema.partial();
+
 const registerSchema = z.object({
   email: z.email().trim().toLowerCase(),
   name: z.string().trim().min(1).max(120).optional(),
@@ -75,7 +152,6 @@ type JwtPayload = {
   sub: string;
   email: string;
   name: string;
-  exp: number;
 };
 
 type RefreshTokenRow = {
@@ -85,11 +161,93 @@ type RefreshTokenRow = {
   revoked_at: string | null;
 };
 
-const scrypt = promisify(cryptoScrypt) as (
-  password: string,
-  salt: string,
-  keylen: number,
-) => Promise<Buffer>;
+type UserProfileRow = {
+  user_id: string;
+  country: string | null;
+  region: string | null;
+  postcode: string | null;
+  units: string | null;
+  experience_level: string | null;
+  goals: string | null;
+  climate_notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type NoteRow = {
+  id: string;
+  user_id: string;
+  plant_id: string | null;
+  title: string | null;
+  content: string;
+  created_at: string;
+  updated_at: string;
+};
+
+type PhotoRow = {
+  id: string;
+  user_id: string;
+  plant_id: string | null;
+  image_data: string;
+  thumbnail_data: string | null;
+  caption: string | null;
+  captured_at: string;
+  created_at: string;
+  updated_at: string;
+};
+
+type GardenZoneRow = {
+  id: string;
+  user_id: string;
+  garden_id: string;
+  name: string;
+  zone_type: string | null;
+  width_feet: number | null;
+  length_feet: number | null;
+  sort_order: number | null;
+  photo_id: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type PlantingRecordRow = {
+  id: string;
+  user_id: string;
+  plant_name_snapshot: string;
+  species_snapshot: string | null;
+  variety_snapshot: string | null;
+  garden_id: string | null;
+  zone_id: string | null;
+  planted_at: string;
+  removed_at: string | null;
+  harvested_at: string | null;
+  source_plant_id: string | null;
+  outcome: string | null;
+  season: string | null;
+  year: number | null;
+  created_at: string;
+  updated_at: string;
+};
+
+type ObservationRow = {
+  id: string;
+  user_id: string;
+  observation_type: string;
+  text_content: string | null;
+  image_data: string | null;
+  thumbnail_data: string | null;
+  audio_data: string | null;
+  transcript: string | null;
+  plant_id: string | null;
+  garden_id: string | null;
+  zone_id: string | null;
+  planting_record_id: string | null;
+  tags: string | null;
+  observed_at: string;
+  created_at: string;
+  updated_at: string;
+};
 
 const ACCESS_TOKEN_EXPIRES_IN_SECONDS = 15 * 60;
 const REFRESH_TOKEN_EXPIRES_IN_DAYS = 30;
@@ -156,6 +314,82 @@ function serializeAuthUser(user: AuthUser): AuthUser {
   };
 }
 
+function serializeUserProfile(profile: UserProfileRow): UserProfileRow {
+  return {
+    ...profile,
+    created_at: serializeSqliteDate(profile.created_at) ?? profile.created_at,
+    updated_at: serializeSqliteDate(profile.updated_at) ?? profile.updated_at,
+  };
+}
+
+function serializeNote(note: NoteRow): NoteRow {
+  return {
+    ...note,
+    created_at: serializeSqliteDate(note.created_at) ?? note.created_at,
+    updated_at: serializeSqliteDate(note.updated_at) ?? note.updated_at,
+  };
+}
+
+function serializePhoto(photo: PhotoRow): PhotoRow {
+  return {
+    ...photo,
+    captured_at: serializeSqliteDate(photo.captured_at) ?? photo.captured_at,
+    created_at: serializeSqliteDate(photo.created_at) ?? photo.created_at,
+    updated_at: serializeSqliteDate(photo.updated_at) ?? photo.updated_at,
+  };
+}
+
+function serializeGardenZone(zone: GardenZoneRow): GardenZoneRow {
+  return {
+    ...zone,
+    created_at: serializeSqliteDate(zone.created_at) ?? zone.created_at,
+    updated_at: serializeSqliteDate(zone.updated_at) ?? zone.updated_at,
+  };
+}
+
+function serializePlantingRecord(record: PlantingRecordRow): PlantingRecordRow {
+  return {
+    ...record,
+    planted_at: serializeSqliteDate(record.planted_at) ?? record.planted_at,
+    removed_at: serializeSqliteDate(record.removed_at),
+    harvested_at: serializeSqliteDate(record.harvested_at),
+    created_at: serializeSqliteDate(record.created_at) ?? record.created_at,
+    updated_at: serializeSqliteDate(record.updated_at) ?? record.updated_at,
+  };
+}
+
+function serializeObservation(observation: ObservationRow): ObservationRow {
+  return {
+    ...observation,
+    observed_at: serializeSqliteDate(observation.observed_at) ?? observation.observed_at,
+    created_at: serializeSqliteDate(observation.created_at) ?? observation.created_at,
+    updated_at: serializeSqliteDate(observation.updated_at) ?? observation.updated_at,
+  };
+}
+
+function parseObservationTags(tags: string | null | undefined): string[] {
+  if (!tags) {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(tags) as unknown;
+    return Array.isArray(parsed)
+      ? parsed.filter((item): item is string => typeof item === 'string')
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function toObservationResponse(observation: ObservationRow) {
+  const serialized = serializeObservation(observation);
+  return {
+    ...serialized,
+    tags: parseObservationTags(serialized.tags),
+  };
+}
+
 function getDefaultUserName(email: string): string {
   return email.split('@')[0] || 'Patch Gardener';
 }
@@ -169,25 +403,7 @@ function getJwtSecretForSigning(): string | undefined {
     return process.env.JWT_SECRET;
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    return 'patch-development-jwt-secret';
-  }
-
-  return undefined;
-}
-
-function base64UrlJson(value: unknown): string {
-  return Buffer.from(JSON.stringify(value)).toString('base64url');
-}
-
-function signJwtPayload(payload: JwtPayload, secret: string): string {
-  const header = base64UrlJson({ alg: 'HS256', typ: 'JWT' });
-  const body = base64UrlJson(payload);
-  const signature = createHmac('sha256', secret)
-    .update(`${header}.${body}`)
-    .digest('base64url');
-
-  return `${header}.${body}.${signature}`;
+  return 'patch-local-jwt-secret';
 }
 
 function createAccessToken(user: AuthUser): string {
@@ -196,13 +412,18 @@ function createAccessToken(user: AuthUser): string {
     throw new Error('JWT_SECRET is required for auth token issuance');
   }
 
-  const expiresAt = Math.floor(Date.now() / 1000) + ACCESS_TOKEN_EXPIRES_IN_SECONDS;
-  return signJwtPayload({
-    sub: user.id,
-    email: user.email,
-    name: user.name,
-    exp: expiresAt,
-  }, secret);
+  return jwt.sign(
+    {
+      sub: user.id,
+      email: user.email,
+      name: user.name,
+    },
+    secret,
+    {
+      expiresIn: ACCESS_TOKEN_EXPIRES_IN_SECONDS,
+      algorithm: 'HS256',
+    },
+  );
 }
 
 function verifyAccessToken(token: string): JwtPayload | null {
@@ -211,55 +432,36 @@ function verifyAccessToken(token: string): JwtPayload | null {
     return null;
   }
 
-  const parts = token.split('.');
-  if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) {
-    return null;
-  }
-
-  const expectedSignature = createHmac('sha256', secret)
-    .update(`${parts[0]}.${parts[1]}`)
-    .digest('base64url');
-  const receivedSignature = parts[2];
-  const expected = Buffer.from(expectedSignature);
-  const received = Buffer.from(receivedSignature);
-
-  if (expected.length !== received.length || !timingSafeEqual(expected, received)) {
-    return null;
-  }
-
   try {
-    const payload = JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')) as Partial<JwtPayload>;
+    const payload = jwt.verify(token, secret, { algorithms: ['HS256'] }) as jwt.JwtPayload & Partial<JwtPayload>;
     if (
       typeof payload.sub !== 'string'
       || typeof payload.email !== 'string'
       || typeof payload.name !== 'string'
-      || typeof payload.exp !== 'number'
-      || payload.exp <= Math.floor(Date.now() / 1000)
     ) {
       return null;
     }
 
-    return payload as JwtPayload;
+    return {
+      sub: payload.sub,
+      email: payload.email,
+      name: payload.name,
+    };
   } catch {
     return null;
   }
 }
 
 async function hashPassword(password: string): Promise<string> {
-  const salt = randomBytes(16).toString('base64url');
-  const hash = await scrypt(password, salt, 64);
-  return `scrypt:${salt}:${hash.toString('base64url')}`;
+  return bcrypt.hash(password, 10);
 }
 
 async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
-  const [algorithm, salt, hash] = storedHash.split(':');
-  if (algorithm !== 'scrypt' || !salt || !hash) {
+  try {
+    return await bcrypt.compare(password, storedHash);
+  } catch {
     return false;
   }
-
-  const expected = Buffer.from(hash, 'base64url');
-  const actual = await scrypt(password, salt, expected.length);
-  return expected.length === actual.length && timingSafeEqual(expected, actual);
 }
 
 function hashRefreshToken(token: string): string {
@@ -395,6 +597,16 @@ function requireAuth(req: express.Request, res: express.Response, next: express.
   next();
 }
 
+function getRequiredAuthUserId(req: express.Request, res: express.Response): string | null {
+  const userId = (req as AuthenticatedRequest).authUserId;
+  if (!userId) {
+    sendJsonError(res, 401, 'User authentication required');
+    return null;
+  }
+
+  return userId;
+}
+
 // --- REST API ENDPOINTS --- //
 
 app.post('/api/auth/register', async (req, res) => {
@@ -455,9 +667,8 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.get('/api/auth/me', requireAuth, async (req, res) => {
   try {
-    const userId = (req as AuthenticatedRequest).authUserId;
+    const userId = getRequiredAuthUserId(req, res);
     if (!userId) {
-      sendJsonError(res, 401, 'User authentication required');
       return;
     }
 
@@ -474,6 +685,109 @@ app.get('/api/auth/me', requireAuth, async (req, res) => {
   } catch (err) {
     logger.error('Failed to fetch authenticated user', err);
     sendJsonError(res, 500, 'Failed to fetch authenticated user');
+  }
+});
+
+app.get('/api/profile', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const profile = await dbGet<UserProfileRow>(`
+      SELECT
+        user_id,
+        country,
+        region,
+        postcode,
+        units,
+        experience_level,
+        goals,
+        climate_notes,
+        created_at,
+        updated_at
+      FROM user_profiles
+      WHERE user_id = ?
+    `, [userId]);
+
+    res.json({
+      profile: profile ? serializeUserProfile(profile) : null,
+    });
+  } catch (err) {
+    logger.error('Failed to fetch user profile', err);
+    sendJsonError(res, 500, 'Failed to fetch user profile');
+  }
+});
+
+app.put('/api/profile', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const data = upsertProfileSchema.parse(req.body);
+    await dbRun(`
+      INSERT INTO user_profiles (
+        user_id,
+        country,
+        region,
+        postcode,
+        units,
+        experience_level,
+        goals,
+        climate_notes
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(user_id) DO UPDATE SET
+        country = excluded.country,
+        region = excluded.region,
+        postcode = excluded.postcode,
+        units = excluded.units,
+        experience_level = excluded.experience_level,
+        goals = excluded.goals,
+        climate_notes = excluded.climate_notes,
+        updated_at = datetime('now')
+    `, [
+      userId,
+      data.country ?? null,
+      data.region ?? null,
+      data.postcode ?? null,
+      data.units ?? null,
+      data.experience_level ?? null,
+      data.goals ?? null,
+      data.climate_notes ?? null,
+    ]);
+
+    const profile = await dbGet<UserProfileRow>(`
+      SELECT
+        user_id,
+        country,
+        region,
+        postcode,
+        units,
+        experience_level,
+        goals,
+        climate_notes,
+        created_at,
+        updated_at
+      FROM user_profiles
+      WHERE user_id = ?
+    `, [userId]);
+
+    if (!profile) {
+      throw new Error('Failed to retrieve saved profile');
+    }
+
+    res.json(serializeUserProfile(profile));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid profile data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to update user profile', err);
+    sendJsonError(res, 500, 'Failed to update user profile');
   }
 });
 
@@ -527,6 +841,382 @@ app.post('/api/auth/logout', async (req, res) => {
   } catch (err) {
     logger.error('Failed to log out user', err);
     sendJsonError(res, 500, 'Failed to log out user');
+  }
+});
+
+app.get('/api/plants/:id/notes', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const plantId = plantIdSchema.parse(req.params.id);
+    const notes = await dbAll<ObservationRow>(`
+      SELECT
+        id,
+        user_id,
+        observation_type,
+        text_content,
+        image_data,
+        thumbnail_data,
+        audio_data,
+        transcript,
+        plant_id,
+        garden_id,
+        zone_id,
+        planting_record_id,
+        tags,
+        observed_at,
+        created_at,
+        updated_at
+      FROM observations
+      WHERE user_id = ? AND plant_id = ?
+        AND observation_type = 'textNote'
+      ORDER BY observed_at DESC
+    `, [userId, plantId]);
+
+    res.json(notes.map((row) => {
+      const observation = serializeObservation(row);
+      return serializeNote({
+        id: observation.id,
+        user_id: observation.user_id,
+        plant_id: observation.plant_id,
+        title: 'Field note',
+        content: observation.text_content ?? '',
+        created_at: observation.created_at,
+        updated_at: observation.updated_at,
+      });
+    }));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid plant ID');
+      return;
+    }
+    logger.error('Failed to fetch notes', err);
+    sendJsonError(res, 500, 'Failed to fetch notes');
+  }
+});
+
+app.post('/api/plants/:id/notes', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const plantId = plantIdSchema.parse(req.params.id);
+    const plant = await dbGet<{ id: string }>('SELECT id FROM plants WHERE id = ?', [plantId]);
+    if (!plant) {
+      sendJsonError(res, 404, 'Plant not found');
+      return;
+    }
+
+    const data = createNoteSchema.parse(req.body);
+    const noteId = randomUUID();
+    await dbRun(`
+      INSERT INTO observations (
+        id,
+        user_id,
+        observation_type,
+        text_content,
+        plant_id
+      )
+      VALUES (?, ?, 'textNote', ?, ?)
+    `, [
+      noteId,
+      userId,
+      (data.title?.trim() ? `${data.title.trim()}\n\n${data.content}` : data.content),
+      plantId,
+    ]);
+
+    const note = await dbGet<ObservationRow>(`
+      SELECT
+        id,
+        user_id,
+        observation_type,
+        text_content,
+        image_data,
+        thumbnail_data,
+        audio_data,
+        transcript,
+        plant_id,
+        garden_id,
+        zone_id,
+        planting_record_id,
+        tags,
+        observed_at,
+        created_at,
+        updated_at
+      FROM observations
+      WHERE id = ?
+    `, [noteId]);
+    if (!note) {
+      throw new Error('Failed to retrieve created note');
+    }
+
+    const serialized = serializeObservation(note);
+    res.status(201).json(serializeNote({
+      id: serialized.id,
+      user_id: serialized.user_id,
+      plant_id: serialized.plant_id,
+      title: 'Field note',
+      content: serialized.text_content ?? '',
+      created_at: serialized.created_at,
+      updated_at: serialized.updated_at,
+    }));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid note data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to create note', err);
+    sendJsonError(res, 500, 'Failed to create note');
+  }
+});
+
+app.get('/api/plants/:id/photos', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const plantId = plantIdSchema.parse(req.params.id);
+    const photos = await dbAll<ObservationRow>(`
+      SELECT
+        id,
+        user_id,
+        observation_type,
+        text_content,
+        image_data,
+        thumbnail_data,
+        audio_data,
+        transcript,
+        plant_id,
+        garden_id,
+        zone_id,
+        planting_record_id,
+        tags,
+        observed_at,
+        created_at,
+        updated_at
+      FROM observations
+      WHERE user_id = ? AND plant_id = ?
+        AND observation_type = 'photo'
+      ORDER BY observed_at DESC
+    `, [userId, plantId]);
+
+    res.json(photos.map((row) => {
+      const observation = serializeObservation(row);
+      return serializePhoto({
+        id: observation.id,
+        user_id: observation.user_id,
+        plant_id: observation.plant_id,
+        image_data: observation.image_data ?? '',
+        thumbnail_data: observation.thumbnail_data,
+        caption: observation.text_content,
+        captured_at: observation.observed_at,
+        created_at: observation.created_at,
+        updated_at: observation.updated_at,
+      });
+    }));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid plant ID');
+      return;
+    }
+    logger.error('Failed to fetch photos', err);
+    sendJsonError(res, 500, 'Failed to fetch photos');
+  }
+});
+
+app.post('/api/plants/:id/photos', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const plantId = plantIdSchema.parse(req.params.id);
+    const plant = await dbGet<{ id: string }>('SELECT id FROM plants WHERE id = ?', [plantId]);
+    if (!plant) {
+      sendJsonError(res, 404, 'Plant not found');
+      return;
+    }
+
+    const data = createPhotoSchema.parse(req.body);
+    const photoId = randomUUID();
+    await dbRun(`
+      INSERT INTO observations (
+        id,
+        user_id,
+        observation_type,
+        text_content,
+        image_data,
+        thumbnail_data,
+        plant_id,
+        observed_at
+      )
+      VALUES (?, ?, 'photo', ?, ?, ?, ?, COALESCE(?, datetime('now')))
+    `, [
+      photoId,
+      userId,
+      data.caption ?? null,
+      data.image_data,
+      data.thumbnail_data ?? null,
+      plantId,
+      data.captured_at ?? null,
+    ]);
+
+    const photo = await dbGet<ObservationRow>(`
+      SELECT
+        id,
+        user_id,
+        observation_type,
+        text_content,
+        image_data,
+        thumbnail_data,
+        audio_data,
+        transcript,
+        plant_id,
+        garden_id,
+        zone_id,
+        planting_record_id,
+        tags,
+        observed_at,
+        created_at,
+        updated_at
+      FROM observations
+      WHERE id = ?
+    `, [photoId]);
+    if (!photo) {
+      throw new Error('Failed to retrieve created photo');
+    }
+
+    const serialized = serializeObservation(photo);
+    res.status(201).json(serializePhoto({
+      id: serialized.id,
+      user_id: serialized.user_id,
+      plant_id: serialized.plant_id,
+      image_data: serialized.image_data ?? '',
+      thumbnail_data: serialized.thumbnail_data,
+      caption: serialized.text_content,
+      captured_at: serialized.observed_at,
+      created_at: serialized.created_at,
+      updated_at: serialized.updated_at,
+    }));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid photo data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to create photo', err);
+    sendJsonError(res, 500, 'Failed to create photo');
+  }
+});
+
+app.get('/api/plants/:id/observations', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const plantId = plantIdSchema.parse(req.params.id);
+    const rows = await dbAll<ObservationRow>(`
+      SELECT
+        id, user_id, observation_type, text_content, image_data, thumbnail_data, audio_data, transcript,
+        plant_id, garden_id, zone_id, planting_record_id, tags, observed_at, created_at, updated_at
+      FROM observations
+      WHERE user_id = ? AND plant_id = ?
+      ORDER BY observed_at DESC
+    `, [userId, plantId]);
+
+    res.json(rows.map(toObservationResponse));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid plant ID');
+      return;
+    }
+    logger.error('Failed to fetch observations', err);
+    sendJsonError(res, 500, 'Failed to fetch observations');
+  }
+});
+
+app.post('/api/plants/:id/observations', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const plantId = plantIdSchema.parse(req.params.id);
+    const plant = await dbGet<{ id: string; garden_id: string | null }>(
+      'SELECT id, garden_id FROM plants WHERE id = ?',
+      [plantId],
+    );
+    if (!plant) {
+      sendJsonError(res, 404, 'Plant not found');
+      return;
+    }
+
+    const data = createObservationSchema.parse(req.body);
+    const observationId = randomUUID();
+    await dbRun(`
+      INSERT INTO observations (
+        id,
+        user_id,
+        observation_type,
+        text_content,
+        image_data,
+        thumbnail_data,
+        audio_data,
+        transcript,
+        plant_id,
+        garden_id,
+        zone_id,
+        planting_record_id,
+        tags,
+        observed_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, datetime('now')))
+    `, [
+      observationId,
+      userId,
+      data.observation_type,
+      data.text_content ?? null,
+      data.image_data ?? null,
+      data.thumbnail_data ?? null,
+      data.audio_data ?? null,
+      data.transcript ?? null,
+      plantId,
+      data.garden_id ?? plant.garden_id ?? null,
+      data.zone_id ?? null,
+      data.planting_record_id ?? null,
+      JSON.stringify(data.tags ?? []),
+      data.observed_at ?? null,
+    ]);
+
+    const row = await dbGet<ObservationRow>(`
+      SELECT
+        id, user_id, observation_type, text_content, image_data, thumbnail_data, audio_data, transcript,
+        plant_id, garden_id, zone_id, planting_record_id, tags, observed_at, created_at, updated_at
+      FROM observations
+      WHERE id = ?
+    `, [observationId]);
+    if (!row) {
+      throw new Error('Failed to retrieve created observation');
+    }
+
+    res.status(201).json(toObservationResponse(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid observation data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to create observation', err);
+    sendJsonError(res, 500, 'Failed to create observation');
   }
 });
 
@@ -631,16 +1321,15 @@ app.post('/api/plants/:id/tasks', requireAuth, async (req, res) => {
         const taskId = randomUUID();
         
         await dbRun(`
-            INSERT INTO care_tasks (id, plant_id, task_type, scheduled_date, is_recurring, frequency, notes)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO care_tasks (id, plant_id, task_type, scheduled_date, is_recurring, frequency)
+            VALUES (?, ?, ?, ?, ?, ?)
         `, [
             taskId,
             id,
             data.task_type,
             data.scheduled_date,
             data.is_recurring ? 1 : 0,
-            data.frequency || null,
-            data.notes || null
+            data.frequency || null
         ]);
         
         const newTask = await dbGet<CareTask>('SELECT * FROM care_tasks WHERE id = ?', [taskId]);
@@ -655,6 +1344,71 @@ app.post('/api/plants/:id/tasks', requireAuth, async (req, res) => {
         }
         logger.error('Failed to create task', err);
         sendJsonError(res, 500, 'Failed to create task');
+    }
+});
+
+app.post('/api/tasks/:id/complete', requireAuth, async (req, res) => {
+    try {
+        const userId = getRequiredAuthUserId(req, res);
+        if (!userId) {
+            return;
+        }
+
+        const taskId = idSchema.parse(req.params.id);
+        const data = completeTaskSchema.parse(req.body ?? {});
+        const task = await dbGet<CareTask>('SELECT * FROM care_tasks WHERE id = ?', [taskId]);
+        if (!task) {
+            sendJsonError(res, 404, 'Task not found');
+            return;
+        }
+
+        await dbRun(`
+          UPDATE care_tasks
+          SET completed_date = COALESCE(?, datetime('now'))
+          WHERE id = ?
+        `, [data.completed_date ?? null, taskId]);
+
+        const updatedTask = await dbGet<CareTask>('SELECT * FROM care_tasks WHERE id = ?', [taskId]);
+        if (!updatedTask) {
+            throw new Error('Failed to retrieve updated task');
+        }
+
+        const plant = await dbGet<Plant>('SELECT * FROM plants WHERE id = ?', [updatedTask.plant_id]);
+        const latestRecord = await dbGet<PlantingRecordRow>(`
+          SELECT
+            id, user_id, plant_name_snapshot, species_snapshot, variety_snapshot, garden_id, zone_id, planted_at,
+            removed_at, harvested_at, source_plant_id, outcome, season, year, created_at, updated_at
+          FROM planting_records
+          WHERE user_id = ? AND source_plant_id = ?
+          ORDER BY planted_at DESC
+          LIMIT 1
+        `, [userId, updatedTask.plant_id]);
+
+        const observationId = randomUUID();
+        await dbRun(`
+          INSERT INTO observations (
+            id, user_id, observation_type, text_content, plant_id, garden_id, zone_id, planting_record_id, tags, observed_at
+          )
+          VALUES (?, ?, 'taskComplete', ?, ?, ?, ?, ?, ?, datetime('now'))
+        `, [
+          observationId,
+          userId,
+          `${updatedTask.task_type} completed`,
+          updatedTask.plant_id,
+          plant?.garden_id ?? latestRecord?.garden_id ?? null,
+          latestRecord?.zone_id ?? null,
+          latestRecord?.id ?? null,
+          JSON.stringify(['task', 'completion']),
+        ]);
+
+        res.json(serializeCareTask(updatedTask));
+    } catch (err) {
+        if (err instanceof z.ZodError) {
+            sendJsonError(res, 400, 'Invalid task completion payload', { details: err.issues });
+            return;
+        }
+        logger.error('Failed to complete task', err);
+        sendJsonError(res, 500, 'Failed to complete task');
     }
 });
 
@@ -728,6 +1482,568 @@ app.post('/api/gardens', requireAuth, async (req, res) => {
         logger.error('Failed to create garden', err);
         sendJsonError(res, 500, 'Failed to create garden');
     }
+});
+
+app.get('/api/gardens/:id/zones', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const gardenId = idSchema.parse(req.params.id);
+    const rows = await dbAll<GardenZoneRow>(`
+      SELECT id, user_id, garden_id, name, zone_type, width_feet, length_feet, sort_order, photo_id, notes, created_at, updated_at
+      FROM garden_zones
+      WHERE user_id = ? AND garden_id = ?
+      ORDER BY sort_order ASC, created_at ASC
+    `, [userId, gardenId]);
+
+    res.json(rows.map(serializeGardenZone));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid garden ID');
+      return;
+    }
+    logger.error('Failed to fetch garden zones', err);
+    sendJsonError(res, 500, 'Failed to fetch garden zones');
+  }
+});
+
+app.post('/api/gardens/:id/zones', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const gardenId = idSchema.parse(req.params.id);
+    const garden = await dbGet<{ id: string }>('SELECT id FROM gardens WHERE id = ?', [gardenId]);
+    if (!garden) {
+      sendJsonError(res, 404, 'Garden not found');
+      return;
+    }
+
+    const data = createGardenZoneSchema.parse(req.body);
+    const zoneId = randomUUID();
+    await dbRun(`
+      INSERT INTO garden_zones (
+        id, user_id, garden_id, name, zone_type, width_feet, length_feet, sort_order, photo_id, notes
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      zoneId,
+      userId,
+      gardenId,
+      data.name,
+      data.zone_type ?? null,
+      data.width_feet ?? null,
+      data.length_feet ?? null,
+      data.sort_order ?? null,
+      data.photo_id ?? null,
+      data.notes ?? null,
+    ]);
+
+    const row = await dbGet<GardenZoneRow>(`
+      SELECT id, user_id, garden_id, name, zone_type, width_feet, length_feet, sort_order, photo_id, notes, created_at, updated_at
+      FROM garden_zones
+      WHERE id = ?
+    `, [zoneId]);
+    if (!row) {
+      throw new Error('Failed to retrieve created garden zone');
+    }
+
+    res.status(201).json(serializeGardenZone(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid zone data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to create garden zone', err);
+    sendJsonError(res, 500, 'Failed to create garden zone');
+  }
+});
+
+app.get('/api/zones/:id', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const zoneId = idSchema.parse(req.params.id);
+    const row = await dbGet<GardenZoneRow>(`
+      SELECT id, user_id, garden_id, name, zone_type, width_feet, length_feet, sort_order, photo_id, notes, created_at, updated_at
+      FROM garden_zones
+      WHERE id = ? AND user_id = ?
+    `, [zoneId, userId]);
+    if (!row) {
+      sendJsonError(res, 404, 'Zone not found');
+      return;
+    }
+
+    res.json(serializeGardenZone(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid zone ID');
+      return;
+    }
+    logger.error('Failed to fetch zone', err);
+    sendJsonError(res, 500, 'Failed to fetch zone');
+  }
+});
+
+app.put('/api/zones/:id', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const zoneId = idSchema.parse(req.params.id);
+    const existing = await dbGet<{ id: string }>('SELECT id FROM garden_zones WHERE id = ? AND user_id = ?', [zoneId, userId]);
+    if (!existing) {
+      sendJsonError(res, 404, 'Zone not found');
+      return;
+    }
+
+    const data = updateGardenZoneSchema.parse(req.body);
+    await dbRun(`
+      UPDATE garden_zones
+      SET
+        name = COALESCE(?, name),
+        zone_type = COALESCE(?, zone_type),
+        width_feet = COALESCE(?, width_feet),
+        length_feet = COALESCE(?, length_feet),
+        sort_order = COALESCE(?, sort_order),
+        photo_id = COALESCE(?, photo_id),
+        notes = COALESCE(?, notes),
+        updated_at = datetime('now')
+      WHERE id = ? AND user_id = ?
+    `, [
+      data.name ?? null,
+      data.zone_type ?? null,
+      data.width_feet ?? null,
+      data.length_feet ?? null,
+      data.sort_order ?? null,
+      data.photo_id ?? null,
+      data.notes ?? null,
+      zoneId,
+      userId,
+    ]);
+
+    const row = await dbGet<GardenZoneRow>(`
+      SELECT id, user_id, garden_id, name, zone_type, width_feet, length_feet, sort_order, photo_id, notes, created_at, updated_at
+      FROM garden_zones
+      WHERE id = ?
+    `, [zoneId]);
+    if (!row) {
+      throw new Error('Failed to retrieve updated zone');
+    }
+
+    res.json(serializeGardenZone(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid zone update payload', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to update zone', err);
+    sendJsonError(res, 500, 'Failed to update zone');
+  }
+});
+
+app.delete('/api/zones/:id', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const zoneId = idSchema.parse(req.params.id);
+    await dbRun('DELETE FROM garden_zones WHERE id = ? AND user_id = ?', [zoneId, userId]);
+    res.status(204).send();
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid zone ID');
+      return;
+    }
+    logger.error('Failed to delete zone', err);
+    sendJsonError(res, 500, 'Failed to delete zone');
+  }
+});
+
+app.get('/api/zones/:id/history', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const zoneId = idSchema.parse(req.params.id);
+    const rows = await dbAll<PlantingRecordRow>(`
+      SELECT
+        id, user_id, plant_name_snapshot, species_snapshot, variety_snapshot, garden_id, zone_id, planted_at,
+        removed_at, harvested_at, source_plant_id, outcome, season, year, created_at, updated_at
+      FROM planting_records
+      WHERE user_id = ? AND zone_id = ?
+      ORDER BY planted_at DESC
+    `, [userId, zoneId]);
+
+    res.json(rows.map(serializePlantingRecord));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid zone ID');
+      return;
+    }
+    logger.error('Failed to fetch zone history', err);
+    sendJsonError(res, 500, 'Failed to fetch zone history');
+  }
+});
+
+app.get('/api/zones/:id/observations', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const zoneId = idSchema.parse(req.params.id);
+    const rows = await dbAll<ObservationRow>(`
+      SELECT
+        id, user_id, observation_type, text_content, image_data, thumbnail_data, audio_data, transcript,
+        plant_id, garden_id, zone_id, planting_record_id, tags, observed_at, created_at, updated_at
+      FROM observations
+      WHERE user_id = ? AND zone_id = ?
+      ORDER BY observed_at DESC
+    `, [userId, zoneId]);
+
+    res.json(rows.map(toObservationResponse));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid zone ID');
+      return;
+    }
+    logger.error('Failed to fetch zone observations', err);
+    sendJsonError(res, 500, 'Failed to fetch zone observations');
+  }
+});
+
+app.get('/api/planting-records', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const gardenId = typeof req.query.garden_id === 'string' ? req.query.garden_id : undefined;
+    const zoneId = typeof req.query.zone_id === 'string' ? req.query.zone_id : undefined;
+    const sql = `
+      SELECT
+        id, user_id, plant_name_snapshot, species_snapshot, variety_snapshot, garden_id, zone_id, planted_at,
+        removed_at, harvested_at, source_plant_id, outcome, season, year, created_at, updated_at
+      FROM planting_records
+      WHERE user_id = ?
+        AND (? IS NULL OR garden_id = ?)
+        AND (? IS NULL OR zone_id = ?)
+      ORDER BY planted_at DESC
+    `;
+    const rows = await dbAll<PlantingRecordRow>(sql, [userId, gardenId ?? null, gardenId ?? null, zoneId ?? null, zoneId ?? null]);
+    res.json(rows.map(serializePlantingRecord));
+  } catch (err) {
+    logger.error('Failed to fetch planting records', err);
+    sendJsonError(res, 500, 'Failed to fetch planting records');
+  }
+});
+
+app.post('/api/planting-records', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const data = createPlantingRecordSchema.parse(req.body);
+    const recordId = randomUUID();
+    await dbRun(`
+      INSERT INTO planting_records (
+        id, user_id, plant_name_snapshot, species_snapshot, variety_snapshot, garden_id, zone_id, planted_at,
+        removed_at, harvested_at, source_plant_id, outcome, season, year
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `, [
+      recordId,
+      userId,
+      data.plant_name_snapshot,
+      data.species_snapshot ?? null,
+      data.variety_snapshot ?? null,
+      data.garden_id ?? null,
+      data.zone_id ?? null,
+      data.planted_at,
+      data.removed_at ?? null,
+      data.harvested_at ?? null,
+      data.source_plant_id ?? null,
+      data.outcome ?? null,
+      data.season ?? null,
+      data.year ?? null,
+    ]);
+
+    const row = await dbGet<PlantingRecordRow>(`
+      SELECT
+        id, user_id, plant_name_snapshot, species_snapshot, variety_snapshot, garden_id, zone_id, planted_at,
+        removed_at, harvested_at, source_plant_id, outcome, season, year, created_at, updated_at
+      FROM planting_records
+      WHERE id = ?
+    `, [recordId]);
+    if (!row) {
+      throw new Error('Failed to retrieve created planting record');
+    }
+
+    res.status(201).json(serializePlantingRecord(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid planting record data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to create planting record', err);
+    sendJsonError(res, 500, 'Failed to create planting record');
+  }
+});
+
+app.put('/api/planting-records/:id', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const recordId = idSchema.parse(req.params.id);
+    const data = updatePlantingRecordSchema.parse(req.body);
+    await dbRun(`
+      UPDATE planting_records
+      SET
+        plant_name_snapshot = COALESCE(?, plant_name_snapshot),
+        species_snapshot = COALESCE(?, species_snapshot),
+        variety_snapshot = COALESCE(?, variety_snapshot),
+        garden_id = COALESCE(?, garden_id),
+        zone_id = COALESCE(?, zone_id),
+        planted_at = COALESCE(?, planted_at),
+        removed_at = COALESCE(?, removed_at),
+        harvested_at = COALESCE(?, harvested_at),
+        source_plant_id = COALESCE(?, source_plant_id),
+        outcome = COALESCE(?, outcome),
+        season = COALESCE(?, season),
+        year = COALESCE(?, year),
+        updated_at = datetime('now')
+      WHERE id = ? AND user_id = ?
+    `, [
+      data.plant_name_snapshot ?? null,
+      data.species_snapshot ?? null,
+      data.variety_snapshot ?? null,
+      data.garden_id ?? null,
+      data.zone_id ?? null,
+      data.planted_at ?? null,
+      data.removed_at ?? null,
+      data.harvested_at ?? null,
+      data.source_plant_id ?? null,
+      data.outcome ?? null,
+      data.season ?? null,
+      data.year ?? null,
+      recordId,
+      userId,
+    ]);
+
+    const row = await dbGet<PlantingRecordRow>(`
+      SELECT
+        id, user_id, plant_name_snapshot, species_snapshot, variety_snapshot, garden_id, zone_id, planted_at,
+        removed_at, harvested_at, source_plant_id, outcome, season, year, created_at, updated_at
+      FROM planting_records
+      WHERE id = ? AND user_id = ?
+    `, [recordId, userId]);
+    if (!row) {
+      sendJsonError(res, 404, 'Planting record not found');
+      return;
+    }
+
+    res.json(serializePlantingRecord(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid planting record update payload', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to update planting record', err);
+    sendJsonError(res, 500, 'Failed to update planting record');
+  }
+});
+
+app.post('/api/observations', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const data = createObservationSchema.parse(req.body);
+    const observationId = randomUUID();
+    await dbRun(`
+      INSERT INTO observations (
+        id, user_id, observation_type, text_content, image_data, thumbnail_data, audio_data, transcript,
+        plant_id, garden_id, zone_id, planting_record_id, tags, observed_at
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, datetime('now')))
+    `, [
+      observationId,
+      userId,
+      data.observation_type,
+      data.text_content ?? null,
+      data.image_data ?? null,
+      data.thumbnail_data ?? null,
+      data.audio_data ?? null,
+      data.transcript ?? null,
+      data.plant_id ?? null,
+      data.garden_id ?? null,
+      data.zone_id ?? null,
+      data.planting_record_id ?? null,
+      JSON.stringify(data.tags ?? []),
+      data.observed_at ?? null,
+    ]);
+
+    const row = await dbGet<ObservationRow>(`
+      SELECT
+        id, user_id, observation_type, text_content, image_data, thumbnail_data, audio_data, transcript,
+        plant_id, garden_id, zone_id, planting_record_id, tags, observed_at, created_at, updated_at
+      FROM observations
+      WHERE id = ?
+    `, [observationId]);
+    if (!row) {
+      throw new Error('Failed to retrieve created observation');
+    }
+    res.status(201).json(toObservationResponse(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid observation data', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to create observation', err);
+    sendJsonError(res, 500, 'Failed to create observation');
+  }
+});
+
+app.get('/api/observations', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const plantId = typeof req.query.plant_id === 'string' ? req.query.plant_id : undefined;
+    const gardenId = typeof req.query.garden_id === 'string' ? req.query.garden_id : undefined;
+    const zoneId = typeof req.query.zone_id === 'string' ? req.query.zone_id : undefined;
+    const rows = await dbAll<ObservationRow>(`
+      SELECT
+        id, user_id, observation_type, text_content, image_data, thumbnail_data, audio_data, transcript,
+        plant_id, garden_id, zone_id, planting_record_id, tags, observed_at, created_at, updated_at
+      FROM observations
+      WHERE user_id = ?
+        AND (? IS NULL OR plant_id = ?)
+        AND (? IS NULL OR garden_id = ?)
+        AND (? IS NULL OR zone_id = ?)
+      ORDER BY observed_at DESC
+    `, [
+      userId,
+      plantId ?? null, plantId ?? null,
+      gardenId ?? null, gardenId ?? null,
+      zoneId ?? null, zoneId ?? null,
+    ]);
+    res.json(rows.map(toObservationResponse));
+  } catch (err) {
+    logger.error('Failed to fetch observations', err);
+    sendJsonError(res, 500, 'Failed to fetch observations');
+  }
+});
+
+app.put('/api/observations/:id', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const observationId = idSchema.parse(req.params.id);
+    const data = updateObservationSchema.parse(req.body);
+    await dbRun(`
+      UPDATE observations
+      SET
+        observation_type = COALESCE(?, observation_type),
+        text_content = COALESCE(?, text_content),
+        image_data = COALESCE(?, image_data),
+        thumbnail_data = COALESCE(?, thumbnail_data),
+        audio_data = COALESCE(?, audio_data),
+        transcript = COALESCE(?, transcript),
+        plant_id = COALESCE(?, plant_id),
+        garden_id = COALESCE(?, garden_id),
+        zone_id = COALESCE(?, zone_id),
+        planting_record_id = COALESCE(?, planting_record_id),
+        tags = COALESCE(?, tags),
+        observed_at = COALESCE(?, observed_at),
+        updated_at = datetime('now')
+      WHERE id = ? AND user_id = ?
+    `, [
+      data.observation_type ?? null,
+      data.text_content ?? null,
+      data.image_data ?? null,
+      data.thumbnail_data ?? null,
+      data.audio_data ?? null,
+      data.transcript ?? null,
+      data.plant_id ?? null,
+      data.garden_id ?? null,
+      data.zone_id ?? null,
+      data.planting_record_id ?? null,
+      data.tags ? JSON.stringify(data.tags) : null,
+      data.observed_at ?? null,
+      observationId,
+      userId,
+    ]);
+
+    const row = await dbGet<ObservationRow>(`
+      SELECT
+        id, user_id, observation_type, text_content, image_data, thumbnail_data, audio_data, transcript,
+        plant_id, garden_id, zone_id, planting_record_id, tags, observed_at, created_at, updated_at
+      FROM observations
+      WHERE id = ? AND user_id = ?
+    `, [observationId, userId]);
+    if (!row) {
+      sendJsonError(res, 404, 'Observation not found');
+      return;
+    }
+    res.json(toObservationResponse(row));
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid observation update payload', { details: err.issues });
+      return;
+    }
+    logger.error('Failed to update observation', err);
+    sendJsonError(res, 500, 'Failed to update observation');
+  }
+});
+
+app.delete('/api/observations/:id', requireAuth, async (req, res) => {
+  try {
+    const userId = getRequiredAuthUserId(req, res);
+    if (!userId) {
+      return;
+    }
+
+    const observationId = idSchema.parse(req.params.id);
+    await dbRun('DELETE FROM observations WHERE id = ? AND user_id = ?', [observationId, userId]);
+    res.status(204).send();
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      sendJsonError(res, 400, 'Invalid observation ID');
+      return;
+    }
+    logger.error('Failed to delete observation', err);
+    sendJsonError(res, 500, 'Failed to delete observation');
+  }
 });
 
 // Get all wiki entries

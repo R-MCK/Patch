@@ -46,6 +46,31 @@
   --ink-overdue: #b8543c;
   --ink-overdue-soft: #f7e5df;
 
+  --cottage-bg-1: #f6f0e1;
+  --cottage-bg-2: #efe7d3;
+  --cottage-bg-3: #e6dcc2;
+  --cottage-cream: #fbf6e9;
+  --cottage-moss: #6b8a4f;
+  --cottage-rust: #c47a4a;
+  --cottage-ink: #1a1410;
+  --cottage-stone: #8a7a62;
+  --cottage-overdue: #b8543c;
+  --cottage-overdue-soft: #f7e5df;
+  --cottage-weather-chip: #dcebf3;
+
+  --cottage-space-xs: 4px;
+  --cottage-space-sm: 8px;
+  --cottage-space-md: 16px;
+  --cottage-space-lg: 24px;
+  --cottage-space-xl: 32px;
+  --cottage-space-2xl: 48px;
+
+  --cottage-radius-sm: 4px;
+  --cottage-radius-md: 8px;
+  --cottage-radius-lg: 16px;
+  --cottage-radius-xl: 24px;
+  --cottage-radius-2xl: 32px;
+
   --font-display: 'DM Serif Display', 'Playfair Display', Georgia, serif;
   --font-slab: 'Roboto Slab', 'Rockwell', Georgia, serif;
   --font-body: 'Inter', system-ui, sans-serif;
@@ -59,6 +84,14 @@ body[data-palette="cottage"] {
   --rule: #c8b896; --rule-soft: #ddd0b0;
   --forest: #2f4a32; --moss: #6b8a4f; --sage: #a8b888; --sage-soft: #d6dcb8;
   --terracotta: #b85c38; --rust: #c47a4a; --honey: #d4a056; --berry: #8e3a3a; --plum: #5a3a4a; --sky: #6b8aa8;
+  --cottage-bg-1: var(--paper);
+  --cottage-bg-2: var(--paper-2);
+  --cottage-bg-3: var(--paper-3);
+  --cottage-cream: var(--cream);
+  --cottage-moss: var(--moss);
+  --cottage-rust: var(--rust);
+  --cottage-ink: var(--ink);
+  --cottage-stone: var(--ink-faint);
 }
 body[data-palette="herbarium"] {
   --paper: #efece2; --paper-2: #e7e3d4; --cream: #f6f3e8;
@@ -92,6 +125,12 @@ body[data-density="airy"]    {
   --space-lg: 30px;
   --space-xl: 40px;
   --space-2xl: 60px;
+  --cottage-space-xs: 5px;
+  --cottage-space-sm: 10px;
+  --cottage-space-md: 20px;
+  --cottage-space-lg: 30px;
+  --cottage-space-xl: 40px;
+  --cottage-space-2xl: 60px;
 }
 
 .cottage-host {

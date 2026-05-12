@@ -1,7 +1,7 @@
 import Constants from 'expo-constants'
 import { Platform } from 'react-native'
 import { PatchApiClient } from '@patch/api'
-import { getPatchAuthToken } from './authTokens'
+import { getPatchAuthToken, persistPatchAccessToken } from './authTokens'
 
 function getExpoHostBaseUrl() {
   const hostUri = Constants.expoConfig?.hostUri ?? Constants.expoGoConfig?.debuggerHost
@@ -29,4 +29,5 @@ export const patchApiBaseUrl = getPatchApiBaseUrl()
 export const patchApiClient = new PatchApiClient({
   baseUrl: patchApiBaseUrl,
   getAuthToken: getPatchAuthToken,
+  setAuthToken: persistPatchAccessToken,
 })

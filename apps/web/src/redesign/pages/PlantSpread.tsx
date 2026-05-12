@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { mapDbCareTaskToCareTask, isOverdue, isDueToday, type CareTask, type DbCareTask, type Plant } from '@patch/core'
+import { isOverdue, isDueToday, type CareTask, type Observation, type Plant, type WikiEntry } from '@patch/core'
 
 import { ChevronLeftGlyph, PencilGlyph, PlusGlyph, DropGlyph } from '../glyphs'
 import { PlantArt } from '../plant-art'
@@ -79,7 +79,11 @@ export const PlantSpread = () => {
   const fetchGardens = useGardenStore((s) => s.fetchGardens)
 
   const [tasks, setTasks] = useState<CareTask[]>([])
+  const [observations, setObservations] = useState<Observation[]>([])
+  const [wikiEntry, setWikiEntry] = useState<WikiEntry | null>(null)
   const [tasksLoading, setTasksLoading] = useState(false)
+  const [observationsLoading, setObservationsLoading] = useState(false)
+  const [wikiLoading, setWikiLoading] = useState(false)
 
   useEffect(() => {
     if (plants.length === 0) void fetchPlants()
@@ -92,9 +96,9 @@ export const PlantSpread = () => {
     void (async () => {
       try {
         setTasksLoading(true)
-        const raw = (await api.getTasks(plantId)) as DbCareTask[]
+        const raw = await api.getTasks(plantId)
         if (cancelled) return
-        const mapped = Array.isArray(raw) ? raw.map(mapDbCareTaskToCareTask) : []
+        const mapped = Array.isArray(raw) ? raw : []
         setTasks(mapped)
       } catch {
         if (!cancelled) setTasks([])
@@ -105,8 +109,56 @@ export const PlantSpread = () => {
     return () => { cancelled = true }
   }, [plantId])
 
+  useEffect(() => {
+    if (!plantId) return
+    let cancelled = false
+    void (async () => {
+      try {
+        setObservationsLoading(true)
+        const rows = await api.getPlantObservations(plantId)
+        if (cancelled) return
+        setObservations(rows)
+      } catch {
+        if (!cancelled) setObservations([])
+      } finally {
+        if (!cancelled) setObservationsLoading(false)
+      }
+    })()
+    return () => { cancelled = true }
+  }, [plantId])
+
   const plant = useMemo(() => plants.find((p) => p.id === plantId), [plants, plantId])
   const garden = useMemo(() => plant?.gardenId ? gardens.find((g) => g.id === plant.gardenId) : undefined, [plant, gardens])
+
+  useEffect(() => {
+    if (!plant) return
+    const speciesHint = (plant.species ?? plant.scientificName ?? '').trim().toLowerCase()
+    if (!speciesHint) return
+
+    let cancelled = false
+    void (async () => {
+      try {
+        setWikiLoading(true)
+        const entries = await api.getWikiEntries()
+        if (cancelled) return
+        const match = entries.find((entry) => {
+          const scientific = entry.scientificName?.trim().toLowerCase()
+          const common = entry.commonName?.trim().toLowerCase()
+          return scientific === speciesHint
+            || common === speciesHint
+            || speciesHint.includes(common ?? '')
+            || speciesHint.includes(scientific ?? '')
+        }) ?? null
+        setWikiEntry(match)
+      } catch {
+        if (!cancelled) setWikiEntry(null)
+      } finally {
+        if (!cancelled) setWikiLoading(false)
+      }
+    })()
+
+    return () => { cancelled = true }
+  }, [plant])
 
   // Loading / not-found shells
   if (!plant) {
@@ -137,6 +189,7 @@ export const PlantSpread = () => {
   const color = colorForPlant(plant)
   const illust = inferIllust(plant)
   const ageDays = daysSince(plant.plantedDate ?? plant.plantingDate)
+  const speciesLabel = plant.species ?? plant.scientificName
 
   const sortedTasks = [...tasks].sort((a, b) => a.scheduledDate.getTime() - b.scheduledDate.getTime())
   const lastWatering = tasks
@@ -157,10 +210,10 @@ export const PlantSpread = () => {
           <ChevronLeftGlyph size={14} /> ALL PLANTS · {(garden?.name ?? plant.location ?? 'Patch').toUpperCase()} · {plant.name.toUpperCase()}
         </Link>
         <nav style={{ display: 'flex', gap: 24, fontFamily: 'var(--font-slab)', fontSize: 11, fontWeight: 500, letterSpacing: '0.06em', textTransform: 'uppercase' }}>
-          <a href="/" style={{ color: 'var(--ink-soft)' }}>Today</a>
+          <a href="/today" style={{ color: 'var(--ink-soft)' }}>Today</a>
           <a href="/plants" style={{ color: 'var(--ink)', borderBottom: '2px solid var(--terracotta)', paddingBottom: 4 }}>Plants</a>
-          <a href="/gardens" style={{ color: 'var(--ink-soft)' }}>Gardens</a>
-          <a href="/wiki" style={{ color: 'var(--ink-soft)' }}>Wiki</a>
+          <a href="/dashboard/map" style={{ color: 'var(--ink-soft)' }}>Gardens</a>
+          <a href="/dashboard/almanac" style={{ color: 'var(--ink-soft)' }}>Almanac</a>
         </nav>
       </header>
     }>
@@ -250,21 +303,78 @@ export const PlantSpread = () => {
       </section>
 
       <section style={{ padding: '28px 36px', borderBottom: '1px solid var(--rule)' }}>
-        <SectionHeader title="Notes & Photos" trailing="PHASE 5" />
-        <p style={{ marginTop: 14, fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 640 }}>
-          Observations land in Phase 5. Soon this section will hold the journal of waterings,
-          notes, photos, and harvests for <strong>{plant.name}</strong> — every entry kept on the same
-          paper as the rest of the spread.
-        </p>
+        <SectionHeader title="Observations" trailing={`${observations.length} ENTRIES`} />
+        {observationsLoading ? (
+          <p style={{ marginTop: 14, fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)' }}>
+            Loading observations…
+          </p>
+        ) : observations.length === 0 ? (
+          <p style={{ marginTop: 14, fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 640 }}>
+            No observations yet for <strong>{plant.name}</strong>. Use Capture to add notes, photos, or task milestones.
+          </p>
+        ) : (
+          <ul style={{ listStyle: 'none', padding: 0, margin: '14px 0 0', display: 'grid', gap: 10 }}>
+            {observations.slice(0, 8).map((observation) => (
+              <li
+                key={observation.id}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '140px 1fr',
+                  gap: 14,
+                  border: '1px solid var(--rule)',
+                  background: 'var(--cream)',
+                  padding: '10px 12px',
+                }}
+              >
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.1em', color: 'var(--ink-faint)' }}>
+                  {observation.observationType.toUpperCase()}
+                  <div style={{ marginTop: 4 }}>{observation.observedAt.toLocaleDateString()}</div>
+                </div>
+                <div style={{ fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink)' }}>
+                  {observation.textContent
+                    || (observation.observationType === 'photo'
+                      ? 'Photo capture'
+                      : observation.observationType === 'taskComplete'
+                        ? 'Task marked complete'
+                        : 'Observation')}
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <section style={{ padding: '28px 36px' }}>
-        <SectionHeader title="Wiki Reference" trailing={(plant.species ?? plant.scientificName) ? 'BY SPECIES' : 'PHASE 5'} />
-        <p style={{ marginTop: 14, fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 640 }}>
-          {(plant.species ?? plant.scientificName)
-            ? `When the wiki store is wired, we'll cross-reference "${plant.species ?? plant.scientificName}" and pull sunlight, watering, soil, and companion plant guidance here.`
-            : 'Wiki cross-reference will appear once this plant has a species recorded.'}
-        </p>
+        <SectionHeader title="Wiki Reference" trailing={speciesLabel ? 'BY SPECIES' : 'NO SPECIES'} />
+        {wikiLoading ? (
+          <p style={{ marginTop: 14, fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)' }}>
+            Looking up wiki guidance…
+          </p>
+        ) : speciesLabel && wikiEntry ? (
+          <div style={{ marginTop: 14, maxWidth: 700 }}>
+            <h4 style={{ fontFamily: 'var(--font-display)', fontSize: 22, margin: 0, color: 'var(--ink-2)' }}>
+              {wikiEntry.commonName ?? wikiEntry.title}
+            </h4>
+            {wikiEntry.scientificName && (
+              <div style={{ marginTop: 2, fontFamily: 'var(--font-display)', fontSize: 13, fontStyle: 'italic', color: 'var(--ink-faint)' }}>
+                {wikiEntry.scientificName}
+              </div>
+            )}
+            <p style={{ marginTop: 10, fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.6 }}>
+              {wikiEntry.entryDescription ?? wikiEntry.content}
+            </p>
+            <div style={{ marginTop: 8, fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', color: 'var(--ink-faint)' }}>
+              {wikiEntry.sunlight ? `SUNLIGHT: ${wikiEntry.sunlight} · ` : ''}
+              {wikiEntry.watering ? `WATERING: ${wikiEntry.watering}` : ''}
+            </div>
+          </div>
+        ) : (
+          <p style={{ marginTop: 14, fontFamily: 'var(--font-slab)', fontSize: 13, color: 'var(--ink-soft)', lineHeight: 1.6, maxWidth: 640 }}>
+            {speciesLabel
+              ? `No wiki entry matched "${speciesLabel}" yet.`
+              : 'Wiki cross-reference will appear once this plant has a species recorded.'}
+          </p>
+        )}
       </section>
     </AlmanacLayout>
   )
